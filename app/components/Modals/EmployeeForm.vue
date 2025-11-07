@@ -1,0 +1,519 @@
+<!-- @format -->
+
+<script setup lang="ts">
+import type { Employee, EmployeeFormData } from "../../../types/employee";
+
+interface Props {
+  modelValue: boolean;
+  employee?: Employee | null;
+}
+
+const props = defineProps<Props>();
+
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+  save: [employee: Employee];
+}>();
+const isEmployeeFormOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => emit("update:modelValue", value),
+});
+const employeeToDetail = computed(() => props.employee);
+
+const handleSaveEmployeeForm = () => {
+  if (!isFormValid.value) return;
+
+  const employeeData: Employee = {
+    ...formData.value,
+    id: props.employee?.id || Date.now().toString(),
+  };
+
+  emit("save", employeeData);
+  isEmployeeFormOpen.value = false;
+};
+
+const handleCancelEmployeeForm = () => {
+  isEmployeeFormOpen.value = false;
+};
+
+// Form state
+const formData = ref<EmployeeFormData>({
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  jobTitle: "",
+  department: "",
+  startDate: "",
+  salary: 0,
+  currency: "USD",
+  status: "Active",
+  address: {
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  },
+  credentials: {
+    username: "",
+    password: "",
+  },
+  profileImage: "",
+});
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => emit("update:modelValue", value),
+});
+
+// Watch for employee changes to populate form
+watch(
+  () => props.employee,
+  (employee) => {
+    if (employee) {
+      formData.value = {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        phone: employee.phone,
+        jobTitle: employee.jobTitle,
+        department: employee.department,
+        startDate: employee.startDate,
+        salary: employee.salary,
+        currency: employee.currency,
+        status: employee.status,
+        address: { ...employee.address },
+        credentials: { ...employee.credentials },
+        profileImage: employee.profileImage || "",
+      };
+    } else {
+      // Reset form for new employee
+      formData.value = {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        jobTitle: "",
+        department: "",
+        startDate: "",
+        salary: 0,
+        currency: "USD",
+        status: "Active",
+        address: {
+          street: "",
+          city: "",
+          state: "",
+          zipCode: "",
+        },
+        credentials: {
+          username: "",
+          password: "",
+        },
+        profileImage: "",
+      };
+    }
+  },
+  { immediate: true }
+);
+
+// Form validation
+const isFormValid = computed(() => {
+  return (
+    formData.value.firstName.trim() &&
+    formData.value.lastName.trim() &&
+    formData.value.email.trim() &&
+    formData.value.jobTitle.trim() &&
+    formData.value.department.trim() &&
+    formData.value.startDate &&
+    formData.value.salary > 0 &&
+    formData.value.currency.trim() !== ""
+  );
+});
+
+// Methods
+const handleSaveEmployee = () => {
+  if (!isFormValid.value) return;
+
+  const employeeData: Employee = {
+    ...formData.value,
+    id: props.employee?.id || "",
+  };
+
+  emit("save", employeeData);
+};
+
+const handleCancel = () => {
+  isOpen.value = false;
+};
+
+// File upload functionality
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const triggerFileUpload = () => {
+  fileInput.value?.click();
+};
+
+const handleImageUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (file) {
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size must be less than 5MB");
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid image file");
+      return;
+    }
+
+    // Convert to base64 for preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      formData.value.profileImage = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const removeImage = () => {
+  formData.value.profileImage = "";
+  if (fileInput.value) {
+    fileInput.value.value = "";
+  }
+};
+
+// Department options
+const departmentOptions = ["Developer", "Designer", "Marketing", "Accountant"];
+
+// Status options
+const statusOptions = [
+  { label: "Active", value: "Active" },
+  { label: "Inactive", value: "Inactive" },
+  { label: "On Leave", value: "On Leave" },
+];
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "Active":
+      return "success";
+    case "Inactive":
+      return "error";
+    case "On Leave":
+      return "warning";
+    default:
+      return "neutral";
+  }
+};
+// Currency options
+const currencies = [
+  { label: "USD ($)", value: "USD", symbol: "$" },
+  { label: "PHP (₱)", value: "PHP", symbol: "₱" },
+  { label: "KRW (₩)", value: "KRW", symbol: "₩" },
+];
+
+const currentCurrencySymbol = computed(() => {
+  const currency = currencies.find((c) => c.value === formData.value.currency);
+  return currency?.symbol || "";
+});
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount);
+};
+</script>
+
+<template>
+  <UCard>
+    <div
+      class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 mb-5 pb-2"
+    >
+      <UIcon
+        :name="employee ? 'i-lucide-user-pen' : 'i-lucide-user-plus'"
+        class="h-5 w-5 text-primary-500"
+      />
+      <h3 class="text-lg font-semibold">
+        {{ employee ? "Edit Employee Details" : "Add New Employee" }}
+      </h3>
+    </div>
+
+    <div class="space-y-6 max-h-96 overflow-y-auto">
+      <!-- Personal Information -->
+      <div class="space-y-2">
+        <h4 class="text-md font-medium text-gray-900 dark:text-gray-50 pb-2">
+          Personal Information
+        </h4>
+
+        <!-- Profile Picture Section -->
+        <div class="flex items-center gap-4 mb-4">
+          <div class="flex-shrink-0">
+            <img
+              :src="
+                formData.profileImage ||
+                'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
+              "
+              :alt="`${formData.firstName} ${formData.lastName}`"
+              class="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+            />
+          </div>
+          <div class="flex-1">
+            <UFormGroup label="Profile Picture">
+              <div class="flex items-center gap-3">
+                <input
+                  ref="fileInput"
+                  type="file"
+                  accept="image/*"
+                  @change="handleImageUpload"
+                  class="hidden"
+                />
+                <UButton
+                  @click="triggerFileUpload"
+                  icon="i-lucide-upload"
+                  variant="outline"
+                  size="sm"
+                >
+                  Upload Image
+                </UButton>
+                <UButton
+                  v-if="formData.profileImage"
+                  @click="removeImage"
+                  icon="i-lucide-x"
+                  variant="outline"
+                  size="sm"
+                  color="error"
+                >
+                  Remove
+                </UButton>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">
+                Supported formats: JPG, PNG, GIF (Max 5MB)
+              </p>
+            </UFormGroup>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
+          <UFormGroup label="First Name" required>
+            <UInput
+              v-model="formData.firstName"
+              placeholder="Enter first name"
+              icon="i-lucide-user"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Last Name" required>
+            <UInput
+              v-model="formData.lastName"
+              placeholder="Enter last name"
+              icon="i-lucide-user"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Email" required>
+            <UInput
+              v-model="formData.email"
+              type="email"
+              placeholder="Enter email address"
+              icon="i-lucide-mail"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Phone">
+            <UInput
+              v-model="formData.phone"
+              placeholder="Enter phone number"
+              icon="i-lucide-phone"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+        </div>
+      </div>
+
+      <!-- Job Information -->
+      <div class="space-y-2">
+        <h4 class="text-md font-medium text-gray-900 dark:text-gray-50 pb-2">
+          Job Information
+        </h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
+          <UFormGroup label="Job Title" required>
+            <UInput
+              v-model="formData.jobTitle"
+              placeholder="Enter job title"
+              icon="i-lucide-briefcase"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Department" required>
+            <USelectMenu
+              v-model="formData.department"
+              :items="departmentOptions"
+              placeholder="Select department"
+              icon="i-lucide-building"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Start Date" required>
+            <UInput
+              v-model="formData.startDate"
+              type="date"
+              icon="i-lucide-calendar"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Status">
+            <USelectMenu
+              v-model="formData.status"
+              :items="statusOptions"
+              placeholder="Select status"
+              :value-key="'value'"
+              :label-key="'label'"
+              icon="i-lucide-check-circle"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Currency" class="md:col-span-1">
+            <USelect
+              v-model="formData.currency"
+              :items="currencies"
+              placeholder="Select currency"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Salary" required>
+            <UInput
+              v-model.number="formData.salary"
+              type="number"
+              :placeholder="`0.00 ${currentCurrencySymbol}`"
+              size="lg"
+              :items="currencies"
+              :value-key="'value'"
+              :label-key="'label'"
+              class="w-full"
+            >
+              <template #leading>
+                <span class="text-gray-500 font-medium">{{
+                  currentCurrencySymbol
+                }}</span>
+              </template>
+            </UInput>
+          </UFormGroup>
+        </div>
+      </div>
+
+      <!-- Address Information -->
+      <div class="space-y-2">
+        <h4 class="text-md font-medium text-gray-900 dark:text-gray-50 pb-2">
+          Address Information
+        </h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
+          <UFormGroup label="Street Address" class="md:col-span-1">
+            <UInput
+              v-model="formData.address.street"
+              placeholder="Enter street address"
+              icon="i-lucide-map-pin"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="City">
+            <UInput
+              v-model="formData.address.city"
+              placeholder="Enter city"
+              icon="i-lucide-map"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="State">
+            <UInput
+              v-model="formData.address.state"
+              placeholder="Enter state"
+              icon="i-lucide-map"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="ZIP Code">
+            <UInput
+              v-model="formData.address.zipCode"
+              placeholder="Enter ZIP code"
+              icon="i-lucide-hash"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+        </div>
+      </div>
+
+      <!-- Account Information -->
+      <div class="space-y-2">
+        <h4 class="text-md font-medium text-gray-900 dark:text-gray-50 pb-2">
+          Account Information
+        </h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
+          <UFormGroup label="Username">
+            <UInput
+              v-model="formData.credentials.username"
+              placeholder="Enter username/email"
+              icon="i-lucide-user"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+          <UFormGroup label="Password">
+            <UInput
+              v-model="formData.credentials.password"
+              placeholder="Enter password"
+              icon="i-lucide-lock"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <div class="flex justify-end gap-3">
+        <UButton @click="handleCancel" variant="outline" icon="i-lucide-x">
+          Cancel
+        </UButton>
+        <UButton
+          @click="handleSaveEmployeeForm"
+          :disabled="!isFormValid"
+          icon="i-lucide-save"
+          color="primary"
+        >
+          {{ employee ? "Save Changes" : "Save New Employee" }}
+        </UButton>
+      </div>
+    </template>
+  </UCard>
+</template>
