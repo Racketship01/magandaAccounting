@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 interface ExtractedData {
-  price: string;
+  amount: string;
   date: string;
   merchantName: string;
 }
@@ -12,14 +12,14 @@ interface ExtractedData {
 const uploadedImage = ref<string | null>(null);
 const isProcessing = ref(false);
 const extractedData = ref<ExtractedData>({
-  price: "",
+  amount: "",
   date: "",
   merchantName: "",
 });
 
 // Form data
 const formData = ref({
-  price: "",
+  amount: "",
   currency: "USD",
   date: "",
   merchantName: "",
@@ -46,11 +46,6 @@ const currencies = [
   { label: "KRW (₩)", value: "KRW", symbol: "₩" },
 ];
 
-// const currentCurrencySymbol = computed(() => {
-//   const currency = currencies.find((c) => c.value === formData.value.currency);
-//   return currency?.symbol || "$";
-// });
-
 const formatCurrency = (amount: number, currency: string = "USD") => {
   const currencySymbol = getCurrencySymbol(currency);
   return `${currencySymbol} ${amount.toLocaleString()}`;
@@ -61,14 +56,15 @@ const getCurrencySymbol = (currency: string) => {
   return currencyObj?.symbol || "$";
 };
 
-// Mock OCR function - In production, you'd use a service like Google Vision API, AWS Textract, or Tesseract.js
+// TODO: Implement OCR service-----------------
+// SCANNER: Mock OCR function - In production, you'd use a service like Google Vision API, AWS Textract, or Tesseract.js
 const extractReceiptData = async (imageFile: File): Promise<ExtractedData> => {
   // Simulate processing time
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
   // Mock extracted data - replace with actual OCR service
   return {
-    price: extractedData.value.price,
+    amount: extractedData.value.amount,
     date: new Date().toISOString().split("T")[0] || "",
     merchantName: "Sample Store",
   };
@@ -100,7 +96,7 @@ const handleFileUpload = async (files: FileList | null) => {
     extractedData.value = extracted;
 
     // Auto-populate form fields
-    formData.value.price = extracted.price;
+    formData.value.amount = extracted.amount;
     formData.value.date = extracted.date;
     formData.value.merchantName = extracted.merchantName;
   } catch (error) {
@@ -123,7 +119,7 @@ const handleDragOver = (e: DragEvent) => {
 
 const submitExpense = () => {
   if (
-    !formData.value.price ||
+    !formData.value.amount ||
     !formData.value.date ||
     !formData.value.merchantName
   ) {
@@ -141,7 +137,7 @@ const submitExpense = () => {
 const resetForm = () => {
   uploadedImage.value = null;
   formData.value = {
-    price: "",
+    amount: "",
     currency: "USD",
     date: "",
     merchantName: "",
@@ -149,7 +145,7 @@ const resetForm = () => {
     description: "",
   };
   extractedData.value = {
-    price: "",
+    amount: "",
     date: "",
     merchantName: "",
   };
@@ -251,7 +247,7 @@ const resetForm = () => {
 
         <!-- Extraction Status -->
         <div
-          v-if="extractedData.price"
+          v-if="extractedData.amount"
           class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
         >
           <div class="flex items-center">
@@ -275,7 +271,7 @@ const resetForm = () => {
 
         <form @submit.prevent="submitExpense" class="space-y-4">
           <div class="flex flex-col gap-5">
-            <!-- Currency and Price Fields -->
+            <!-- Currency and Amount Fields -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <!-- Currency Field -->
               <UFormGroup label="Currency" class="md:col-span-1">
@@ -288,13 +284,13 @@ const resetForm = () => {
                 />
               </UFormGroup>
 
-              <!-- Price Field -->
+              <!-- Amount Field -->
               <UFormGroup label="Amount" required class="md:col-span-2">
                 <UInput
-                  v-model="formData.price"
+                  v-model="formData.amount"
                   type="number"
                   step="0.01"
-                  :placeholder="`0.00 ${getCurrencySymbol(formData.currency)}`"
+                  :placeholder="`0.00`"
                   size="lg"
                   class="w-full"
                 >
@@ -373,7 +369,7 @@ const resetForm = () => {
                 color="primary"
                 size="lg"
                 :disabled="
-                  !formData.price || !formData.date || !formData.merchantName
+                  !formData.amount || !formData.date || !formData.merchantName
                 "
               >
                 Submit Expense

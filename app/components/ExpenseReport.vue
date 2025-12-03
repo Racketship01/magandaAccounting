@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <script setup lang="ts">
 import ExpenseView from "~/components/Modals/ExpenseView.vue";
 import ExpenseDelete from "~/components/Modals/ExpenseDelete.vue";
@@ -13,12 +11,9 @@ interface ExpenseItem {
   currency: string;
   merchantName: string;
   description: string;
-  employeeName: string;
+  employeeName?: string;
   status: string;
   receiptUrl?: string;
-  notes?: string;
-  projectCode?: string;
-  isSelected: boolean;
 }
 
 const searchQuery = ref("");
@@ -45,7 +40,6 @@ const availableExpenses = ref<ExpenseItem[]>([
     employeeName: "John Doe",
     status: "Pending",
     receiptUrl: "/mock-receipt-1.jpg",
-    isSelected: false,
   },
   {
     id: "2",
@@ -58,7 +52,6 @@ const availableExpenses = ref<ExpenseItem[]>([
     employeeName: "Jane Smith",
     status: "Approved",
     receiptUrl: "/mock-receipt-2.jpg",
-    isSelected: false,
   },
   {
     id: "3",
@@ -71,7 +64,6 @@ const availableExpenses = ref<ExpenseItem[]>([
     employeeName: "Mike Johnson",
     status: "Pending",
     receiptUrl: "/mock-receipt-3.jpg",
-    isSelected: false,
   },
   {
     id: "4",
@@ -84,7 +76,6 @@ const availableExpenses = ref<ExpenseItem[]>([
     employeeName: "Sarah Wilson",
     status: "Rejected",
     receiptUrl: "/mock-receipt-4.jpg",
-    isSelected: false,
   },
   {
     id: "5",
@@ -97,7 +88,6 @@ const availableExpenses = ref<ExpenseItem[]>([
     employeeName: "Sarah Wilson",
     status: "Approved",
     receiptUrl: "/mock-receipt-4.jpg",
-    isSelected: false,
   },
   {
     id: "6",
@@ -110,7 +100,6 @@ const availableExpenses = ref<ExpenseItem[]>([
     employeeName: "John Doe",
     status: "Pending",
     receiptUrl: "/mock-receipt-1.jpg",
-    isSelected: false,
   },
 ]);
 
@@ -178,7 +167,7 @@ const filteredExpenses = computed(() => {
   });
 });
 
-// Computed selected expenses total
+// Computed selected expenses total --TODO: make this total expenses for employee and admin reported expenses
 const selectedExpensesTotal = computed(() => {
   const selected = availableExpenses.value.filter((expense) =>
     selectedExpenses.value.includes(expense.id)
@@ -198,15 +187,29 @@ const toggleExpenseSelection = (expenseId: string) => {
   }
 };
 
-const selectAllFiltered = () => {
-  const filteredIds = filteredExpenses.value.map((expense) => expense.id);
-  selectedExpenses.value = [
-    ...new Set([...selectedExpenses.value, ...filteredIds]),
-  ];
-};
+const allFilteredSelected = computed(() => {
+  const filteredIds = filteredExpenses.value.map((e) => e.id);
+  return (
+    filteredIds.length > 0 &&
+    filteredIds.every((id) => selectedExpenses.value.includes(id))
+  );
+});
 
-const clearSelection = () => {
-  selectedExpenses.value = [];
+const toggleFilteredSelection = () => {
+  const filteredIds = filteredExpenses.value.map((e) => e.id);
+
+  if (allFilteredSelected.value) {
+    // unselect all filtered
+    const toRemove = new Set(filteredIds);
+    selectedExpenses.value = selectedExpenses.value.filter(
+      (id) => !toRemove.has(id)
+    );
+  } else {
+    // select all filtered
+    selectedExpenses.value = [
+      ...new Set([...selectedExpenses.value, ...filteredIds]),
+    ];
+  }
 };
 
 const deleteSelectedExpenses = () => {
@@ -346,10 +349,10 @@ const formatDate = (dateString: string) => {
       <UButton
         color="primary"
         variant="outline"
-        @click="selectAllFiltered"
+        @click="toggleFilteredSelection"
         :disabled="filteredExpenses.length === 0"
       >
-        Select All
+        {{ allFilteredSelected ? "Unselect All" : "Select All" }}
       </UButton>
       <UButton
         color="error"

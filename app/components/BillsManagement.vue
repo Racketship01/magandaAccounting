@@ -10,7 +10,6 @@ import { ref, computed } from "vue";
 
 // Page meta
 definePageMeta({
-  layout: "default",
   title: "Bills Management - NextOne",
 });
 
@@ -44,22 +43,6 @@ const billCategories = [
     icon: "i-lucide-credit-card",
   },
   { label: "Other", value: "other", icon: "i-lucide-file-text" },
-];
-
-// Recurring types
-const recurringTypes = [
-  { label: "Monthly", value: "monthly" },
-  { label: "Quarterly", value: "quarterly" },
-  { label: "Yearly", value: "yearly" },
-];
-
-// Reminder options
-const reminderOptions = [
-  { label: "1 day before", value: 1 },
-  { label: "3 days before", value: 3 },
-  { label: "7 days before", value: 7 },
-  { label: "14 days before", value: 14 },
-  { label: "30 days before", value: 30 },
 ];
 
 // Sample bills data
@@ -160,24 +143,6 @@ const isDeleteBillModalOpen = ref(false);
 const isBillViewEditModalOpen = ref(false);
 const selectedBill = ref<Bill | null>(null);
 
-// Form data
-const formData = ref({
-  title: "",
-  amount: 0,
-  category: "",
-  dueDate: "",
-  isRecurring: false,
-  recurringType: "monthly",
-  reminderDays: 7,
-  reminderEnabled: true,
-});
-
-// Image upload state
-const isUploading = ref(false);
-const uploadError = ref("");
-const fileInput = ref<HTMLInputElement | null>(null);
-const receiptImage = ref("");
-
 // Filter state
 const searchQuery = ref("");
 const selectedCategory = ref("");
@@ -220,33 +185,9 @@ const filteredBills = computed(() => {
   return filtered;
 });
 
-const totalUnpaidAmount = computed(() => {
-  return bills.value
-    .filter((bill) => !bill.isPaid)
-    .reduce((total, bill) => total + bill.amount, 0);
-});
-
-const overdueBills = computed(() => {
-  return bills.value.filter(
-    (bill) => !bill.isPaid && new Date(bill.dueDate) < new Date()
-  );
-});
-
-const upcomingBills = computed(() => {
-  const today = new Date();
-  const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  return bills.value.filter(
-    (bill) =>
-      !bill.isPaid &&
-      new Date(bill.dueDate) >= today &&
-      new Date(bill.dueDate) <= nextWeek
-  );
-});
-
 // Methods
 const handleNewBill = () => {
   selectedBill.value = null;
-  resetForm();
   isBillAddModalOpen.value = true;
 };
 
@@ -298,7 +239,7 @@ const handleSaveBill = (data: any) => {
     isEditBillModalOpen.value = false;
   }
 
-  resetForm();
+  // resetForm();
   selectedBill.value = null;
 };
 
@@ -335,22 +276,6 @@ const handleCloseViewBill = () => {
   selectedBill.value = null;
 };
 
-const handleMarkAsPaid = (bill: Bill) => {
-  const index = bills.value.findIndex((b) => b.id === bill.id);
-  if (index !== -1 && bills.value[index]) {
-    bills.value[index].isPaid = true;
-    bills.value[index].paidDate = new Date().toISOString().split("T")[0];
-  }
-};
-
-const handleMarkAsUnpaid = (bill: Bill) => {
-  const index = bills.value.findIndex((b) => b.id === bill.id);
-  if (index !== -1 && bills.value[index]) {
-    bills.value[index].isPaid = false;
-    bills.value[index].paidDate = undefined;
-  }
-};
-
 const handleMarkAsPaidFromModal = (billId: string) => {
   const bill = bills.value.find((b) => b.id === billId);
   if (bill) {
@@ -363,71 +288,6 @@ const handleMarkAsPaidFromModal = (billId: string) => {
 const handleRemoveBillFromModal = (billId: string) => {
   bills.value = bills.value.filter((b) => b.id !== billId);
   isViewBillModalOpen.value = false;
-};
-
-const resetForm = () => {
-  formData.value = {
-    title: "",
-    amount: 0,
-    category: "",
-    dueDate: "",
-    isRecurring: false,
-    recurringType: "monthly",
-    reminderDays: 7,
-    reminderEnabled: true,
-  };
-  receiptImage.value = "";
-  uploadError.value = "";
-};
-
-// Image upload functions
-const handleUploadClick = () => {
-  fileInput.value?.click();
-};
-
-const handleFileSelect = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-
-  if (!file) return;
-
-  // Validate file type
-  if (!file.type.startsWith("image/")) {
-    uploadError.value = "Please select a valid image file";
-    return;
-  }
-
-  // Validate file size (max 5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    uploadError.value = "File size must be less than 5MB";
-    return;
-  }
-
-  isUploading.value = true;
-  uploadError.value = "";
-
-  try {
-    // Convert file to base64 for preview
-    const base64 = await convertToBase64(file);
-    receiptImage.value = base64;
-    console.log("Receipt uploaded successfully");
-  } catch (error) {
-    uploadError.value = "Failed to process image";
-    console.error("Upload error:", error);
-  } finally {
-    isUploading.value = false;
-    // Clear the file input
-    if (target) target.value = "";
-  }
-};
-
-const convertToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 };
 
 const getCategoryLabel = (category: string) => {
@@ -489,14 +349,6 @@ const formatDate = (dateString: string) => {
 
 const isOverdue = (dueDate: string) => {
   return new Date(dueDate) < new Date();
-};
-
-const getDaysUntilDue = (dueDate: string) => {
-  const today = new Date();
-  const due = new Date(dueDate);
-  const diffTime = due.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
 };
 </script>
 

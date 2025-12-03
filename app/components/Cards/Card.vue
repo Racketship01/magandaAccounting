@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
   showActions: true,
 });
 
-const slots = useSlots();
+// const slots = useSlots();
 </script>
 
 <template>
