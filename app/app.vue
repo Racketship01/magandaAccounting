@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <template>
   <UApp>
     <NuxtRouteAnnouncer />

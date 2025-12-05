@@ -6,5 +6,3 @@ useHead({
   title: "Home",
 });
 </script>
-
-<template></template>
