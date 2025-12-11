@@ -1,7 +1,5 @@
 <!-- @format -->
 
-<!-- @format -->
-
 <script setup lang="ts">
 interface ExtractedData {
   price: string;

@@ -8,6 +8,8 @@ interface Props {
   title?: string;
   description?: string;
   employee?: Employee;
+  status?: "Approved" | "Rejected";
+  date?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -15,6 +17,8 @@ const props = withDefaults(defineProps<Props>(), {
   title: "Card Title",
   description: "Card description goes here...",
   employee: undefined,
+  status: undefined,
+  date: undefined,
 });
 
 const emit = defineEmits<{
@@ -24,6 +28,20 @@ const emit = defineEmits<{
 const removeCard = (title: string) => {
   emit("removeCard", title);
 };
+
+const statusColor = computed(() => {
+  if (props.status === "Approved") {
+    return {
+      color: "success",
+      textColor: "text-green-600 dark:text-green-400",
+    };
+  } else if (props.status === "Rejected") {
+    return {
+      color: "error",
+      textColor: "text-red-600 dark:text-red-400",
+    };
+  }
+});
 </script>
 
 <template>
@@ -62,6 +80,12 @@ const removeCard = (title: string) => {
         <!-- Small Description -->
         <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
           {{ props.description }}
+          <span :class="statusColor?.textColor">{{ props.status }}</span>
+        </p>
+
+        <!-- Date (if provided) -->
+        <p v-if="props.date" class="text-xs text-gray-500 dark:text-gray-400">
+          {{ props.date }}
         </p>
       </div>
     </div>

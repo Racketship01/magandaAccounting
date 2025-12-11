@@ -2,16 +2,24 @@
 
 <script setup lang="ts">
 import NotificationSlider from "~/components/NotificationSlider.vue";
+import logotest from "~/assets/images/logotest.png";
+import logotestDark from "~/assets/images/logotest-dark.png";
 
+const colorMode = useColorMode();
 const open = ref(false);
 const collapsed = ref(false);
+
+// Computed property to switch logo based on color mode
+const currentLogo = computed(() => {
+  return colorMode.value === "dark" ? logotest : logotestDark;
+});
 
 const links = [
   [
     {
       label: "Dashboard",
       icon: "i-lucide-house",
-      to: "/dashboard",
+      to: "/dashBoard",
       onSelect: () => {
         open.value = false;
       },
@@ -26,7 +34,7 @@ const links = [
     },
     {
       label: "Expense Reports",
-      icon: "i-lucide-file-text",
+      icon: "i-lucide-receipt-text",
       to: "/expenseReports",
       onSelect: () => {
         open.value = false;
@@ -48,14 +56,6 @@ const links = [
         open.value = false;
       },
     },
-    {
-      label: "Settings",
-      icon: "i-lucide-settings",
-      to: "/userProfile",
-      onSelect: () => {
-        open.value = false;
-      },
-    },
   ],
 ];
 
@@ -67,7 +67,7 @@ const isNotificationSliderOpen = ref(false);
     <!-- Header -->
     <UHeader class="sticky top-0 z-50 flex-shrink-0">
       <template #left>
-        <h1 class="text-lg font-semibold">Accounting App</h1>
+        <img :src="currentLogo" alt="Logo" class="h-10 w-auto" />
       </template>
 
       <template #right>

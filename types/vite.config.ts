@@ -46,3 +46,46 @@ export default defineConfig({
     }),
   ],
 });
+
+// <style scoped>
+// .animated-gradient-border {
+//   position: relative;
+//   padding: 3px;
+//   border-radius: 0.5rem;
+//   background: linear-gradient(
+//     90deg,
+//     #ef4444,
+//     #f97316,
+//     #eab308,
+//     #22c55e,
+//     #3b82f6,
+//     #8b5cf6,
+//     #ec4899,
+//     #ef4444
+//   );
+//   background-size: 400% 400%;
+//   animation: gradient-shift 3s ease infinite;
+// }
+
+// @keyframes gradient-shift {
+//   0% {
+//     background-position: 0% 50%;
+//   }
+//   50% {
+//     background-position: 100% 50%;
+//   }
+//   100% {
+//     background-position: 0% 50%;
+//   }
+// }
+
+// .animated-gradient-border :deep(> *) {
+//   border-radius: calc(0.5rem - 3px);
+//   background: white;
+// }
+
+// /* Dark mode support */
+// .dark .animated-gradient-border :deep(> *) {
+//   background: #1f2937;
+// }
+// </style>

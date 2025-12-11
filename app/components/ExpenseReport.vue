@@ -36,14 +36,14 @@ const isExpenseDeleteModalOpen = ref(false);
 const availableExpenses = ref<ExpenseItem[]>([
   {
     id: "1",
-    date: "2025-01-15",
+    date: "2025-02-15",
     category: "Food & Dining",
     amount: 45.5,
     currency: "USD",
     merchantName: "Starbucks",
     description: "Client meeting coffee",
     employeeName: "John Doe",
-    status: "Pending",
+    status: "Approved",
     receiptUrl: "/mock-receipt-1.jpg",
     isSelected: false,
   },
@@ -75,7 +75,7 @@ const availableExpenses = ref<ExpenseItem[]>([
   },
   {
     id: "4",
-    date: "2025-01-12",
+    date: "2025-03-20",
     category: "Utilities",
     amount: 89.99,
     currency: "USD",
@@ -88,7 +88,7 @@ const availableExpenses = ref<ExpenseItem[]>([
   },
   {
     id: "5",
-    date: "2025-01-12",
+    date: "2025-06-05",
     category: "Healthcare",
     amount: 89.99,
     currency: "USD",
@@ -453,6 +453,17 @@ const formatDate = (dateString: string) => {
             @click="viewExpenseView(expense)"
           />
         </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-if="filteredExpenses.length === 0" class="text-center py-8 mt-4">
+        <UIcon
+          name="i-lucide-receipt-text"
+          class="mx-auto h-14 w-14 text-gray-400 mb-4"
+        />
+        <p class="text-gray-500 dark:text-gray-400">
+          No expenses found. Try adjusting your search or filters.
+        </p>
       </div>
     </template>
 

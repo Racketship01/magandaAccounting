@@ -658,6 +658,17 @@ const getDaysUntilDue = (dueDate: string) => {
           </div>
         </div>
       </div>
+
+      <!-- Empty State -->
+      <div v-if="filteredBills.length === 0" class="text-center py-8 mt-4">
+        <UIcon
+          name="i-lucide-inbox"
+          class="mx-auto h-14 w-14 text-gray-400 mb-4"
+        />
+        <p class="text-gray-500 dark:text-gray-400">
+          No bills found. Try adjusting your search or filters.
+        </p>
+      </div>
     </template>
 
     <!-- Modals Slot -->

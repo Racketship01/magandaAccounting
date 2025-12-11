@@ -526,8 +526,32 @@ const formatDate = (dateString: string) => {
             />
           </div>
         </div>
+        <div
+          v-if="filteredEmployees.length === 0"
+          class="text-center py-8 mt-4"
+        >
+          <UIcon
+            name="i-lucide-user-x-2"
+            class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-400 mb-4"
+          />
+          <p class="text-gray-500 dark:text-gray-400 text-center">
+            No employees found
+          </p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-if="filteredEmployees.length === 0" class="text-center py-8 mt-4">
+        <UIcon
+          name="i-lucide-user-round-search"
+          class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-400 mb-4"
+        />
+        <p class="text-gray-500 dark:text-gray-400 text-center">
+          No employees found. Try adjusting your search or filters.
+        </p>
       </div>
     </template>
+
     <!-- Modals Slot -->
     <template #modals>
       <!-- Employee Form Modal -->
