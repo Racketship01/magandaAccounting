@@ -1,107 +1,13 @@
 <script setup lang="ts">
-import ExpenseView from "~/components/ExpenseView.vue";
-import ExpenseDelete from "~/components/ExpenseDelete.vue";
-import Card from "~~/layers/base/app/components/Card.vue";
+import { ref, computed } from "vue";
+import useExpense from "../composables/useExpense";
 
-interface ExpenseItem {
-  id: string;
-  date: string;
-  category: string;
-  amount: number;
-  currency: string;
-  merchantName: string;
-  description: string;
-  employeeName?: string;
-  status: string;
-  receiptUrl?: string;
-}
-
-const searchQuery = ref("");
-const selectedCategory = ref("");
-const selectedEmployee = ref("");
-const selectedStatus = ref("");
-const selectedExpenses = ref<string[]>([]);
+const { expenseState, availableExpenses, selectedExpense } = useExpense();
 
 // Modal state
 const isModalOpen = ref(false);
-const selectedExpense = ref<ExpenseItem | null>(null);
+const selectedExpenses = computed(() => expenseState.value.selectedExpenses);
 const isExpenseDeleteModalOpen = ref(false);
-
-// Mock expense data (individual expenses not yet in a report)
-const availableExpenses = ref<ExpenseItem[]>([
-  {
-    id: "1",
-    date: "2025-01-15",
-    category: "Food & Dining",
-    amount: 45.5,
-    currency: "USD",
-    merchantName: "Starbucks",
-    description: "Client meeting coffee",
-    employeeName: "John Doe",
-    status: "Pending",
-    receiptUrl: "/mock-receipt-1.jpg",
-  },
-  {
-    id: "2",
-    date: "2025-01-14",
-    category: "Transportation",
-    amount: 25.0,
-    currency: "USD",
-    merchantName: "Uber",
-    description: "Airport pickup",
-    employeeName: "Jane Smith",
-    status: "Approved",
-    receiptUrl: "/mock-receipt-2.jpg",
-  },
-  {
-    id: "3",
-    date: "2025-01-13",
-    category: "Office Supplies",
-    amount: 120.75,
-    currency: "USD",
-    merchantName: "Office Depot",
-    description: "Printer cartridges and paper",
-    employeeName: "Mike Johnson",
-    status: "Pending",
-    receiptUrl: "/mock-receipt-3.jpg",
-  },
-  {
-    id: "4",
-    date: "2025-01-12",
-    category: "Utilities",
-    amount: 89.99,
-    currency: "USD",
-    merchantName: "Electric Company",
-    description: "Monthly office electricity",
-    employeeName: "Sarah Wilson",
-    status: "Rejected",
-    receiptUrl: "/mock-receipt-4.jpg",
-  },
-  {
-    id: "5",
-    date: "2025-01-12",
-    category: "Healthcare",
-    amount: 89.99,
-    currency: "USD",
-    merchantName: "Doctor",
-    description: "Doctor visit",
-    employeeName: "Sarah Wilson",
-    status: "Approved",
-    receiptUrl: "/mock-receipt-4.jpg",
-  },
-  {
-    id: "6",
-    date: "2025-01-15",
-    category: "Other",
-    amount: 45.5,
-    currency: "USD",
-    merchantName: "Supreme",
-    description: "Supreme t-shirt",
-    employeeName: "John Doe",
-    status: "Pending",
-    receiptUrl: "/mock-receipt-1.jpg",
-  },
-]);
 
 const categories = [
   { label: "All Categories", value: "all", icon: "i-lucide-clipboard-list" },
@@ -138,44 +44,31 @@ const statusOptions = [
 
 // Computed filtered expenses
 const filteredExpenses = computed(() => {
+  const { searchQuery, selectedCategory, selectedEmployee, selectedStatus } =
+    expenseState.value;
+
   return availableExpenses.value.filter((expense) => {
     const matchesSearch =
-      expense.merchantName
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase()) ||
-      expense.description
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase()) ||
-      expense.employeeName
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase());
+      expense.merchantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      expense.employeeName?.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesCategory =
-      !selectedCategory.value ||
-      selectedCategory.value === "all" ||
-      expense.category === selectedCategory.value;
+      !selectedCategory ||
+      selectedCategory === "all" ||
+      expense.category === selectedCategory;
     const matchesEmployee =
-      !selectedEmployee.value ||
-      selectedEmployee.value === "all" ||
-      expense.employeeName === selectedEmployee.value;
+      !selectedEmployee ||
+      selectedEmployee === "all" ||
+      expense.employeeName === selectedEmployee;
     const matchesStatus =
-      !selectedStatus.value ||
-      selectedStatus.value === "all" ||
-      expense.status === selectedStatus.value;
+      !selectedStatus ||
+      selectedStatus === "all" ||
+      expense.status === selectedStatus;
 
     return matchesSearch && matchesCategory && matchesEmployee && matchesStatus;
   });
 });
-
-// Computed selected expenses total --TODO: make this total expenses for employee and admin reported expenses
-const selectedExpensesTotal = computed(() => {
-  const selected = availableExpenses.value.filter((expense) =>
-    selectedExpenses.value.includes(expense.id)
-  );
-  return selected.reduce((total, expense) => total + expense.amount, 0);
-});
-
-const selectedExpensesCount = computed(() => selectedExpenses.value.length);
 
 // Actions
 const toggleExpenseSelection = (expenseId: string) => {
@@ -201,12 +94,12 @@ const toggleFilteredSelection = () => {
   if (allFilteredSelected.value) {
     // unselect all filtered
     const toRemove = new Set(filteredIds);
-    selectedExpenses.value = selectedExpenses.value.filter(
+    expenseState.value.selectedExpenses = selectedExpenses.value.filter(
       (id) => !toRemove.has(id)
     );
   } else {
     // select all filtered
-    selectedExpenses.value = [
+    expenseState.value.selectedExpenses = [
       ...new Set([...selectedExpenses.value, ...filteredIds]),
     ];
   }
@@ -226,7 +119,7 @@ const confirmDeleteExpenses = () => {
   );
 
   // Clear the selection
-  selectedExpenses.value = [];
+  expenseState.value.selectedExpenses = [];
 
   // Close the modal
   isExpenseDeleteModalOpen.value = false;
@@ -236,7 +129,7 @@ const confirmDeleteExpenses = () => {
 };
 
 // Modal functions
-const viewExpenseView = (expense: ExpenseItem) => {
+const viewExpenseView = (expense: any) => {
   selectedExpense.value = expense;
   isModalOpen.value = true;
 };
@@ -311,7 +204,7 @@ const formatDate = (dateString: string) => {
       <!-- Search Bar -->
       <div class="flex-1">
         <UInput
-          v-model="searchQuery"
+          v-model="expenseState.searchQuery"
           icon="i-lucide-search"
           placeholder="Search expenses..."
           size="lg"
@@ -322,7 +215,7 @@ const formatDate = (dateString: string) => {
       <!-- Category Filter -->
       <div class="w-full sm:w-48">
         <USelect
-          v-model="selectedCategory"
+          v-model="expenseState.selectedCategory"
           :items="categories"
           placeholder="Category"
           icon="i-lucide-list-check"
@@ -334,7 +227,7 @@ const formatDate = (dateString: string) => {
       <!-- Employee Filter -->
       <div class="w-full sm:w-48">
         <USelect
-          v-model="selectedEmployee"
+          v-model="expenseState.selectedEmployee"
           :items="employees"
           placeholder="Employee"
           icon="i-lucide-user"
@@ -368,7 +261,7 @@ const formatDate = (dateString: string) => {
     <!-- Status Filter Slot -->
     <template #status-filter>
       <USelect
-        v-model="selectedStatus"
+        v-model="expenseState.selectedStatus"
         :items="statusOptions"
         placeholder="Status"
         icon="i-lucide-check-circle"

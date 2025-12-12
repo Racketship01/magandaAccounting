@@ -1,8 +1,6 @@
 <!-- @format -->
 
 <script setup lang="ts">
-import Delete from "~~/layers/base/app/components/Delete.vue";
-
 interface Bill {
   id: string;
   title: string;

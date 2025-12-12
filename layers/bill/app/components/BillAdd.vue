@@ -1,8 +1,4 @@
-<!-- @format -->
-
 <script setup lang="ts">
-import BillForm from "~/components/BillForm.vue";
-
 // Bill interface
 interface Bill {
   id: string;

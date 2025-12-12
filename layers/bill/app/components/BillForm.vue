@@ -1,9 +1,6 @@
-<!-- @format -->
-
 <script setup lang="ts">
+import useBillForm from "../composables/useBillForm";
 import { ref, watch } from "vue";
-
-const emit = defineEmits(["close", "save"]);
 
 // Edit Bill interface
 interface Bill {
@@ -32,6 +29,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits(["close", "save"]);
 
 // Bill categories
 const billCategories = [
@@ -64,23 +62,13 @@ const reminderOptions = [
 ];
 
 // Form data
-const formData = ref({
-  title: "",
-  amount: 0,
-  category: "",
-  dueDate: "",
-  isRecurring: false,
-  recurringType: "monthly",
-  reminderDays: 7,
-  reminderEnabled: true,
-  currency: "USD",
-});
+const { formData } = useBillForm();
 
 // Image upload state
 const isUploading = ref(false);
 const uploadError = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
-const receiptImage = ref("");
+const receiptImage = ref<string>("");
 
 // Reset form function
 const resetForm = () => {

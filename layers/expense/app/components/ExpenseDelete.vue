@@ -1,8 +1,4 @@
-<!-- @format -->
-
 <script setup lang="ts">
-import Delete from "~~/layers/base/app/components/Delete.vue";
-
 interface ExpenseItem {
   id: string;
   date: string;
@@ -11,12 +7,12 @@ interface ExpenseItem {
   currency: string;
   merchantName: string;
   description: string;
-  employeeName: string;
+  employeeName?: string;
   status: string;
   receiptUrl?: string;
   notes?: string;
   projectCode?: string;
-  isSelected: boolean;
+  isSelected?: boolean;
 }
 
 interface Props {
@@ -44,6 +40,7 @@ const cancelDelete = () => {
   <Delete
     title="Delete Expense(s) Confirmation"
     subtitle="Are you sure you want to delete the selected expense(s)"
+    subTitleBold=""
     message="This action cannot be undone. The selected expense(s) will be permanently removed from the system."
     :buttonText="`Delete ${props.selectedExpenses.length} Expense(s)`"
     @confirmDelete="confirmDeleteExpenses"

@@ -1,9 +1,4 @@
-<!-- @format -->
-
 <script setup lang="ts">
-const emit = defineEmits(["close", "save"]);
-import BillForm from "~/components/BillForm.vue";
-
 interface Bill {
   id: string;
   title: string;
@@ -26,6 +21,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const emit = defineEmits(["close", "save"]);
 
 const handleClose = () => {
   emit("close");

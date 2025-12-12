@@ -1,7 +1,7 @@
 <!-- @format -->
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
-import Delete from "~~/layers/base/app/components/Delete.vue";
+import { computed } from "vue";
 
 interface Props {
   modelValue: boolean;
@@ -36,6 +36,7 @@ const cancelDelete = () => {
 </script>
 
 <template>
+  <!-- @vue-ignore -->
   <Delete
     title="Delete Employee Confirmation"
     :subtitle="`Are you sure you want to delete this employee`"

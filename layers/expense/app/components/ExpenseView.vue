@@ -1,7 +1,6 @@
-<!-- @format -->
-
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import View from "~~/layers/base/app/components/View.vue";
+import { computed } from "vue";
 
 interface ExpenseItem {
   id: string;
@@ -11,12 +10,12 @@ interface ExpenseItem {
   currency: string;
   merchantName: string;
   description: string;
-  employeeName: string;
+  employeeName?: string;
   status: string;
   receiptUrl?: string;
   notes?: string;
   projectCode?: string;
-  isSelected: boolean;
+  isSelected?: boolean;
 }
 
 interface Props {
@@ -48,6 +47,7 @@ const expenseData = computed(() => {
 });
 </script>
 
+<!-- @vue-ignore -->
 <template>
   <View
     title="Expense Details"

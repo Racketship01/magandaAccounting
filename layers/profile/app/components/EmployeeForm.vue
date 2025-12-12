@@ -1,7 +1,6 @@
-<!-- @format -->
-
 <script setup lang="ts">
 import type { Employee, EmployeeFormData } from "../../../../types/employee";
+import { computed, ref, watch } from "vue";
 
 interface Props {
   modelValue: boolean;
@@ -14,11 +13,11 @@ const emit = defineEmits<{
   "update:modelValue": [value: boolean];
   save: [employee: Employee];
 }>();
+
 const isEmployeeFormOpen = computed({
   get: () => props.modelValue,
   set: (value) => emit("update:modelValue", value),
 });
-const employeeToDetail = computed(() => props.employee);
 
 const handleSaveEmployeeForm = () => {
   if (!isFormValid.value) return;
@@ -29,10 +28,6 @@ const handleSaveEmployeeForm = () => {
   };
 
   emit("save", employeeData);
-  isEmployeeFormOpen.value = false;
-};
-
-const handleCancelEmployeeForm = () => {
   isEmployeeFormOpen.value = false;
 };
 

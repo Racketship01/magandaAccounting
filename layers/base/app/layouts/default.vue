@@ -1,6 +1,6 @@
-<!-- @format -->
 <script setup lang="ts">
-import NotificationSlider from "~~/layers/base/app/components/NotificationSlider.vue";
+import { ref, computed } from "vue";
+import useColor from "../composables/useColorMode";
 
 const open = ref(false);
 const collapsed = ref(false);
@@ -18,7 +18,7 @@ const links = [
     {
       label: "Receipt Scanner",
       icon: "i-lucide-scan-line",
-      to: "/receiptScanner",
+      to: "/receipt",
       onSelect: () => {
         open.value = false;
       },
@@ -26,7 +26,7 @@ const links = [
     {
       label: "Expense Reports",
       icon: "i-lucide-file-text",
-      to: "/expenseReports",
+      to: "/expense",
       onSelect: () => {
         open.value = false;
       },
@@ -34,7 +34,7 @@ const links = [
     {
       label: "Bills Management",
       icon: "i-lucide-bell-ring",
-      to: "/billsManagement",
+      to: "/bills",
       onSelect: () => {
         open.value = false;
       },
@@ -42,7 +42,7 @@ const links = [
     {
       label: "Employee Records",
       icon: "i-lucide-clipboard-list",
-      to: "/employeeRecords",
+      to: "/employee",
       onSelect: () => {
         open.value = false;
       },
@@ -50,7 +50,7 @@ const links = [
     {
       label: "Settings",
       icon: "i-lucide-settings",
-      to: "/userProfile",
+      to: "/profile",
       onSelect: () => {
         open.value = false;
       },
@@ -60,7 +60,7 @@ const links = [
 
 const isNotificationSliderOpen = ref(false);
 
-const colorMode = useColorMode();
+const { colorMode } = useColor();
 const isDark = computed(() => colorMode.value === "dark");
 
 function toggleColorMode() {
@@ -71,7 +71,7 @@ function toggleColorMode() {
 <template>
   <div class="min-h-screen flex flex-col">
     <!-- Header -->
-    <UHeader class="sticky top-0 z-50 flex-shrink-0">
+    <UHeader class="sticky top-0 z-50 shrink-0">
       <template #left>
         <h1 class="text-lg font-semibold">Accounting App</h1>
       </template>

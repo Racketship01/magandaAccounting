@@ -1,7 +1,14 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
+import useUser from "../composables/useUser";
+import { computed } from "vue";
+import useApp from "../composables/useApp";
 defineProps<{
   collapsed?: boolean;
 }>();
+
+const { appConfig } = useApp();
+const { user } = useUser();
 
 const colors = [
   "red",
@@ -23,17 +30,6 @@ const colors = [
   "rose",
 ];
 const neutrals = ["slate", "gray", "zinc", "neutral", "stone"];
-
-const appConfig = useAppConfig();
-const colorMode = useColorMode();
-
-const user = ref({
-  name: "John Doe",
-  avatar: {
-    src: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    alt: "John Doe",
-  },
-});
 
 const items = computed(() => [
   [
@@ -137,12 +133,13 @@ const items = computed(() => [
       }"
     />
 
+    <!-- @vue-ignore -->
     <template #chip-leading="{ item }">
       <span
         :style="{
-            '--chip-light': `var(--color-${(item as any).chip}-500)`,
-            '--chip-dark': `var(--color-${(item as any).chip}-400)`
-          }"
+          '--chip-light': `var(--color-${item.chip}-500)`,
+          '--chip-dark': `var(--color-${item.chip}-400)`,
+        }"
         class="ms-0.5 size-2 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
       />
     </template>

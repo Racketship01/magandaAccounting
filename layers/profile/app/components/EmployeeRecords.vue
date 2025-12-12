@@ -2,12 +2,9 @@
 
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
-import Card from "~~/layers/base/app/components/Card.vue";
-import EmployeeDelete from "~/components/EmployeeDelete.vue";
-import EmployeeForm from "~/components/EmployeeForm.vue";
+import { ref, computed } from "vue";
 
 definePageMeta({
-  layout: "default",
   title: "Employee Records - NextOne",
 });
 // Reactive state

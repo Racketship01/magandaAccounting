@@ -1,31 +1,10 @@
-<!-- @format -->
-
-<!-- @format -->
-
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-interface ExtractedData {
-  amount: string;
-  date: string;
-  merchantName: string;
-}
+import { ref } from "vue";
+import { useReceipt } from "../composables/useReceipt";
 
-const uploadedImage = ref<string | null>(null);
+const { extractedData, formData, uploadedImage, resetForm } = useReceipt();
 const isProcessing = ref(false);
-const extractedData = ref<ExtractedData>({
-  amount: "",
-  date: "",
-  merchantName: "",
-});
-
-// Form data
-const formData = ref({
-  amount: "",
-  currency: "USD",
-  date: "",
-  merchantName: "",
-  category: "",
-  description: "",
-});
 
 const categories = [
   { label: "Food & Dining", value: "food", icon: "i-lucide-utensils" },
@@ -46,11 +25,6 @@ const currencies = [
   { label: "KRW (₩)", value: "KRW", symbol: "₩" },
 ];
 
-const formatCurrency = (amount: number, currency: string = "USD") => {
-  const currencySymbol = getCurrencySymbol(currency);
-  return `${currencySymbol} ${amount.toLocaleString()}`;
-};
-
 const getCurrencySymbol = (currency: string) => {
   const currencyObj = currencies.find((c) => c.value === currency);
   return currencyObj?.symbol || "$";
@@ -64,7 +38,7 @@ const extractReceiptData = async (imageFile: File): Promise<ExtractedData> => {
 
   // Mock extracted data - replace with actual OCR service
   return {
-    amount: extractedData.value.amount,
+    amount: extractedData.value?.amount || "",
     date: new Date().toISOString().split("T")[0] || "",
     merchantName: "Sample Store",
   };
@@ -96,7 +70,7 @@ const handleFileUpload = async (files: FileList | null) => {
     extractedData.value = extracted;
 
     // Auto-populate form fields
-    formData.value.amount = extracted.amount;
+    formData.value.amount = extracted?.amount || "";
     formData.value.date = extracted.date;
     formData.value.merchantName = extracted.merchantName;
   } catch (error) {
@@ -119,7 +93,7 @@ const handleDragOver = (e: DragEvent) => {
 
 const submitExpense = () => {
   if (
-    !formData.value.amount ||
+    !formData.value?.amount ||
     !formData.value.date ||
     !formData.value.merchantName
   ) {
@@ -132,23 +106,6 @@ const submitExpense = () => {
 
   // Reset form
   resetForm();
-};
-
-const resetForm = () => {
-  uploadedImage.value = null;
-  formData.value = {
-    amount: "",
-    currency: "USD",
-    date: "",
-    merchantName: "",
-    category: "",
-    description: "",
-  };
-  extractedData.value = {
-    amount: "",
-    date: "",
-    merchantName: "",
-  };
 };
 </script>
 
@@ -195,6 +152,7 @@ const resetForm = () => {
               </p>
             </div>
 
+            <!-- @vue-ignore -->
             <UButton
               color="primary"
               class="mt-4"
@@ -207,7 +165,9 @@ const resetForm = () => {
               type="file"
               accept="image/*"
               class="hidden"
-              @change="handleFileUpload($event.target?.files)"
+              @change="
+                handleFileUpload(($event.target as HTMLInputElement)?.files)
+              "
             />
           </div>
 
