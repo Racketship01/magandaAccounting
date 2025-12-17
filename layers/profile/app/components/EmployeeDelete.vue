@@ -1,4 +1,3 @@
-<!-- @format -->
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
 import { computed } from "vue";

@@ -1,5 +1,3 @@
-/** @format */
-
 export interface Employee {
   id: string;
   firstName: string;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Employee, EmployeeFormData } from "../../../../types/employee";
+import type { Employee } from "../../../../types/employee";
 import { computed, ref, watch } from "vue";
+import useEmployee from "./composables/useEmployee";
 
 interface Props {
   modelValue: boolean;
@@ -13,6 +14,14 @@ const emit = defineEmits<{
   "update:modelValue": [value: boolean];
   save: [employee: Employee];
 }>();
+
+// Form state
+const { formData, resetForm } = useEmployee();
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => emit("update:modelValue", value),
+});
 
 const isEmployeeFormOpen = computed({
   get: () => props.modelValue,
@@ -30,36 +39,6 @@ const handleSaveEmployeeForm = () => {
   emit("save", employeeData);
   isEmployeeFormOpen.value = false;
 };
-
-// Form state
-const formData = ref<EmployeeFormData>({
-  firstName: "",
-  lastName: "",
-  email: "",
-  phone: "",
-  jobTitle: "",
-  department: "",
-  startDate: "",
-  salary: 0,
-  currency: "USD",
-  status: "Active",
-  address: {
-    street: "",
-    city: "",
-    state: "",
-    zipCode: "",
-  },
-  credentials: {
-    username: "",
-    password: "",
-  },
-  profileImage: "",
-});
-
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value),
-});
 
 // Watch for employee changes to populate form
 watch(
@@ -83,29 +62,7 @@ watch(
       };
     } else {
       // Reset form for new employee
-      formData.value = {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        jobTitle: "",
-        department: "",
-        startDate: "",
-        salary: 0,
-        currency: "USD",
-        status: "Active",
-        address: {
-          street: "",
-          city: "",
-          state: "",
-          zipCode: "",
-        },
-        credentials: {
-          username: "",
-          password: "",
-        },
-        profileImage: "",
-      };
+      resetForm();
     }
   },
   { immediate: true }
@@ -126,17 +83,6 @@ const isFormValid = computed(() => {
 });
 
 // Methods
-const handleSaveEmployee = () => {
-  if (!isFormValid.value) return;
-
-  const employeeData: Employee = {
-    ...formData.value,
-    id: props.employee?.id || "",
-  };
-
-  emit("save", employeeData);
-};
-
 const handleCancel = () => {
   isOpen.value = false;
 };
@@ -191,18 +137,6 @@ const statusOptions = [
   { label: "On Leave", value: "On Leave" },
 ];
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "Active":
-      return "success";
-    case "Inactive":
-      return "error";
-    case "On Leave":
-      return "warning";
-    default:
-      return "neutral";
-  }
-};
 // Currency options
 const currencies = [
   { label: "USD ($)", value: "USD", symbol: "$" },
@@ -214,13 +148,6 @@ const currentCurrencySymbol = computed(() => {
   const currency = currencies.find((c) => c.value === formData.value.currency);
   return currency?.symbol || "";
 });
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
-};
 </script>
 
 <template>
