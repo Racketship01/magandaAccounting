@@ -1,8 +1,4 @@
-<!-- @format -->
-
 <script setup lang="ts">
-import View from "~~/layers/base/app/components/View.vue";
-
 interface Bill {
   id: string;
   title: string;
@@ -24,7 +20,7 @@ interface Props {
   bill: Bill | null;
 }
 
-const props = defineProps<Props>();
+const _props = defineProps<Props>();
 
 const emit = defineEmits<{
   paid: [billId: string];

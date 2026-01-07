@@ -40,10 +40,10 @@ const cancelDelete = () => {
   <Delete
     title="Delete Expense(s) Confirmation"
     subtitle="Are you sure you want to delete the selected expense(s)"
-    subTitleBold=""
+    sub-title-bold=""
     message="This action cannot be undone. The selected expense(s) will be permanently removed from the system."
-    :buttonText="`Delete ${props.selectedExpenses.length} Expense(s)`"
-    @confirmDelete="confirmDeleteExpenses"
+    :button-text="`Delete ${props.selectedExpenses.length} Expense(s)`"
+    @confirm-delete="confirmDeleteExpenses"
     @cancel="cancelDelete"
   />
 </template>

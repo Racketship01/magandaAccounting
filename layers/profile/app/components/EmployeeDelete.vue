@@ -39,10 +39,10 @@ const cancelDelete = () => {
   <Delete
     title="Delete Employee Confirmation"
     :subtitle="`Are you sure you want to delete this employee`"
-    :subTitleBold="`${employeeToDelete?.firstName} ${employeeToDelete?.lastName}`"
+    :sub-title-bold="`${employeeToDelete?.firstName} ${employeeToDelete?.lastName}`"
     message="This action cannot be undone. The employee will be permanently removed from the system and all associated data will be lost."
-    buttonText="Delete Employee"
-    @confirmDelete="confirmDelete"
+    button-text="Delete Employee"
+    @confirm-delete="confirmDelete"
     @cancel="cancelDelete"
   />
 </template>

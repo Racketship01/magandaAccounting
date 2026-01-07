@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
 import { ref, computed } from "vue";
-import useEmployee from "./composables/useEmployee";
+import useEmployee from "../composables/useEmployee";
 
 const { currentUser } = useEmployee();
 const isEditProfileOpen = ref(false);
@@ -183,7 +183,7 @@ const convertToBase64 = (file: File): Promise<string> => {
               />
               <div
                 v-else
-                class="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-gray-200 dark:border-gray-600"
+                class="w-32 h-32 rounded-full bg-linear-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-gray-200 dark:border-gray-600"
               >
                 {{ currentUser.firstName[0] }}{{ currentUser.lastName[0] }}
               </div>
@@ -192,13 +192,13 @@ const convertToBase64 = (file: File): Promise<string> => {
             <!-- Upload Button and Error Message -->
             <div class="mt-5 space-y-2">
               <UButton
-                @click="handleUploadClick"
                 :loading="isUploading"
                 :disabled="isUploading"
                 icon="i-lucide-upload"
                 variant="solid"
                 color="primary"
                 size="md"
+                @click="handleUploadClick"
               >
                 {{ isUploading ? "Uploading..." : "Upload Image" }}
               </UButton>
@@ -214,8 +214,8 @@ const convertToBase64 = (file: File): Promise<string> => {
               ref="fileInput"
               type="file"
               accept="image/*"
-              @change="handleFileSelect"
               class="hidden"
+              @change="handleFileSelect"
             />
           </div>
         </div>
@@ -228,11 +228,11 @@ const convertToBase64 = (file: File): Promise<string> => {
                 {{ fullName }}
               </h2>
               <UButton
-                @click="handleEditProfile"
                 icon="i-lucide-edit"
                 variant="solid"
                 color="primary"
                 size="md"
+                @click="handleEditProfile"
               >
                 Edit Profile
               </UButton>

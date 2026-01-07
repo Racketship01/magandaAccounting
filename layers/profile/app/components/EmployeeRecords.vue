@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
 import { ref, computed } from "vue";
-import useEmployee from "./composables/useEmployee";
+import useEmployee from "../composables/useEmployee";
 
 const { employees, employeeState } = useEmployee();
 
@@ -207,10 +207,10 @@ const formatDate = (dateString: string) => {
     <!-- Status Filter Slot -->
     <template #status-filter>
       <UButton
-        @click="handleAddEmployee"
         icon="i-lucide-plus"
         size="lg"
         color="primary"
+        @click="handleAddEmployee"
       >
         Add New Employee
       </UButton>
@@ -224,7 +224,7 @@ const formatDate = (dateString: string) => {
         class="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
       >
         <!-- Employee Profile Picture -->
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
           <img
             :src="
               employee.profileImage ||
@@ -290,17 +290,17 @@ const formatDate = (dateString: string) => {
           <!-- Employee Actions -->
           <div class="flex items-center gap-1 justify-end">
             <UButton
-              @click="handleEditEmployee(employee)"
               icon="i-lucide-edit"
               size="sm"
               variant="ghost"
+              @click="handleEditEmployee(employee)"
             />
             <UButton
-              @click="handleDeleteEmployee(employee)"
               icon="i-lucide-trash-2"
               size="sm"
               variant="ghost"
               color="error"
+              @click="handleDeleteEmployee(employee)"
             />
           </div>
         </div>
@@ -333,7 +333,7 @@ const formatDate = (dateString: string) => {
           <EmployeeDelete
             v-model="isEmployeeDeleteModalOpen"
             :employee="employeeToDelete"
-            @confirmDelete="handleConfirmDelete"
+            @confirm-delete="handleConfirmDelete"
             @cancel="handleCancelDelete"
           />
         </template>

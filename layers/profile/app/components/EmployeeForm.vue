@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
 import { computed, ref, watch } from "vue";
-import useEmployee from "./composables/useEmployee";
+import useEmployee from "../composables/useEmployee";
 
 interface Props {
   modelValue: boolean;
@@ -173,7 +173,7 @@ const currentCurrencySymbol = computed(() => {
 
         <!-- Profile Picture Section -->
         <div class="flex items-center gap-4 mb-4">
-          <div class="flex-shrink-0">
+          <div class="shrink-0">
             <img
               :src="
                 formData.profileImage ||
@@ -190,24 +190,24 @@ const currentCurrencySymbol = computed(() => {
                   ref="fileInput"
                   type="file"
                   accept="image/*"
-                  @change="handleImageUpload"
                   class="hidden"
+                  @change="handleImageUpload"
                 />
                 <UButton
-                  @click="triggerFileUpload"
                   icon="i-lucide-upload"
                   variant="outline"
                   size="sm"
+                  @click="triggerFileUpload"
                 >
                   Upload Image
                 </UButton>
                 <UButton
                   v-if="formData.profileImage"
-                  @click="removeImage"
                   icon="i-lucide-x"
                   variant="outline"
                   size="sm"
                   color="error"
+                  @click="removeImage"
                 >
                   Remove
                 </UButton>
@@ -424,14 +424,14 @@ const currentCurrencySymbol = computed(() => {
     </div>
     <template #footer>
       <div class="flex justify-end gap-3">
-        <UButton @click="handleCancel" variant="outline" icon="i-lucide-x">
+        <UButton variant="outline" icon="i-lucide-x" @click="handleCancel">
           Cancel
         </UButton>
         <UButton
-          @click="handleSaveEmployeeForm"
           :disabled="!isFormValid"
           icon="i-lucide-save"
           color="primary"
+          @click="handleSaveEmployeeForm"
         >
           {{ employee ? "Save Changes" : "Save New Employee" }}
         </UButton>

@@ -242,8 +242,8 @@ const formatDate = (dateString: string) => {
       <UButton
         color="primary"
         variant="outline"
-        @click="toggleFilteredSelection"
         :disabled="filteredExpenses.length === 0"
+        @click="toggleFilteredSelection"
       >
         {{ allFilteredSelected ? "Unselect All" : "Select All" }}
       </UButton>
@@ -251,8 +251,8 @@ const formatDate = (dateString: string) => {
         color="error"
         variant="outline"
         icon="i-lucide-trash-2"
-        @click="deleteSelectedExpenses"
         :disabled="selectedExpenses.length === 0"
+        @click="deleteSelectedExpenses"
       >
         Delete
       </UButton>

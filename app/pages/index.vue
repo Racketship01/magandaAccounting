@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Set page title
+import { useHead } from "nuxt/app";
 
 useHead({
   title: "Home",

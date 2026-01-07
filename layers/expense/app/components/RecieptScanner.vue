@@ -32,7 +32,9 @@ const getCurrencySymbol = (currency: string) => {
 
 // TODO: Implement OCR service-----------------
 // SCANNER: Mock OCR function - In production, you'd use a service like Google Vision API, AWS Textract, or Tesseract.js
-const extractReceiptData = async (imageFile: File): Promise<ExtractedData> => {
+const extractReceiptData = async (
+  imageFile: File
+): Promise<typeof extractedData.value> => {
   // Simulate processing time
   await new Promise((resolve) => setTimeout(resolve, 2000));
 

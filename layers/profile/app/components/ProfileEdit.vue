@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
 import { computed } from "vue";
@@ -38,7 +36,7 @@ const handleCancel = () => {
     v-model:model-value="isOpen"
     :employee="employee"
     title="Edit Profile Information"
-    buttonText="Save Changes"
+    button-text="Save Changes"
     @save="handleSaveProfile"
     @close="handleCancel"
   />
