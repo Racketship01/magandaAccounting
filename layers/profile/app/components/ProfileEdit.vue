@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
-import FormEdit from "~~/layers/profile/app/components/FormEdit.vue";
+import { computed } from "vue";
 
 interface Props {
   modelValue: boolean;

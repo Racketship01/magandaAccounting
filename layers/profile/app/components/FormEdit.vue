@@ -1,14 +1,16 @@
-<!-- @format -->
-
 <script setup lang="ts">
-import type { Employee, EmployeeFormData } from "../../../../types/employee";
+import type { Employee } from "../../../../types/employee";
+import { ref, computed, watch } from "vue";
+import useEmployee from "./composables/useEmployee";
 
 interface Props {
   modelValue: boolean;
   employee?: Employee | null;
-  title?: String;
-  buttonText?: String;
+  title?: string;
+  buttonText?: string;
 }
+
+const { formData, resetForm } = useEmployee();
 
 const props = defineProps<Props>();
 
@@ -17,31 +19,6 @@ const emit = defineEmits<{
   save: [employee: Employee];
   close: [];
 }>();
-
-// Form state
-const formData = ref<EmployeeFormData>({
-  firstName: "",
-  lastName: "",
-  email: "",
-  phone: "",
-  jobTitle: "",
-  department: "",
-  startDate: "",
-  salary: 0,
-  currency: "USD" as "USD" | "PHP" | "KRW",
-  status: "Active" as "Active" | "Inactive" | "On Leave",
-  address: {
-    street: "",
-    city: "",
-    state: "",
-    zipCode: "",
-  },
-  credentials: {
-    username: "",
-    password: "",
-  },
-  profileImage: "",
-});
 
 const isOpen = computed({
   get: () => props.modelValue,
@@ -70,29 +47,7 @@ watch(
       };
     } else {
       // Reset form for new employee
-      formData.value = {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        jobTitle: "",
-        department: "",
-        startDate: "",
-        salary: 0,
-        currency: "USD" as "USD" | "PHP" | "KRW",
-        status: "Active" as "Active" | "Inactive" | "On Leave",
-        address: {
-          street: "",
-          city: "",
-          state: "",
-          zipCode: "",
-        },
-        credentials: {
-          username: "",
-          password: "",
-        },
-        profileImage: "",
-      };
+      resetForm();
     }
   },
   { immediate: true }
@@ -191,13 +146,6 @@ const currentCurrencySymbol = computed(() => {
   const currency = currencies.find((c) => c.value === formData.value.currency);
   return currency?.symbol || "";
 });
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD" as "USD" | "PHP" | "KRW",
-  }).format(amount);
-};
 </script>
 
 <template>

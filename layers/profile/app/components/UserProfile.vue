@@ -1,35 +1,9 @@
-<!-- @format -->
-
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
-import ProfileEditModal from "~~/layers/profile/app/components/ProfileEdit.vue";
+import { ref, computed } from "vue";
+import useEmployee from "./composables/useEmployee";
 
-// Mock current user - in real app this would come from auth
-const currentUser = ref<Employee>({
-  id: "1",
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@company.com",
-  phone: "+1 (555) 123-4567",
-  jobTitle: "Software Engineer",
-  department: "Engineering",
-  startDate: "2022-03-15",
-  salary: 85000,
-  currency: "USD",
-  status: "Active",
-  address: {
-    street: "123 Main St",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94105",
-  },
-  credentials: {
-    username: "john.doe",
-    password: "password",
-  },
-  profileImage: "",
-});
-
+const { currentUser } = useEmployee();
 const isEditProfileOpen = ref(false);
 
 // Image upload state
@@ -41,7 +15,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const fullName = computed(
   () => `${currentUser.value.firstName} ${currentUser.value.lastName}`
 );
-const fullAddress = computed(() => {
+const _fullAddress = computed(() => {
   const addr = currentUser.value.address;
   return `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`;
 });
@@ -75,7 +49,7 @@ const currencies = [
   { label: "KRW (₩)", value: "KRW", symbol: "₩" },
 ];
 
-const currentCurrencySymbol = computed(() => {
+const _currentCurrencySymbol = computed(() => {
   const currency = currencies.find(
     (c) => c.value === currentUser.value.currency
   );
@@ -106,10 +80,6 @@ const calculateTenure = (startDate: string) => {
   return `${months} month${months > 1 ? "s" : ""}`;
 };
 
-// const toggleEditMode = () => {
-//   isEditMode.value = !isEditMode.value;
-// };
-
 const handleEditProfile = () => {
   isEditProfileOpen.value = true;
 };
@@ -119,6 +89,8 @@ const handleSaveProfile = (employeeData: Employee) => {
   currentUser.value = {
     ...employeeData,
     id: currentUser.value.id,
+    profileImage:
+      employeeData.profileImage || currentUser.value.profileImage || "",
   };
   isEditProfileOpen.value = false;
 };
@@ -428,7 +400,7 @@ const convertToBase64 = (file: File): Promise<string> => {
       leave-active-class="animate-fade-out"
     >
       <template #body>
-        <ProfileEditModal
+        <ProfileEdit
           v-model="isEditProfileOpen"
           :employee="currentUser"
           @save="handleSaveProfile"
