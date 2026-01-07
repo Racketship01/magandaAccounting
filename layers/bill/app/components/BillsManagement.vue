@@ -1,11 +1,4 @@
-<!-- @format -->
-
 <script setup lang="ts">
-import Card from "~~/layers/base/app/components/Card.vue";
-import BillAdd from "~/components/BillAdd.vue";
-import BillDelete from "~/components/BillDelete.vue";
-import BillView from "~/components/BillView.vue";
-import BillEdit from "~/components/BillEdit.vue";
 import { ref, computed } from "vue";
 
 // Page meta
@@ -296,7 +289,7 @@ const getCategoryLabel = (category: string) => {
   );
 };
 
-const getCategoryIcon = (category: string) => {
+const _getCategoryIcon = (category: string) => {
   return (
     billCategories.find((cat) => cat.value === category)?.icon ||
     "i-lucide-file-text"

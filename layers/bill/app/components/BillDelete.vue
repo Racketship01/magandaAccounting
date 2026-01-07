@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <script setup lang="ts">
 interface Bill {
   id: string;
@@ -23,7 +21,7 @@ interface Props {
   bill: Bill | null;
 }
 
-const props = defineProps<Props>();
+const _props = defineProps<Props>();
 
 const emit = defineEmits<{
   confirmDelete: [];
@@ -38,14 +36,14 @@ const cancelDelete = () => {
   emit("cancel");
 };
 
-const formatCurrency = (amount: number) => {
+const _formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
   }).format(amount);
 };
 
-const formatDate = (dateString: string) => {
+const _formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -58,10 +56,10 @@ const formatDate = (dateString: string) => {
   <Delete
     title="Delete Bill Confirmation"
     subtitle="Are you sure you want to delete this bill"
-    subTitleBold=""
+    sub-title-bold=""
     message="This action cannot be undone. The bill will be permanently removed from the system and all associated data will be lost."
-    buttonText="Delete Bill"
-    @confirmDelete="confirmDelete"
+    button-text="Delete Bill"
+    @confirm-delete="confirmDelete"
     @cancel="cancelDelete"
   />
 </template>

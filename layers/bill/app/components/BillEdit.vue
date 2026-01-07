@@ -20,7 +20,7 @@ interface Props {
   bill?: Bill | null;
 }
 
-const props = defineProps<Props>();
+const _props = defineProps<Props>();
 
 const emit = defineEmits(["close", "save"]);
 

@@ -1,9 +1,8 @@
-<!-- @format -->
-
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import useNotifications from "../composables/useNotifications";
 
-const props = defineProps<{
+const _props = defineProps<{
   modelValue: boolean;
 }>();
 
@@ -40,7 +39,7 @@ const removeCard = (title: string) => {
           :icon="stat.icon"
           :title="stat.title"
           :description="stat.description"
-          @removeCard="removeCard(stat.title)"
+          @remove-card="removeCard(stat.title)"
         />
       </div>
     </template>

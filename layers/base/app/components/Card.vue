@@ -1,15 +1,14 @@
-<!-- @format -->
-
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 interface Props {
   title: string;
-  subtitle?: string;
+  subtitle: string;
   description?: string;
   showFilters?: boolean;
   showActions?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   description: "",
   showFilters: true,
   showActions: true,

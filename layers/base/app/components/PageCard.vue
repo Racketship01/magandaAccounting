@@ -1,5 +1,4 @@
-<!-- @format -->
-
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import type { Employee } from "../../../../types/employee";
 
@@ -32,7 +31,7 @@ const removeCard = (title: string) => {
   >
     <div class="flex items-start gap-4">
       <!-- Left Icon -->
-      <div class="flex-shrink-0">
+      <div class="shrink-0">
         <div
           class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center"
         >

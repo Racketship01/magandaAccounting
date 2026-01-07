@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-self-closing -->
 <script setup lang="ts">
 import useBillForm from "../composables/useBillForm";
 import { ref, watch } from "vue";
@@ -282,12 +283,12 @@ const getCurrencySymbol = (currency: string) => {
                     Receipt uploaded successfully
                   </p>
                   <UButton
-                    @click="receiptImage = ''"
                     icon="i-lucide-x"
                     size="sm"
                     variant="outline"
                     color="error"
                     class="mt-2"
+                    @click="receiptImage = ''"
                   >
                     Remove
                   </UButton>
@@ -306,12 +307,12 @@ const getCurrencySymbol = (currency: string) => {
                   Upload receipt photo
                 </p>
                 <UButton
-                  @click="handleUploadClick"
                   :loading="isUploading"
                   :disabled="isUploading"
                   icon="i-lucide-camera"
                   variant="outline"
                   size="sm"
+                  @click="handleUploadClick"
                 >
                   {{ isUploading ? "Uploading..." : "Choose File" }}
                 </UButton>
@@ -319,8 +320,8 @@ const getCurrencySymbol = (currency: string) => {
                   ref="fileInput"
                   type="file"
                   accept="image/*"
-                  @change="handleFileSelect"
                   class="hidden"
+                  @change="handleFileSelect"
                 />
               </div>
               <div v-if="uploadError" class="text-red-500 text-xs">
@@ -371,12 +372,11 @@ const getCurrencySymbol = (currency: string) => {
     </div>
     <template #footer>
       <div class="flex justify-end gap-3">
-        <UButton variant="outline" @click="handleCancel" icon="i-lucide-x">
+        <UButton variant="outline" icon="i-lucide-x" @click="handleCancel">
           Cancel
         </UButton>
         <UButton
           color="primary"
-          @click="handleSaveBill()"
           :disabled="
             !formData.title ||
             !formData.amount ||
@@ -384,6 +384,7 @@ const getCurrencySymbol = (currency: string) => {
             !formData.dueDate
           "
           icon="i-lucide-save"
+          @click="handleSaveBill()"
         >
           {{ buttonText }}
         </UButton>

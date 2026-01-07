@@ -1,5 +1,4 @@
-<!-- @format -->
-
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 
@@ -153,7 +152,7 @@ const handleRemove = () => {
   }
 };
 
-const handleClose = () => {
+const _handleClose = () => {
   emit("close");
 };
 
@@ -174,7 +173,7 @@ const isOverdue = computed(() => {
 
 // Currency selector for bills
 const selectedCurrency = ref<string>("");
-const showCurrencySelector = computed(
+const _showCurrencySelector = computed(
   () => isBill.value && bill.value !== null
 );
 
@@ -192,7 +191,7 @@ watch(
 );
 
 // Currency options
-const currencies = [
+const _currencies = [
   { label: "USD ($)", value: "USD", symbol: "$" },
   { label: "PHP (₱)", value: "PHP", symbol: "₱" },
   { label: "KRW (₩)", value: "KRW", symbol: "₩" },
@@ -229,7 +228,7 @@ const displayCurrency = computed(() => {
     <div class="space-y-6">
       <!-- Main Information Card -->
       <div
-        class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6"
+        class="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6"
       >
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Date -->
@@ -432,18 +431,18 @@ const displayCurrency = computed(() => {
           <UButton
             color="success"
             variant="subtle"
-            @click="handleApprove"
             icon="i-lucide-check"
             size="lg"
+            @click="handleApprove"
           >
             Approve Expense
           </UButton>
           <UButton
             color="error"
             variant="subtle"
-            @click="handleReject"
             icon="i-lucide-x"
             size="lg"
+            @click="handleReject"
           >
             Reject Expense
           </UButton>
@@ -455,9 +454,9 @@ const displayCurrency = computed(() => {
             v-if="!bill?.isPaid"
             color="success"
             variant="subtle"
-            @click="handlePaid"
             icon="i-lucide-check"
             size="lg"
+            @click="handlePaid"
           >
             Mark as Paid
           </UButton>
@@ -465,9 +464,9 @@ const displayCurrency = computed(() => {
             v-if="showRemoveButton"
             color="error"
             variant="subtle"
-            @click="handleRemove"
             icon="i-lucide-trash-2"
             size="lg"
+            @click="handleRemove"
           >
             Remove Bill
           </UButton>
