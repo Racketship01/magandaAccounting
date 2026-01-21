@@ -1,28 +1,9 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import useBill from "../composables/useBill";
 
-// Page meta
-definePageMeta({
-  title: "Bills Management - NextOne",
-});
-
-// Bill interface
-interface Bill {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  dueDate: string;
-  isRecurring: boolean;
-  recurringType?: "monthly" | "quarterly" | "yearly";
-  reminderDays: number;
-  isPaid: boolean;
-  paidDate?: string;
-  createdAt: string;
-  receiptImage?: string;
-  reminderEnabled: boolean;
-  currency?: string;
-}
+const { bill: BillProps, bills } = useBill();
 
 // Bill categories
 const billCategories = [
@@ -38,103 +19,13 @@ const billCategories = [
   { label: "Other", value: "other", icon: "i-lucide-file-text" },
 ];
 
-// Sample bills data
-const bills = ref<Bill[]>([
-  {
-    id: "1",
-    title: "Water Bill - January 2024",
-    amount: 85.5,
-    category: "water",
-    dueDate: "2024-02-15",
-    isRecurring: true,
-    recurringType: "monthly",
-    reminderDays: 7,
-    isPaid: false,
-    createdAt: "2024-01-15",
-    reminderEnabled: true,
-    currency: "USD",
-  },
-  {
-    id: "2",
-    title: "Electricity Bill - January 2024",
-    amount: 125.75,
-    category: "electric",
-    dueDate: "2024-02-20",
-    isRecurring: true,
-    recurringType: "monthly",
-    reminderDays: 3,
-    isPaid: true,
-    paidDate: "2024-01-20",
-    createdAt: "2024-01-15",
-    reminderEnabled: true,
-    currency: "USD",
-  },
-  {
-    id: "3",
-    title: "Internet Service - February 2024",
-    amount: 79.99,
-    category: "internet",
-    dueDate: "2024-02-25",
-    isRecurring: true,
-    recurringType: "monthly",
-    reminderDays: 7,
-    isPaid: false,
-    createdAt: "2024-01-15",
-    reminderEnabled: true,
-    currency: "USD",
-  },
-  {
-    id: "4",
-    title: "Rent Payment - February 2024",
-    amount: 1200.0,
-    category: "rent",
-    dueDate: "2024-02-01",
-    isRecurring: true,
-    recurringType: "monthly",
-    reminderDays: 14,
-    isPaid: false,
-    createdAt: "2024-01-15",
-    reminderEnabled: true,
-    currency: "USD",
-  },
-  {
-    id: "5",
-    title: "Phone Bill - January 2024",
-    amount: 65.0,
-    category: "phone",
-    dueDate: "2024-02-10",
-    isRecurring: true,
-    recurringType: "monthly",
-    reminderDays: 5,
-    isPaid: true,
-    paidDate: "2024-01-10",
-    createdAt: "2024-01-15",
-    reminderEnabled: true,
-    currency: "USD",
-  },
-  {
-    id: "6",
-    title: "Other Bill - January 2024",
-    amount: 65.0,
-    category: "other",
-    dueDate: "2024-02-10",
-    isRecurring: false,
-    reminderDays: 5,
-    isPaid: true,
-    paidDate: "2024-01-10",
-    createdAt: "2024-01-10",
-    reminderEnabled: false,
-    currency: "USD",
-  },
-]);
-
 // Form state
 const isBillAddModalOpen = ref(false);
 const isEditBillModalOpen = ref(false);
 const isViewBillModalOpen = ref(false);
 const isDeleteBillModalOpen = ref(false);
 const isBillViewEditModalOpen = ref(false);
-const selectedBill = ref<Bill | null>(null);
+const selectedBill = ref<typeof BillProps.value | null>(null);
 
 // Filter state
 const searchQuery = ref("");
@@ -149,28 +40,29 @@ const filteredBills = computed(() => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
-      (bill) =>
+      (bill: { title: string; category: string }) =>
         bill.title.toLowerCase().includes(query) ||
-        bill.category.toLowerCase().includes(query)
+        bill.category.toLowerCase().includes(query),
     );
   }
 
   // Filter by category
   if (selectedCategory.value && selectedCategory.value !== "all") {
     filtered = filtered.filter(
-      (bill) => bill.category === selectedCategory.value
+      (bill: { category: string }) => bill.category === selectedCategory.value,
     );
   }
 
   // Filter by status
   if (selectedStatus.value && selectedStatus.value !== "all") {
     if (selectedStatus.value === "paid") {
-      filtered = filtered.filter((bill) => bill.isPaid);
+      filtered = filtered.filter((bill: { isPaid: any }) => bill.isPaid);
     } else if (selectedStatus.value === "unpaid") {
-      filtered = filtered.filter((bill) => !bill.isPaid);
+      filtered = filtered.filter((bill: { isPaid: any }) => !bill.isPaid);
     } else if (selectedStatus.value === "overdue") {
       filtered = filtered.filter(
-        (bill) => !bill.isPaid && new Date(bill.dueDate) < new Date()
+        (bill: { isPaid: any; dueDate: string | number | Date }) =>
+          !bill.isPaid && new Date(bill.dueDate) < new Date(),
       );
     }
   }
@@ -184,12 +76,12 @@ const handleNewBill = () => {
   isBillAddModalOpen.value = true;
 };
 
-const handleViewBill = (bill: Bill) => {
+const handleViewBill = (bill: any) => {
   selectedBill.value = bill;
   isBillViewEditModalOpen.value = true;
 };
 
-const handleEditBill = (bill: Bill) => {
+const handleEditBill = (bill: any) => {
   selectedBill.value = bill;
   isEditBillModalOpen.value = true;
 };
@@ -197,7 +89,7 @@ const handleEditBill = (bill: Bill) => {
 const handleSaveBill = (data: any) => {
   if (isBillAddModalOpen.value) {
     // Add new bill
-    const newBill: Bill = {
+    const newBill: typeof BillProps.value = {
       id: Date.now().toString(),
       title: data.title,
       amount: data.amount,
@@ -218,7 +110,7 @@ const handleSaveBill = (data: any) => {
   } else if (isEditBillModalOpen.value && selectedBill.value) {
     // Edit existing bill
     const index = bills.value.findIndex(
-      (bill) => bill.id === selectedBill.value!.id
+      (bill: { id: any }) => bill.id === selectedBill.value!.id,
     );
     if (index !== -1) {
       bills.value[index] = {
@@ -236,14 +128,16 @@ const handleSaveBill = (data: any) => {
   selectedBill.value = null;
 };
 
-const handleDeleteBill = (bill: Bill) => {
+const handleDeleteBill = (bill: any) => {
   selectedBill.value = bill;
   isDeleteBillModalOpen.value = true;
 };
 
 const confirmDeleteBill = () => {
   if (selectedBill.value) {
-    bills.value = bills.value.filter((b) => b.id !== selectedBill.value!.id);
+    bills.value = bills.value.filter(
+      (b: { id: any }) => b.id !== selectedBill.value!.id,
+    );
     selectedBill.value = null;
     isDeleteBillModalOpen.value = false;
   }
@@ -270,7 +164,7 @@ const handleCloseViewBill = () => {
 };
 
 const handleMarkAsPaidFromModal = (billId: string) => {
-  const bill = bills.value.find((b) => b.id === billId);
+  const bill = bills.value.find((b: { id: string }) => b.id === billId);
   if (bill) {
     bill.isPaid = true;
     bill.paidDate = new Date().toISOString().split("T")[0];
@@ -279,7 +173,7 @@ const handleMarkAsPaidFromModal = (billId: string) => {
 };
 
 const handleRemoveBillFromModal = (billId: string) => {
-  bills.value = bills.value.filter((b) => b.id !== billId);
+  bills.value = bills.value.filter((b: { id: string }) => b.id !== billId);
   isViewBillModalOpen.value = false;
 };
 
@@ -399,10 +293,10 @@ const isOverdue = (dueDate: string) => {
     <!-- Status Filter Slot -->
     <template #status-filter>
       <UButton
-        @click="handleNewBill"
         icon="i-lucide-plus"
         size="lg"
         color="primary"
+        @click="handleNewBill"
       >
         Add New Bill
       </UButton>
@@ -443,16 +337,16 @@ const isOverdue = (dueDate: string) => {
                 bill.isPaid
                   ? 'Paid'
                   : isOverdue(bill.dueDate)
-                  ? 'Overdue'
-                  : 'Pending'
+                    ? 'Overdue'
+                    : 'Pending'
               "
               variant="soft"
               :color="
                 bill.isPaid
                   ? 'success'
                   : isOverdue(bill.dueDate)
-                  ? 'error'
-                  : 'warning'
+                    ? 'error'
+                    : 'warning'
               "
               size="sm"
             />

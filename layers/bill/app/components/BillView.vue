@@ -1,23 +1,11 @@
+<!-- eslint-disable vue/no-dupe-keys -->
 <script setup lang="ts">
-interface Bill {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  dueDate: string;
-  isRecurring: boolean;
-  recurringType?: "monthly" | "quarterly" | "yearly";
-  reminderDays: number;
-  isPaid: boolean;
-  paidDate?: string;
-  createdAt: string;
-  receiptImage?: string;
-  reminderEnabled: boolean;
-  currency?: string;
-}
+import useBill from "../composables/useBill";
+
+const { bill } = useBill();
 
 interface Props {
-  bill: Bill | null;
+  bill: typeof bill.value | null;
 }
 
 const _props = defineProps<Props>();

@@ -1,24 +1,12 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-interface Bill {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  dueDate: string;
-  isRecurring: boolean;
-  recurringType?: "monthly" | "quarterly" | "yearly";
-  reminderDays: number;
-  isPaid: boolean;
-  paidDate?: string;
-  createdAt: string;
-  receiptImage?: string;
-  reminderEnabled: boolean;
-  currency?: string;
-}
+import useBill from "../composables/useBill";
 
 interface Props {
-  bill?: Bill | null;
+  bill?: typeof BillProps.value | null;
 }
+
+const { bill: BillProps } = useBill();
 
 const _props = defineProps<Props>();
 
@@ -28,7 +16,7 @@ const handleClose = () => {
   emit("close");
 };
 
-const handleSaveBill = (updatedBill: Bill) => {
+const handleSaveBill = (updatedBill: typeof BillProps.value) => {
   emit("save", updatedBill);
 };
 </script>

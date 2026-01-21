@@ -5,3 +5,7 @@ useHead({
   title: "Home",
 });
 </script>
+
+<template>
+  <Dashboard />
+</template>

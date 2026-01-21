@@ -1,28 +1,12 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable vue/html-self-closing -->
 <script setup lang="ts">
 import useBillForm from "../composables/useBillForm";
+import useBill from "../composables/useBill";
 import { ref, watch } from "vue";
 
-// Edit Bill interface
-interface Bill {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  dueDate: string;
-  isRecurring: boolean;
-  recurringType?: "monthly" | "quarterly" | "yearly";
-  reminderDays: number;
-  isPaid: boolean;
-  paidDate?: string;
-  createdAt: string;
-  receiptImage?: string;
-  reminderEnabled: boolean;
-  currency?: string;
-}
-
 interface Props {
-  bill?: Bill | null;
+  bill?: typeof BillProps.value | null;
   title: string;
   subtitle: string;
   icon: string;
@@ -64,6 +48,7 @@ const reminderOptions = [
 
 // Form data
 const { formData } = useBillForm();
+const { bill: BillProps } = useBill();
 
 // Image upload state
 const isUploading = ref(false);
@@ -110,7 +95,7 @@ watch(
       resetForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const handleSaveBill = () => {
