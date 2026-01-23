@@ -1,4 +1,4 @@
-interface Bill {
+export interface Bill {
   id: string;
   title: string;
   amount: number;

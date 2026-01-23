@@ -3,7 +3,9 @@
 import { ref, computed } from "vue";
 import useBill from "../composables/useBill";
 
-const { bill: BillProps, bills } = useBill();
+import type { Bill } from "../composables/useBill";
+
+const { bills } = useBill();
 
 // Bill categories
 const billCategories = [
@@ -25,7 +27,7 @@ const isEditBillModalOpen = ref(false);
 const isViewBillModalOpen = ref(false);
 const isDeleteBillModalOpen = ref(false);
 const isBillViewEditModalOpen = ref(false);
-const selectedBill = ref<typeof BillProps.value | null>(null);
+const selectedBill = ref<Bill | null>(null);
 
 // Filter state
 const searchQuery = ref("");
@@ -89,7 +91,7 @@ const handleEditBill = (bill: any) => {
 const handleSaveBill = (data: any) => {
   if (isBillAddModalOpen.value) {
     // Add new bill
-    const newBill: typeof BillProps.value = {
+    const newBill: Bill = {
       id: Date.now().toString(),
       title: data.title,
       amount: data.amount,
@@ -439,6 +441,7 @@ const isOverdue = (dueDate: string) => {
       >
         <template #body>
           <BillView
+            v-if="selectedBill"
             :bill="selectedBill"
             @paid="handleMarkAsPaidFromModal"
             @remove="handleRemoveBillFromModal"

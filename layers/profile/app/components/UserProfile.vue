@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../types/employee";
+import type { EmployeeData } from "../composables/useEmployee";
 import { ref, computed } from "vue";
 import useEmployee from "../composables/useEmployee";
 
@@ -13,7 +13,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 
 // Computed properties
 const fullName = computed(
-  () => `${currentUser.value.firstName} ${currentUser.value.lastName}`
+  () => `${currentUser.value.firstName} ${currentUser.value.lastName}`,
 );
 const _fullAddress = computed(() => {
   const addr = currentUser.value.address;
@@ -35,7 +35,7 @@ const getStatusColor = (status: string) => {
 
 const formatCurrency = (
   amount: number,
-  currency: string = currentUser.value.currency
+  currency: string = currentUser.value.currency,
 ) => {
   const currencySymbol =
     currencies.find((c) => c.value === currency)?.symbol || "$";
@@ -51,7 +51,7 @@ const currencies = [
 
 const _currentCurrencySymbol = computed(() => {
   const currency = currencies.find(
-    (c) => c.value === currentUser.value.currency
+    (c) => c.value === currentUser.value.currency,
   );
   return currency?.symbol || "$";
 });
@@ -84,7 +84,7 @@ const handleEditProfile = () => {
   isEditProfileOpen.value = true;
 };
 
-const handleSaveProfile = (employeeData: Employee) => {
+const handleSaveProfile = (employeeData: EmployeeData) => {
   // Update current user
   currentUser.value = {
     ...employeeData,

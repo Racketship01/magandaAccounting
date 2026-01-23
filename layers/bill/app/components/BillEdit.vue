@@ -1,9 +1,10 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import useBill from "../composables/useBill";
+import type { Bill } from "../composables/useBill";
 
 interface Props {
-  bill?: typeof BillProps.value | null;
+  bill?: Bill | null;
 }
 
 const { bill: BillProps } = useBill();

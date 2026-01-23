@@ -43,7 +43,7 @@ const items = computed(() => [
     {
       label: "Profile",
       icon: "i-lucide-user",
-      to: "/userProfile",
+      to: "/profile",
     },
   ],
   [
