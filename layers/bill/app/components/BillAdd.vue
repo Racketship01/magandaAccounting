@@ -1,21 +1,6 @@
 <script setup lang="ts">
 // Bill interface
-interface Bill {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  dueDate: string;
-  isRecurring: boolean;
-  recurringType?: "monthly" | "quarterly" | "yearly";
-  reminderDays: number;
-  isPaid: boolean;
-  paidDate?: string;
-  createdAt: string;
-  receiptImage?: string;
-  reminderEnabled: boolean;
-  currency?: string;
-}
+import type { Bill } from "../composables/useBill";
 
 interface Props {
   bill?: Bill | null;

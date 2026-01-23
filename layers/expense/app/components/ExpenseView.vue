@@ -1,25 +1,13 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { computed } from "vue";
+import useExpense from "../composables/useExpense";
 
-interface ExpenseItem {
-  id: string;
-  date: string;
-  category: string;
-  amount: number;
-  currency: string;
-  merchantName: string;
-  description: string;
-  employeeName?: string;
-  status: string;
-  receiptUrl?: string;
-  notes?: string;
-  projectCode?: string;
-  isSelected?: boolean;
-}
+const { selectedExpense } = useExpense();
 
 interface Props {
-  expense: ExpenseItem | null;
+  expense: typeof selectedExpense.value | null;
 }
 
 const props = defineProps<Props>();
@@ -50,8 +38,8 @@ const expenseData = computed(() => {
 <!-- @vue-ignore -->
 <template>
   <View
-    title="Expense Details"
     :data="expenseData"
+    title="Expense Details"
     type="expense"
     :show-actions="true"
     @approve="handleApprove"

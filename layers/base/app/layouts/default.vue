@@ -1,16 +1,37 @@
+<!-- eslint-disable @typescript-eslint/no-unused-expressions -->
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+
+import logotest from "../assets/images/logotest.png";
+import logotestDark from "../assets/images/logotest-dark.png";
 import useColor from "../composables/useColorMode";
 
+// Reactive state
 const open = ref(false);
 const collapsed = ref(false);
+const isNotificationSliderOpen = ref(false);
+const isMounted = ref(false);
 
+// Color mode composable
+const { colorMode } = useColor();
+const isDark = computed(() => colorMode.value === "dark");
+
+// Computed properties
+const currentLogo = computed(() => {
+  // Always show logotest on initial load/refresh
+  if (!isMounted.value) {
+    return logotest;
+  }
+  return colorMode.value === "dark" ? logotest : logotestDark;
+});
+
+// Navigation links
 const links = [
   [
     {
       label: "Dashboard",
       icon: "i-lucide-house",
-      to: "/dashboard",
+      to: "/",
       onSelect: () => {
         open.value = false;
       },
@@ -47,25 +68,23 @@ const links = [
         open.value = false;
       },
     },
-    {
-      label: "Settings",
-      icon: "i-lucide-settings",
-      to: "/profile",
-      onSelect: () => {
-        open.value = false;
-      },
-    },
   ],
 ];
 
-const isNotificationSliderOpen = ref(false);
-
-const { colorMode } = useColor();
-const isDark = computed(() => colorMode.value === "dark");
-
+// Functions
 function toggleColorMode() {
   colorMode.preference = isDark.value ? "light" : "dark";
 }
+
+// Lifecycle hooks
+onMounted(() => {
+  // Set color mode to dark on first mount
+  if (!colorMode.preference) {
+    colorMode.preference = "dark";
+  }
+  // Set mounted flag to allow logo switching
+  isMounted.value = true;
+});
 </script>
 
 <template>
@@ -73,7 +92,7 @@ function toggleColorMode() {
     <!-- Header -->
     <UHeader class="sticky top-0 z-50 shrink-0">
       <template #left>
-        <h1 class="text-lg font-semibold">Accounting App</h1>
+        <img :src="currentLogo" alt="Logo" class="h-10 w-auto" />
       </template>
 
       <template #right>

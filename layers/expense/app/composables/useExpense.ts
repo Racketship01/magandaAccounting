@@ -23,7 +23,7 @@ export default function useExpense() {
   //modal state
   const selectedExpense = useState<ExpenseItem | null>(
     "selectedExpense",
-    () => null
+    () => null,
   );
 
   // Mock expense data (individual expenses not yet in a report)

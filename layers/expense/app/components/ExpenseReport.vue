@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import useExpense from "../composables/useExpense";
@@ -95,7 +96,7 @@ const toggleFilteredSelection = () => {
     // unselect all filtered
     const toRemove = new Set(filteredIds);
     expenseState.value.selectedExpenses = selectedExpenses.value.filter(
-      (id) => !toRemove.has(id)
+      (id) => !toRemove.has(id),
     );
   } else {
     // select all filtered
@@ -115,7 +116,7 @@ const confirmDeleteExpenses = () => {
 
   // Remove selected expenses from the available expenses list
   availableExpenses.value = availableExpenses.value.filter(
-    (expense) => !selectedExpenses.value.includes(expense.id)
+    (expense) => !selectedExpenses.value.includes(expense.id),
   );
 
   // Clear the selection

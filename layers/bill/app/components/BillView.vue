@@ -1,26 +1,11 @@
 <script setup lang="ts">
-interface Bill {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  dueDate: string;
-  isRecurring: boolean;
-  recurringType?: "monthly" | "quarterly" | "yearly";
-  reminderDays: number;
-  isPaid: boolean;
-  paidDate?: string;
-  createdAt: string;
-  receiptImage?: string;
-  reminderEnabled: boolean;
-  currency?: string;
-}
+import type { Bill } from "../composables/useBill";
 
 interface Props {
   bill: Bill | null;
 }
 
-const _props = defineProps<Props>();
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
   paid: [billId: string];
@@ -44,7 +29,7 @@ const handleClose = () => {
 <template>
   <View
     title="Bill Details"
-    :data="bill"
+    :data="props.bill"
     type="bill"
     :show-actions="true"
     :show-remove-button="false"

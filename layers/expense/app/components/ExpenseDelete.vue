@@ -1,23 +1,12 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-interface ExpenseItem {
-  id: string;
-  date: string;
-  category: string;
-  amount: number;
-  currency: string;
-  merchantName: string;
-  description: string;
-  employeeName?: string;
-  status: string;
-  receiptUrl?: string;
-  notes?: string;
-  projectCode?: string;
-  isSelected?: boolean;
-}
+import useExpense from "../composables/useExpense";
+
+const { selectedExpense } = useExpense();
 
 interface Props {
-  selectedExpenses: string[];
-  availableExpenses: ExpenseItem[];
+  selectedExpenses: (typeof selectedExpense.value)[];
+  availableExpenses: (typeof selectedExpense.value)[];
 }
 
 const props = defineProps<Props>();
