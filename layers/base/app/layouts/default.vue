@@ -1,28 +1,29 @@
 <!-- eslint-disable @typescript-eslint/no-unused-expressions -->
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-
-import logotest from "../assets/images/logotest.png";
-import logotestDark from "../assets/images/logotest-dark.png";
+import { ref, onMounted } from "vue";
 import useColor from "../composables/useColorMode";
 
 // Reactive state
 const open = ref(false);
 const collapsed = ref(false);
 const isNotificationSliderOpen = ref(false);
-const isMounted = ref(false);
 
 // Color mode composable
-const { colorMode } = useColor();
-const isDark = computed(() => colorMode.value === "dark");
+const { colorMode, isMounted, isDark, currentLogo } = useColor();
 
-// Computed properties
-const currentLogo = computed(() => {
-  // Always show logotest on initial load/refresh
-  if (!isMounted.value) {
-    return logotest;
+// Functions
+function toggleColorMode() {
+  colorMode.preference = isDark.value ? "light" : "dark";
+}
+
+// Lifecycle hooks
+onMounted(() => {
+  // Set color mode to dark on first mount
+  if (!colorMode.preference) {
+    colorMode.preference = "dark";
   }
-  return colorMode.value === "dark" ? logotest : logotestDark;
+  // Set mounted flag to allow logo switching
+  isMounted.value = true;
 });
 
 // Navigation links
@@ -31,7 +32,7 @@ const links = [
     {
       label: "Dashboard",
       icon: "i-lucide-house",
-      to: "/",
+      to: "/dashboard",
       onSelect: () => {
         open.value = false;
       },
@@ -70,21 +71,6 @@ const links = [
     },
   ],
 ];
-
-// Functions
-function toggleColorMode() {
-  colorMode.preference = isDark.value ? "light" : "dark";
-}
-
-// Lifecycle hooks
-onMounted(() => {
-  // Set color mode to dark on first mount
-  if (!colorMode.preference) {
-    colorMode.preference = "dark";
-  }
-  // Set mounted flag to allow logo switching
-  isMounted.value = true;
-});
 </script>
 
 <template>

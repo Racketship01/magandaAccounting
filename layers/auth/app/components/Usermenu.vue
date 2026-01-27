@@ -103,7 +103,7 @@ const items = computed(() => [
     {
       label: "Log out",
       icon: "i-lucide-log-out",
-      to: "/login",
+      to: "/",
     },
   ],
 ]);

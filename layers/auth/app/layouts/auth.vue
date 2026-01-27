@@ -20,6 +20,38 @@
     <div class="relative z-10">
       <slot />
     </div>
+
+    <!-- Footer -->
+    <!-- <footer class="relative z-10 py-6 px-4 text-center">
+      <div class="max-w-7xl mx-auto">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          © 2024 NextOne. All rights reserved.
+        </p>
+        <div class="mt-2 flex justify-center space-x-6">
+          <UButton
+            variant="ghost"
+            size="sm"
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            Privacy Policy
+          </UButton>
+          <UButton
+            variant="ghost"
+            size="sm"
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            Terms of Service
+          </UButton>
+          <UButton
+            variant="ghost"
+            size="sm"
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            Support
+          </UButton>
+        </div>
+      </div>
+    </footer> -->
   </div>
 </template>
 

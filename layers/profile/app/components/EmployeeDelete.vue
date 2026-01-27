@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../types/employee";
+import type { Employee } from "../../../../private/types/employee";
 import { computed } from "vue";
 
 interface Props {

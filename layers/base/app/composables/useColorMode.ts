@@ -3,14 +3,15 @@ import logotestDark from "../assets/images/logotest-dark.png";
 
 export default function useColor() {
   const colorMode = useColorMode();
+  const isMounted = ref(false);
 
   // Color mode composable
   const isDark = computed(() => colorMode.value === "dark");
 
   // Computed properties
-  const currentLogo = computed((isMounted: boolean) => {
+  const currentLogo = computed(() => {
     // Always show logotest on initial load/refresh
-    if (!isMounted) {
+    if (!isMounted.value) {
       return logotest;
     }
     return isDark.value ? logotest : logotestDark;
@@ -20,5 +21,6 @@ export default function useColor() {
     colorMode,
     isDark,
     currentLogo,
+    isMounted,
   };
 }

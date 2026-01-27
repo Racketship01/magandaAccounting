@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../types/employee";
+import type { Employee } from "../../../../private/types/employee";
 import { ref, computed, watch } from "vue";
 import useEmployee from "../composables/useEmployee";
 
@@ -50,7 +50,7 @@ watch(
       resetForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Form validation

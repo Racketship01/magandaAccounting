@@ -1,14 +1,7 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import logotest from "~~/layers/base/app/assets/images/logotest.png";
-import logotestDark from "~~/layers/base/app/assets/images/logotest-dark.png";
-import useColorMode from "~/composables/useColorMode";
-
-// Page meta
-definePageMeta({
-  layout: "auth",
-  title: "Login - NextOne",
-});
+import useColor from "../../../base/app/composables/useColorMode";
 
 // Form state
 const email = ref("");
@@ -16,17 +9,8 @@ const password = ref("");
 const rememberMe = ref(false);
 const isLoading = ref(false);
 const errorMessage = ref("");
-const isMounted = ref(false);
 
-const colorMode = useColorMode();
-// Computed properties
-const currentLogo = computed(() => {
-  // Always show logotest on initial load/refresh
-  if (!isMounted.value) {
-    return logotest;
-  }
-  return colorMode.value === "dark" ? logotest : logotestDark;
-});
+const { colorMode, isMounted, currentLogo } = useColor();
 
 // Form validation
 const isEmailValid = computed(() => {
@@ -76,7 +60,7 @@ const handleLogin = async () => {
     }
 
     // Redirect to dashboard
-    await navigateTo("/dashBoard");
+    await navigateTo("/dashboard");
   } catch (error) {
     errorMessage.value = "Invalid email or password. Please try again.";
     console.error("Login error:", error);

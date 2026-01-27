@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import type { Employee } from "../../../../types/employee";
+import type { Employee } from "../../../../private/types/employee";
 
 interface Props {
   icon?: string;
