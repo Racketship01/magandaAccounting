@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../types/employee";
+import type { Employee } from "../../../../private/types/employee";
 import { ref, computed } from "vue";
 import useEmployee from "../composables/useEmployee";
 
@@ -23,7 +23,7 @@ const filteredEmployees = computed(() => {
         employee.lastName.toLowerCase().includes(query) ||
         employee.email.toLowerCase().includes(query) ||
         employee.jobTitle.toLowerCase().includes(query) ||
-        employee.department.toLowerCase().includes(query)
+        employee.department.toLowerCase().includes(query),
     );
   }
 
@@ -34,7 +34,7 @@ const filteredEmployees = computed(() => {
   ) {
     filtered = filtered.filter(
       (employee) =>
-        employee.department === employeeState.value.selectedDepartment
+        employee.department === employeeState.value.selectedDepartment,
     );
   }
 
@@ -44,7 +44,7 @@ const filteredEmployees = computed(() => {
     employeeState.value.selectedStatus !== "all"
   ) {
     filtered = filtered.filter(
-      (employee) => employee.status === employeeState.value.selectedStatus
+      (employee) => employee.status === employeeState.value.selectedStatus,
     );
   }
 
@@ -86,7 +86,7 @@ const handleSaveEmployee = (employeeData: Employee) => {
   if (employeeState.value.selectedEmployee) {
     // Edit existing employee
     const index = employees.value.findIndex(
-      (emp) => emp.id === employeeState.value.selectedEmployee
+      (emp) => emp.id === employeeState.value.selectedEmployee,
     );
     if (index !== -1) {
       employees.value[index] = {

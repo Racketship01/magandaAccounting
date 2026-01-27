@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../types/employee";
+import type { EmployeeData } from "../composables/useEmployee";
 import { computed } from "vue";
 
 interface Props {
   modelValue: boolean;
-  employee: Employee;
+  employee: EmployeeData;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
-  save: [employee: Employee];
+  save: [employee: EmployeeData];
   close: [];
 }>();
 
@@ -20,7 +20,7 @@ const isOpen = computed({
   set: (value) => emit("update:modelValue", value),
 });
 
-const handleSaveProfile = (employee: Employee) => {
+const handleSaveProfile = (employee: EmployeeData) => {
   emit("save", employee);
   isOpen.value = false;
 };
