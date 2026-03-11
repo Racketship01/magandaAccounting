@@ -51,7 +51,11 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  User: 'User',
+  Employee: 'Employee',
+  Admin: 'Admin',
+  Expense: 'Expense',
+  Bill: 'Bill'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -71,11 +75,102 @@ export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   password: 'password',
+  username: 'username',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const EmployeeScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  phone: 'phone',
+  jobTitle: 'jobTitle',
+  department: 'department',
+  startDate: 'startDate',
+  currency: 'currency',
+  role: 'role',
+  status: 'status',
+  street: 'street',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  salary: 'salary',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
+
+
+export const AdminScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  phone: 'phone',
+  jobTitle: 'jobTitle',
+  department: 'department',
+  startDate: 'startDate',
+  currency: 'currency',
+  role: 'role',
+  salary: 'salary',
+  status: 'status',
+  street: 'street',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof AdminScalarFieldEnum]
+
+
+export const ExpenseScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  category: 'category',
+  amount: 'amount',
+  currency: 'currency',
+  merchantName: 'merchantName',
+  description: 'description',
+  employeeName: 'employeeName',
+  status: 'status',
+  receiptUrl: 'receiptUrl',
+  adminId: 'adminId',
+  employeeId: 'employeeId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
+
+
+export const BillScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  amount: 'amount',
+  category: 'category',
+  dueDate: 'dueDate',
+  isRecurring: 'isRecurring',
+  recurringType: 'recurringType',
+  reminderDays: 'reminderDays',
+  isPaid: 'isPaid',
+  paidDate: 'paidDate',
+  receiptImage: 'receiptImage',
+  reminderEnabled: 'reminderEnabled',
+  currency: 'currency',
+  adminId: 'adminId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -84,4 +179,12 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
