@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
   devtools: { enabled: true },
-  modules: ["@nuxt/eslint", "@nuxt/ui", "@nuxt/auth-utils"],
+  modules: ["@nuxt/eslint", "@nuxt/ui", "nuxt-auth-utils"],
   postcss: {
     plugins: {
       "@tailwindcss/postcss": {},
