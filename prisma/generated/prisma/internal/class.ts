@@ -17,8 +17,8 @@ import type * as Prisma from "./prismaNamespace.js"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.4.1",
-  "engineVersion": "55ae170b1ced7fc6ed07a15f110549408c501bb3",
+  "clientVersion": "7.5.0",
+  "engineVersion": "280c870be64f457428992c43c1f6d557fab6e29e",
   "activeProvider": "sqlite",
   "inlineSchema": "generator client {\n  provider      = \"prisma-client\"\n  output        = \"../prisma/generated/prisma\"\n  compilerBuild = \"fast\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nenum UserRole {\n  admin\n  user\n}\n\nenum EmployeeStatus {\n  active\n  inactive\n  onLeave\n}\n\nenum ExpenseStatus {\n  pending\n  approved\n  rejected\n}\n\nenum BillType {\n  monthly\n  quarterly\n  yearly\n}\n\nmodel User {\n  id        String     @id @default(uuid())\n  email     String     @unique\n  password  String\n  username  String\n  employees Employee[]\n  admin     Admin[]\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n\n  @@unique([username])\n  @@index([email])\n}\n\nmodel Employee {\n  id         String         @id @default(uuid())\n  firstName  String\n  lastName   String\n  phone      String\n  jobTitle   String\n  department String\n  startDate  String\n  currency   String\n  role       UserRole\n  status     EmployeeStatus\n  street     String\n  city       String\n  state      String\n  zipCode    String\n  salary     Float\n  expenses   Expense[]\n\n  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)\n  userId String\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([userId, id])\n  @@index([userId])\n}\n\nmodel Admin {\n  id         String         @id @default(uuid())\n  firstName  String\n  lastName   String\n  phone      String\n  jobTitle   String\n  department String\n  startDate  String\n  currency   String\n  role       UserRole\n  salary     Float\n  status     EmployeeStatus\n  street     String\n  city       String\n  state      String\n  zipCode    String\n  expenses   Expense[]\n  bills      Bill[]\n\n  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)\n  userId String\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([userId, id])\n  @@index([userId])\n}\n\nmodel Expense {\n  id           String        @id @default(uuid())\n  date         String\n  category     String\n  amount       Float\n  currency     String\n  merchantName String\n  description  String?\n  employeeName String?\n  status       ExpenseStatus @default(pending)\n  receiptUrl   String?\n\n  admin   Admin  @relation(fields: [adminId], references: [id], onUpdate: Cascade, onDelete: Cascade)\n  adminId String\n\n  employee   Employee @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)\n  employeeId String\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([adminId, employeeId, id])\n  @@index([adminId, employeeId])\n}\n\nmodel Bill {\n  id              String   @id @default(uuid())\n  title           String\n  amount          Float\n  category        String\n  dueDate         String\n  isRecurring     Boolean\n  recurringType   BillType\n  reminderDays    Int\n  isPaid          Boolean\n  paidDate        String?\n  receiptImage    String?\n  reminderEnabled Boolean\n  currency        String?\n\n  admin   Admin  @relation(fields: [adminId], references: [id], onUpdate: Cascade, onDelete: Cascade)\n  adminId String\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([adminId, id])\n  @@index([adminId])\n}\n",
   "runtimeDataModel": {
@@ -67,7 +67,9 @@ export interface PrismaClientConstructor {
    * Type-safe database client for TypeScript
    * @example
    * ```
-   * const prisma = new PrismaClient()
+   * const prisma = new PrismaClient({
+   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+   * })
    * // Fetch zero or more Users
    * const users = await prisma.user.findMany()
    * ```
@@ -89,7 +91,9 @@ export interface PrismaClientConstructor {
  * Type-safe database client for TypeScript
  * @example
  * ```
- * const prisma = new PrismaClient()
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
  * // Fetch zero or more Users
  * const users = await prisma.user.findMany()
  * ```
