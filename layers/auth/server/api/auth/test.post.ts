@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   try {
     //const prisma = usePrisma();
 
-    const { email, password } = await readBody(event);
+    const { email, password, username } = await readBody(event);
 
     console.log("Attempting to create user with email:", email);
 
@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
       data: {
         email,
         password,
+        username,
       },
     });
 

@@ -3,6 +3,7 @@ import { ref } from "vue";
 import type { FormError, FormSubmitEvent } from "@nuxt/ui";
 
 const state = ref({
+  username: "",
   email: "",
   password: "",
 });
@@ -11,6 +12,7 @@ const state = ref({
 
 const validate = (state: any): FormError[] => {
   const errors = [];
+  if (!state.username) errors.push({ path: "username", message: "Required" });
   if (!state.email) errors.push({ path: "email", message: "Required" });
   if (!state.password) errors.push({ path: "password", message: "Required" });
   return errors;
@@ -62,6 +64,14 @@ async function onSubmit(event: FormSubmitEvent<typeof state.value>) {
           class="space-y-4"
           @submit="onSubmit"
         >
+          <UFormField label="Username" name="username" required>
+            <UInput
+              v-model="state.username"
+              type="text"
+              placeholder="Enter your username"
+            />
+          </UFormField>
+
           <UFormField label="Email" name="email" required>
             <UInput
               v-model="state.email"
