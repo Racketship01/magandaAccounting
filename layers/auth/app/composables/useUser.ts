@@ -6,6 +6,12 @@ interface User {
   };
 }
 
+interface Auth {
+  email: string;
+  password: string;
+  isAuthenticated: boolean;
+}
+
 export default function useUser() {
   const user = useState<User>("user", () => ({
     name: "John Doe",
