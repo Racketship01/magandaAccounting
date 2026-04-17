@@ -3,9 +3,8 @@ import type { Employee } from "../../../../private/types/employee";
 import { ref, computed } from "vue";
 import useEmployee from "../composables/useEmployee";
 
-const { employees, employeeState } = useEmployee();
-
 // state
+const { employees, employeeState } = useEmployee();
 const isEmployeeDeleteModalOpen = ref(false);
 const isEmployeeFormModalOpen = ref(false);
 const employeeToDelete = ref<Employee | null>(null);

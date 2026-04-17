@@ -2,7 +2,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: "auth",
-  title: "Login - NextOne",
+  title: "Signup - NextOne",
 });
 </script>
 

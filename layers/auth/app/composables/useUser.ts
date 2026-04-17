@@ -6,10 +6,15 @@ interface User {
   };
 }
 
-interface Auth {
+interface Signup {
+  username?: string;
   email: string;
   password: string;
-  isAuthenticated: boolean;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+  isLoading: boolean;
+  errorMessage: string;
+  isFormValid: boolean;
 }
 
 export default function useUser() {
@@ -21,7 +26,19 @@ export default function useUser() {
     },
   }));
 
+  const signup = useState<Signup>("signup", () => ({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    agreeToTerms: false,
+    isLoading: false,
+    errorMessage: "",
+    isFormValid: false,
+  }));
+
   return {
     user,
+    signup,
   };
 }

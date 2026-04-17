@@ -3,14 +3,23 @@
 import { ref, computed, onMounted } from "vue";
 import useColor from "../../../base/app/composables/useColorMode";
 
+const { colorMode, isMounted, currentLogo } = useColor();
+// Lifecycle hooks
+onMounted(() => {
+  // Set color mode to dark on first mount
+  if (!colorMode.preference) {
+    colorMode.preference = "dark";
+  }
+  // Set mounted flag to allow logo switching
+  isMounted.value = true;
+});
+
 // Form state
 const email = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const isLoading = ref(false);
 const errorMessage = ref("");
-
-const { colorMode, isMounted, currentLogo } = useColor();
 
 // Form validation
 const isEmailValid = computed(() => {
@@ -75,16 +84,6 @@ const handleKeyPress = (event: KeyboardEvent) => {
     handleLogin();
   }
 };
-
-// Lifecycle hooks
-onMounted(() => {
-  // Set color mode to dark on first mount
-  if (!colorMode.preference) {
-    colorMode.preference = "dark";
-  }
-  // Set mounted flag to allow logo switching
-  isMounted.value = true;
-});
 </script>
 
 <template>
