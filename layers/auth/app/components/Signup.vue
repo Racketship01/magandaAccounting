@@ -9,63 +9,15 @@ const { colorMode, isMounted, currentLogo } = useColor();
 
 // Lifecycle hooks
 onMounted(() => {
-  // Set color mode to dark on first mount
   if (!colorMode.preference) {
     colorMode.preference = "dark";
   }
-  // Set mounted flag to allow logo switching
+
   isMounted.value = true;
 });
 
 // Form state
 const { signup } = useUser();
-
-// Form validation
-// const isUsernameValid = computed(() => {
-//   if (!username.value) return true;
-//   return username.value.length >= 2;
-// });
-
-// const isEmailValid = computed(() => {
-//   if (!email.value) return true;
-//   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//   return emailRegex.test(email.value);
-// });
-
-// const isPasswordValid = computed(() => {
-//   if (!password.value) return true;
-//   return password.value.length >= 6;
-// });
-
-// const isConfirmPasswordValid = computed(() => {
-//   if (!confirmPassword.value) return true;
-//   return confirmPassword.value === password.value;
-// });
-
-// const isFormValid = computed(() => {
-//   return (
-//     username.value &&
-//     //lastName.value &&
-//     email.value &&
-//     password.value &&
-//     confirmPassword.value &&
-//     isUsernameValid.value &&
-//     //isLastNameValid.value &&
-//     isEmailValid.value &&
-//     isPasswordValid.value &&
-//     isConfirmPasswordValid.value &&
-//     agreeToTerms.value
-//   );
-// });
-// const isFormValid = computed(() => {
-//   return signupSchema.safeParse({
-//     username: signup.value.username,
-//     email: signup.value.email,
-//     password: signup.value.password,
-//     confirmPassword: signup.value.confirmPassword,
-//     agreeToTerms: signup.value.agreeToTerms,
-//   });
-// });
 
 const isFormValid = computed(() => {
   return signupSchema.safeParse({

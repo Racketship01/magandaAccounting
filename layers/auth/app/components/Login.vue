@@ -1,55 +1,41 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import useColor from "../../../base/app/composables/useColorMode";
+import useUser from "../composables/useUser";
+import { loginSchema } from "../../server/schemas";
 
 const { colorMode, isMounted, currentLogo } = useColor();
 // Lifecycle hooks
 onMounted(() => {
-  // Set color mode to dark on first mount
   if (!colorMode.preference) {
     colorMode.preference = "dark";
   }
-  // Set mounted flag to allow logo switching
+
   isMounted.value = true;
 });
 
 // Form state
-const email = ref("");
-const password = ref("");
-const rememberMe = ref(false);
-const isLoading = ref(false);
-const errorMessage = ref("");
-
-// Form validation
-const isEmailValid = computed(() => {
-  if (!email.value) return true; // Don't show error until user interacts
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.value);
-});
-
-const isPasswordValid = computed(() => {
-  if (!password.value) return true; // Don't show error until user interacts
-  return password.value.length >= 6;
-});
+const { login } = useUser();
 
 const isFormValid = computed(() => {
-  return (
-    email.value && password.value && isEmailValid.value && isPasswordValid.value
-  );
+  return loginSchema.safeParse({
+    email: login.value.email,
+    password: login.value.password,
+  }).success;
 });
 
 // Handle login
 const handleLogin = async () => {
-  errorMessage.value = "";
+  login.value.errorMessage = "";
 
   // Validate form
   if (!isFormValid.value) {
-    errorMessage.value = "Please fill in all fields correctly";
+    login.value.errorMessage = "Please fill in all fields correctly";
     return;
   }
 
-  isLoading.value = true;
+  login.value.isLoading = true;
 
   try {
     // Simulate API call
@@ -58,30 +44,23 @@ const handleLogin = async () => {
     // Mock authentication - replace with actual API call
     // For demo purposes, accept any email/password
     console.log("Login attempt:", {
-      email: email.value,
-      password: password.value,
-      rememberMe: rememberMe.value,
+      email: login.value.email,
+      password: login.value.password,
+      rememberMe: login.value.rememberMe,
     });
 
     // Store auth state (in real app, use proper auth store/composable)
-    if (rememberMe.value) {
+    if (login.value.rememberMe) {
       localStorage.setItem("rememberMe", "true");
     }
 
     // Redirect to dashboard
     await navigateTo("/dashboard");
   } catch (error) {
-    errorMessage.value = "Invalid email or password. Please try again.";
+    login.value.errorMessage = "Invalid email or password. Please try again.";
     console.error("Login error:", error);
   } finally {
-    isLoading.value = false;
-  }
-};
-
-// Handle Enter key press
-const handleKeyPress = (event: KeyboardEvent) => {
-  if (event.key === "Enter" && isFormValid.value) {
-    handleLogin();
+    login.value.isLoading = false;
   }
 };
 </script>
@@ -110,10 +89,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
       >
         <!-- Error Message -->
         <UAlert
-          v-if="errorMessage"
+          v-if="login.errorMessage"
           color="error"
           variant="soft"
-          :title="errorMessage"
+          :title="login.errorMessage"
           class="mb-6"
           :close-button="{
             icon: 'i-lucide-x',
@@ -121,76 +100,58 @@ const handleKeyPress = (event: KeyboardEvent) => {
             variant: 'link',
             size: 'sm',
           }"
-          @close="errorMessage = ''"
+          @close="login.errorMessage = ''"
         />
 
         <!-- Login Form -->
-        <form @submit.prevent="handleLogin" class="space-y-6">
+        <UForm
+          class="space-y-6"
+          :schema="loginSchema"
+          :state="login"
+          @submit.prevent="handleLogin"
+        >
           <!-- Email Field -->
           <div>
-            <UFormGroup
-              label="Email Address"
-              :error="
-                email && !isEmailValid
-                  ? 'Please enter a valid email address'
-                  : ''
-              "
-            >
+            <UFormField name="email" label="Email Address">
               <UInput
-                v-model="email"
+                v-model="login.email"
                 type="email"
                 placeholder="you@example.com"
                 icon="i-lucide-mail"
                 class="w-full"
                 size="lg"
-                :disabled="isLoading"
-                :class="{
-                  'border-red-500 dark:border-red-500': email && !isEmailValid,
-                }"
-                @keypress="handleKeyPress"
+                :disabled="login.isLoading"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <!-- Password Field -->
           <div>
-            <UFormGroup
-              label="Password"
-              :error="
-                password && !isPasswordValid
-                  ? 'Password must be at least 6 characters'
-                  : ''
-              "
-            >
+            <UFormField name="password" label="Password">
               <UInput
-                v-model="password"
+                v-model="login.password"
                 type="password"
                 placeholder="Enter your password"
                 icon="i-lucide-lock"
                 size="lg"
                 class="w-full"
-                :disabled="isLoading"
-                :class="{
-                  'border-red-500 dark:border-red-500':
-                    password && !isPasswordValid,
-                }"
-                @keypress="handleKeyPress"
+                :disabled="login.isLoading"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <!-- Remember Me & Forgot Password -->
           <div class="flex items-center justify-between">
             <UCheckbox
-              v-model="rememberMe"
+              v-model="login.rememberMe"
               label="Remember me"
-              :disabled="isLoading"
+              :disabled="login.isLoading"
             />
             <UButton
               variant="link"
               color="primary"
               size="sm"
-              :disabled="isLoading"
+              :disabled="login.isLoading"
               class="p-0"
             >
               Forgot password?
@@ -203,14 +164,14 @@ const handleKeyPress = (event: KeyboardEvent) => {
             block
             size="lg"
             color="primary"
-            :loading="isLoading"
-            :disabled="!isFormValid || isLoading"
+            :loading="login.isLoading"
+            :disabled="!isFormValid || login.isLoading"
             icon="i-lucide-log-in"
             class="mt-4"
           >
-            {{ isLoading ? "Signing in..." : "Sign In" }}
+            {{ login.isLoading ? "Signing in..." : "Sign In" }}
           </UButton>
-        </form>
+        </UForm>
 
         <!-- Divider -->
         <div class="relative my-8">
@@ -235,7 +196,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
             color="neutral"
             block
             size="lg"
-            :disabled="isLoading"
+            :disabled="login.isLoading"
             icon="i-lucide-github"
           >
             GitHub
@@ -245,7 +206,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
             color="neutral"
             block
             size="lg"
-            :disabled="isLoading"
+            :disabled="login.isLoading"
             icon="i-lucide-mail"
           >
             Google
@@ -260,7 +221,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
               variant="link"
               color="primary"
               size="sm"
-              :disabled="isLoading"
+              :disabled="login.isLoading"
               class="p-0 ml-1"
               @click="navigateTo('/signup')"
             >

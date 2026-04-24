@@ -17,6 +17,15 @@ interface Signup {
   isFormValid: boolean;
 }
 
+interface Login {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+  isLoading: boolean;
+  errorMessage: string;
+  isFormValid: boolean;
+}
+
 export default function useUser() {
   const user = useState<User>("user", () => ({
     name: "John Doe",
@@ -37,8 +46,18 @@ export default function useUser() {
     isFormValid: false,
   }));
 
+  const login = useState<Login>("login", () => ({
+    email: "",
+    password: "",
+    rememberMe: false,
+    isLoading: false,
+    errorMessage: "",
+    isFormValid: false,
+  }));
+
   return {
     user,
     signup,
+    login,
   };
 }
