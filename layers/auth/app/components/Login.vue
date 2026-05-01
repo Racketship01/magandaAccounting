@@ -1,9 +1,11 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import useColor from "../../../base/app/composables/useColorMode";
 import useUser from "../composables/useUser";
 import { loginSchema } from "../../server/schemas";
+import useAuth from "../composables/useAuth";
+import type { FormSubmitEvent } from "@nuxt/ui";
 
 const { colorMode, isMounted, currentLogo } = useColor();
 // Lifecycle hooks
@@ -16,7 +18,13 @@ onMounted(() => {
 });
 
 // Form state
+const initialFormState = {
+  email: "",
+  password: "",
+  rememberMe: false,
+};
 const { login } = useUser();
+const formRef = ref();
 
 const isFormValid = computed(() => {
   return loginSchema.safeParse({
@@ -25,8 +33,11 @@ const isFormValid = computed(() => {
   }).success;
 });
 
+// @ts-expect-error - useToast is auto-imported by NuxtUI
+const toast = useToast();
+
 // Handle login
-const handleLogin = async () => {
+const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
   login.value.errorMessage = "";
 
   // Validate form
@@ -38,29 +49,37 @@ const handleLogin = async () => {
   login.value.isLoading = true;
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Mock authentication - replace with actual API call
-    // For demo purposes, accept any email/password
-    console.log("Login attempt:", {
-      email: login.value.email,
-      password: login.value.password,
-      rememberMe: login.value.rememberMe,
+    const response = await $fetch("/api/auth/login", {
+      method: "POST",
+      body: event.data,
     });
 
-    // Store auth state (in real app, use proper auth store/composable)
-    if (login.value.rememberMe) {
-      localStorage.setItem("rememberMe", "true");
-    }
+    console.log(response);
+
+    toast.add({
+      title: "Success",
+      description: "Login successfully",
+      color: "primary",
+      duration: 3000,
+    });
+
+    const { fetch } = useAuth(); // useAuth already exposes fetch
+    await fetch(); // sync session from server
 
     // Redirect to dashboard
     await navigateTo("/dashboard");
   } catch (error) {
-    login.value.errorMessage = "Invalid email or password. Please try again.";
-    console.error("Login error:", error);
+    console.error("Login failed:", error);
+    toast.add({
+      title: "Error",
+      description: "Failed to login. Please try again.",
+      color: "error",
+      duration: 1000,
+    });
   } finally {
     login.value.isLoading = false;
+    Object.assign(login.value, initialFormState);
+    formRef.value?.clear();
   }
 };
 </script>
@@ -87,24 +106,9 @@ const handleLogin = async () => {
       <div
         class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
       >
-        <!-- Error Message -->
-        <UAlert
-          v-if="login.errorMessage"
-          color="error"
-          variant="soft"
-          :title="login.errorMessage"
-          class="mb-6"
-          :close-button="{
-            icon: 'i-lucide-x',
-            color: 'error',
-            variant: 'link',
-            size: 'sm',
-          }"
-          @close="login.errorMessage = ''"
-        />
-
         <!-- Login Form -->
         <UForm
+          ref="formRef"
           class="space-y-6"
           :schema="loginSchema"
           :state="login"
@@ -130,13 +134,26 @@ const handleLogin = async () => {
             <UFormField name="password" label="Password">
               <UInput
                 v-model="login.password"
-                type="password"
+                :type="login.showPassword ? 'text' : 'password'"
                 placeholder="Enter your password"
                 icon="i-lucide-lock"
                 size="lg"
                 class="w-full"
                 :disabled="login.isLoading"
-              />
+              >
+                <template #trailing>
+                  <UButton
+                    :icon="
+                      login.showPassword ? 'i-lucide-eye' : 'i-lucide-eye-off'
+                    "
+                    variant="link"
+                    color="neutral"
+                    size="sm"
+                    :disabled="login.isLoading"
+                    @click="login.showPassword = !login.showPassword"
+                  />
+                </template>
+              </UInput>
             </UFormField>
           </div>
 

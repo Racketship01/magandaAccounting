@@ -11,6 +11,8 @@ interface Signup {
   email: string;
   password: string;
   confirmPassword: string;
+  showPassword: boolean;
+  showConfirmPassword: boolean;
   agreeToTerms: boolean;
   isLoading: boolean;
   errorMessage: string;
@@ -20,6 +22,7 @@ interface Signup {
 interface Login {
   email: string;
   password: string;
+  showPassword: boolean;
   rememberMe: boolean;
   isLoading: boolean;
   errorMessage: string;
@@ -40,6 +43,8 @@ export default function useUser() {
     email: "",
     password: "",
     confirmPassword: "",
+    showPassword: false,
+    showConfirmPassword: false,
     agreeToTerms: false,
     isLoading: false,
     errorMessage: "",
@@ -49,6 +54,7 @@ export default function useUser() {
   const login = useState<Login>("login", () => ({
     email: "",
     password: "",
+    showPassword: false,
     rememberMe: false,
     isLoading: false,
     errorMessage: "",

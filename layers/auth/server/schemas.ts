@@ -2,12 +2,10 @@ import { z } from "zod";
 
 const UserRole = z.enum(["admin", "user"]);
 
-export const loginSchema = z
-  .object({
-    email: z.email("Invalid email address"),
-    password: z.string().min(8, "Password must be at least 6 characters"),
-  })
-  .strict();
+export const loginSchema = z.object({
+  email: z.email("Invalid email address"),
+  password: z.string().min(8, "Invalid"),
+});
 
 export const signupSchema = z
   .object({

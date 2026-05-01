@@ -3,12 +3,15 @@
 import useUser from "../composables/useUser";
 import { computed } from "vue";
 import useApp from "../composables/useApp";
+import useAuth from "../composables/useAuth";
 defineProps<{
   collapsed?: boolean;
 }>();
 
 const { appConfig } = useApp();
 const { user } = useUser();
+
+const { logout } = useAuth();
 
 const colors = [
   "red",
@@ -103,6 +106,9 @@ const items = computed(() => [
     {
       label: "Log out",
       icon: "i-lucide-log-out",
+      onClick: () => {
+        logout();
+      },
       to: "/",
     },
   ],
