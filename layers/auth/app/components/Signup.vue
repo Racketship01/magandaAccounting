@@ -1,72 +1,35 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { signupSchema } from "../../server/schemas";
 import useUser from "../composables/useUser";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import useColor from "../../../base/app/composables/useColorMode";
+import type { FormSubmitEvent } from "@nuxt/ui";
 
 const { colorMode, isMounted, currentLogo } = useColor();
 
 // Lifecycle hooks
 onMounted(() => {
-  // Set color mode to dark on first mount
   if (!colorMode.preference) {
     colorMode.preference = "dark";
   }
-  // Set mounted flag to allow logo switching
+
   isMounted.value = true;
 });
 
-// Form state
+// state
+const initialFormState = {
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  agreeToTerms: false,
+};
 const { signup } = useUser();
+const formRef = ref();
 
-// Form validation
-// const isUsernameValid = computed(() => {
-//   if (!username.value) return true;
-//   return username.value.length >= 2;
-// });
-
-// const isEmailValid = computed(() => {
-//   if (!email.value) return true;
-//   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//   return emailRegex.test(email.value);
-// });
-
-// const isPasswordValid = computed(() => {
-//   if (!password.value) return true;
-//   return password.value.length >= 6;
-// });
-
-// const isConfirmPasswordValid = computed(() => {
-//   if (!confirmPassword.value) return true;
-//   return confirmPassword.value === password.value;
-// });
-
-// const isFormValid = computed(() => {
-//   return (
-//     username.value &&
-//     //lastName.value &&
-//     email.value &&
-//     password.value &&
-//     confirmPassword.value &&
-//     isUsernameValid.value &&
-//     //isLastNameValid.value &&
-//     isEmailValid.value &&
-//     isPasswordValid.value &&
-//     isConfirmPasswordValid.value &&
-//     agreeToTerms.value
-//   );
-// });
-// const isFormValid = computed(() => {
-//   return signupSchema.safeParse({
-//     username: signup.value.username,
-//     email: signup.value.email,
-//     password: signup.value.password,
-//     confirmPassword: signup.value.confirmPassword,
-//     agreeToTerms: signup.value.agreeToTerms,
-//   });
-// });
-
+// validation
 const isFormValid = computed(() => {
   return signupSchema.safeParse({
     username: signup.value.username,
@@ -76,8 +39,10 @@ const isFormValid = computed(() => {
   }).success;
 });
 
-// Handle sign up — called by UForm after Zod validation passes
-const handleSignUp = async () => {
+// @ts-expect-error - useToast is auto-imported by NuxtUI
+const toast = useToast();
+
+const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
   signup.value.errorMessage = "";
 
   // Validate form
@@ -94,25 +59,34 @@ const handleSignUp = async () => {
   signup.value.isLoading = true;
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const response = await $fetch("/api/auth/signup", {
+      method: "POST",
+      body: event.data,
+    });
 
-    // Mock registration - replace with actual API call
-    console.log("Sign up attempt:", {
-      username: signup.value.username,
-      //lastName: lastName.value,
-      email: signup.value.email,
-      password: signup.value.password,
+    console.log(response);
+
+    toast.add({
+      title: "Success",
+      description: "Registered successfully. Login to continue...",
+      color: "primary",
+      duration: 3000,
     });
 
     // Redirect to login page after successful sign up
     await navigateTo("/login");
   } catch (error) {
-    signup.value.errorMessage =
-      "An error occurred during registration. Please try again.";
-    console.error("Sign up error:", error);
+    console.error("Signup failed:", error);
+    toast.add({
+      title: "Error",
+      description: "Failed to create account. Please try again.",
+      color: "error",
+      duration: 1000,
+    });
   } finally {
     signup.value.isLoading = false;
+    Object.assign(signup.value, initialFormState);
+    formRef.value?.clear();
   }
 };
 </script>
@@ -139,28 +113,13 @@ const handleSignUp = async () => {
       <div
         class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
       >
-        <!-- Error Message -->
-        <UAlert
-          v-if="signup.errorMessage"
-          color="error"
-          variant="soft"
-          :title="signup.errorMessage"
-          class="mb-6"
-          :close-button="{
-            icon: 'i-lucide-x',
-            color: 'error',
-            variant: 'link',
-            size: 'sm',
-          }"
-          @close="signup.errorMessage = ''"
-        />
-
         <!-- Sign Up Form -->
         <UForm
+          ref="formRef"
           :schema="signupSchema"
           :state="signup"
           class="space-y-6"
-          @submit="handleSignUp"
+          @submit.prevent="handleSignUp"
         >
           <!-- username field -->
           <UFormField name="username" label="Username">
@@ -192,26 +151,56 @@ const handleSignUp = async () => {
           <UFormField name="password" label="Password">
             <UInput
               v-model="signup.password"
-              type="password"
+              :type="signup.showPassword ? 'text' : 'password'"
               placeholder="Enter your password"
               icon="i-lucide-lock"
               size="lg"
               class="w-full"
               :disabled="signup.isLoading"
-            />
+            >
+              <template #trailing>
+                <UButton
+                  :icon="
+                    signup.showPassword ? 'i-lucide-eye' : 'i-lucide-eye-off'
+                  "
+                  variant="link"
+                  color="neutral"
+                  size="sm"
+                  :disabled="signup.isLoading"
+                  @click="signup.showPassword = !signup.showPassword"
+                />
+              </template>
+            </UInput>
           </UFormField>
 
           <!-- Confirm Password Field -->
           <UFormField name="confirmPassword" label="Confirm Password">
             <UInput
               v-model="signup.confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
+              :type="signup.showConfirmPassword ? 'text' : 'password'"
+              placeholder="Enter your password"
               icon="i-lucide-lock"
               size="lg"
               class="w-full"
               :disabled="signup.isLoading"
-            />
+            >
+              <template #trailing>
+                <UButton
+                  :icon="
+                    signup.showConfirmPassword
+                      ? 'i-lucide-eye'
+                      : 'i-lucide-eye-off'
+                  "
+                  variant="link"
+                  color="neutral"
+                  size="sm"
+                  :disabled="signup.isLoading"
+                  @click="
+                    signup.showConfirmPassword = !signup.showConfirmPassword
+                  "
+                />
+              </template>
+            </UInput>
           </UFormField>
 
           <!-- Terms and Conditions -->

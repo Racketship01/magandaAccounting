@@ -11,7 +11,19 @@ interface Signup {
   email: string;
   password: string;
   confirmPassword: string;
+  showPassword: boolean;
+  showConfirmPassword: boolean;
   agreeToTerms: boolean;
+  isLoading: boolean;
+  errorMessage: string;
+  isFormValid: boolean;
+}
+
+interface Login {
+  email: string;
+  password: string;
+  showPassword: boolean;
+  rememberMe: boolean;
   isLoading: boolean;
   errorMessage: string;
   isFormValid: boolean;
@@ -31,7 +43,19 @@ export default function useUser() {
     email: "",
     password: "",
     confirmPassword: "",
+    showPassword: false,
+    showConfirmPassword: false,
     agreeToTerms: false,
+    isLoading: false,
+    errorMessage: "",
+    isFormValid: false,
+  }));
+
+  const login = useState<Login>("login", () => ({
+    email: "",
+    password: "",
+    showPassword: false,
+    rememberMe: false,
     isLoading: false,
     errorMessage: "",
     isFormValid: false,
@@ -40,5 +64,6 @@ export default function useUser() {
   return {
     user,
     signup,
+    login,
   };
 }

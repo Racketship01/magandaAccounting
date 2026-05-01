@@ -1,87 +1,85 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import useColor from "../../../base/app/composables/useColorMode";
+import useUser from "../composables/useUser";
+import { loginSchema } from "../../server/schemas";
+import useAuth from "../composables/useAuth";
+import type { FormSubmitEvent } from "@nuxt/ui";
 
 const { colorMode, isMounted, currentLogo } = useColor();
 // Lifecycle hooks
 onMounted(() => {
-  // Set color mode to dark on first mount
   if (!colorMode.preference) {
     colorMode.preference = "dark";
   }
-  // Set mounted flag to allow logo switching
+
   isMounted.value = true;
 });
 
 // Form state
-const email = ref("");
-const password = ref("");
-const rememberMe = ref(false);
-const isLoading = ref(false);
-const errorMessage = ref("");
-
-// Form validation
-const isEmailValid = computed(() => {
-  if (!email.value) return true; // Don't show error until user interacts
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.value);
-});
-
-const isPasswordValid = computed(() => {
-  if (!password.value) return true; // Don't show error until user interacts
-  return password.value.length >= 6;
-});
+const initialFormState = {
+  email: "",
+  password: "",
+  rememberMe: false,
+};
+const { login } = useUser();
+const formRef = ref();
 
 const isFormValid = computed(() => {
-  return (
-    email.value && password.value && isEmailValid.value && isPasswordValid.value
-  );
+  return loginSchema.safeParse({
+    email: login.value.email,
+    password: login.value.password,
+  }).success;
 });
 
+// @ts-expect-error - useToast is auto-imported by NuxtUI
+const toast = useToast();
+
 // Handle login
-const handleLogin = async () => {
-  errorMessage.value = "";
+const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
+  login.value.errorMessage = "";
 
   // Validate form
   if (!isFormValid.value) {
-    errorMessage.value = "Please fill in all fields correctly";
+    login.value.errorMessage = "Please fill in all fields correctly";
     return;
   }
 
-  isLoading.value = true;
+  login.value.isLoading = true;
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Mock authentication - replace with actual API call
-    // For demo purposes, accept any email/password
-    console.log("Login attempt:", {
-      email: email.value,
-      password: password.value,
-      rememberMe: rememberMe.value,
+    const response = await $fetch("/api/auth/login", {
+      method: "POST",
+      body: event.data,
     });
 
-    // Store auth state (in real app, use proper auth store/composable)
-    if (rememberMe.value) {
-      localStorage.setItem("rememberMe", "true");
-    }
+    console.log(response);
+
+    toast.add({
+      title: "Success",
+      description: "Login successfully",
+      color: "primary",
+      duration: 3000,
+    });
+
+    const { fetch } = useAuth(); // useAuth already exposes fetch
+    await fetch(); // sync session from server
 
     // Redirect to dashboard
     await navigateTo("/dashboard");
   } catch (error) {
-    errorMessage.value = "Invalid email or password. Please try again.";
-    console.error("Login error:", error);
+    console.error("Login failed:", error);
+    toast.add({
+      title: "Error",
+      description: "Failed to login. Please try again.",
+      color: "error",
+      duration: 1000,
+    });
   } finally {
-    isLoading.value = false;
-  }
-};
-
-// Handle Enter key press
-const handleKeyPress = (event: KeyboardEvent) => {
-  if (event.key === "Enter" && isFormValid.value) {
-    handleLogin();
+    login.value.isLoading = false;
+    Object.assign(login.value, initialFormState);
+    formRef.value?.clear();
   }
 };
 </script>
@@ -108,89 +106,69 @@ const handleKeyPress = (event: KeyboardEvent) => {
       <div
         class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
       >
-        <!-- Error Message -->
-        <UAlert
-          v-if="errorMessage"
-          color="error"
-          variant="soft"
-          :title="errorMessage"
-          class="mb-6"
-          :close-button="{
-            icon: 'i-lucide-x',
-            color: 'error',
-            variant: 'link',
-            size: 'sm',
-          }"
-          @close="errorMessage = ''"
-        />
-
         <!-- Login Form -->
-        <form @submit.prevent="handleLogin" class="space-y-6">
+        <UForm
+          ref="formRef"
+          class="space-y-6"
+          :schema="loginSchema"
+          :state="login"
+          @submit.prevent="handleLogin"
+        >
           <!-- Email Field -->
           <div>
-            <UFormGroup
-              label="Email Address"
-              :error="
-                email && !isEmailValid
-                  ? 'Please enter a valid email address'
-                  : ''
-              "
-            >
+            <UFormField name="email" label="Email Address">
               <UInput
-                v-model="email"
+                v-model="login.email"
                 type="email"
                 placeholder="you@example.com"
                 icon="i-lucide-mail"
                 class="w-full"
                 size="lg"
-                :disabled="isLoading"
-                :class="{
-                  'border-red-500 dark:border-red-500': email && !isEmailValid,
-                }"
-                @keypress="handleKeyPress"
+                :disabled="login.isLoading"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <!-- Password Field -->
           <div>
-            <UFormGroup
-              label="Password"
-              :error="
-                password && !isPasswordValid
-                  ? 'Password must be at least 6 characters'
-                  : ''
-              "
-            >
+            <UFormField name="password" label="Password">
               <UInput
-                v-model="password"
-                type="password"
+                v-model="login.password"
+                :type="login.showPassword ? 'text' : 'password'"
                 placeholder="Enter your password"
                 icon="i-lucide-lock"
                 size="lg"
                 class="w-full"
-                :disabled="isLoading"
-                :class="{
-                  'border-red-500 dark:border-red-500':
-                    password && !isPasswordValid,
-                }"
-                @keypress="handleKeyPress"
-              />
-            </UFormGroup>
+                :disabled="login.isLoading"
+              >
+                <template #trailing>
+                  <UButton
+                    :icon="
+                      login.showPassword ? 'i-lucide-eye' : 'i-lucide-eye-off'
+                    "
+                    variant="link"
+                    color="neutral"
+                    size="sm"
+                    :disabled="login.isLoading"
+                    @click="login.showPassword = !login.showPassword"
+                  />
+                </template>
+              </UInput>
+            </UFormField>
           </div>
 
           <!-- Remember Me & Forgot Password -->
           <div class="flex items-center justify-between">
             <UCheckbox
-              v-model="rememberMe"
+              v-model="login.rememberMe"
               label="Remember me"
-              :disabled="isLoading"
+              :disabled="login.isLoading"
             />
             <UButton
               variant="link"
               color="primary"
               size="sm"
-              :disabled="isLoading"
+              :disabled="login.isLoading"
               class="p-0"
             >
               Forgot password?
@@ -203,14 +181,14 @@ const handleKeyPress = (event: KeyboardEvent) => {
             block
             size="lg"
             color="primary"
-            :loading="isLoading"
-            :disabled="!isFormValid || isLoading"
+            :loading="login.isLoading"
+            :disabled="!isFormValid || login.isLoading"
             icon="i-lucide-log-in"
             class="mt-4"
           >
-            {{ isLoading ? "Signing in..." : "Sign In" }}
+            {{ login.isLoading ? "Signing in..." : "Sign In" }}
           </UButton>
-        </form>
+        </UForm>
 
         <!-- Divider -->
         <div class="relative my-8">
@@ -235,7 +213,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
             color="neutral"
             block
             size="lg"
-            :disabled="isLoading"
+            :disabled="login.isLoading"
             icon="i-lucide-github"
           >
             GitHub
@@ -245,7 +223,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
             color="neutral"
             block
             size="lg"
-            :disabled="isLoading"
+            :disabled="login.isLoading"
             icon="i-lucide-mail"
           >
             Google
@@ -260,7 +238,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
               variant="link"
               color="primary"
               size="sm"
-              :disabled="isLoading"
+              :disabled="login.isLoading"
               class="p-0 ml-1"
               @click="navigateTo('/signup')"
             >
