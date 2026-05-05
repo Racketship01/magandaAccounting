@@ -56,13 +56,6 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
 
     console.log(response);
 
-    toast.add({
-      title: "Success",
-      description: "Login successfully",
-      color: "primary",
-      duration: 3000,
-    });
-
     const { fetch } = useAuth(); // useAuth already exposes fetch
     await fetch(); // sync session from server
 
@@ -191,7 +184,7 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
         </UForm>
 
         <!-- Divider -->
-        <div class="relative my-8">
+        <!-- <div class="relative my-8">
           <div class="absolute inset-0 flex items-center">
             <div
               class="w-full border-t border-gray-300 dark:border-gray-600"
@@ -204,10 +197,10 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
               Or continue with
             </span>
           </div>
-        </div>
+        </div> -->
 
         <!-- Social Login Buttons -->
-        <div class="grid grid-cols-2 gap-4">
+        <!-- <div class="grid grid-cols-2 gap-4">
           <UButton
             variant="outline"
             color="neutral"
@@ -228,7 +221,7 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
           >
             Google
           </UButton>
-        </div>
+        </div> -->
 
         <!-- Sign Up Link -->
         <div class="mt-6 text-center">
