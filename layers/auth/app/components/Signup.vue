@@ -253,7 +253,7 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
         </UForm>
 
         <!-- Divider -->
-        <div class="relative my-8">
+        <!-- <div class="relative my-8">
           <div class="absolute inset-0 flex items-center">
             <div
               class="w-full border-t border-gray-300 dark:border-gray-600"
@@ -266,10 +266,10 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
               Or continue with
             </span>
           </div>
-        </div>
+        </div> -->
 
         <!-- Social Sign Up Buttons -->
-        <div class="grid grid-cols-2 gap-4">
+        <!-- <div class="grid grid-cols-2 gap-4">
           <UButton
             variant="outline"
             color="neutral"
@@ -290,7 +290,7 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
           >
             Google
           </UButton>
-        </div>
+        </div> -->
 
         <!-- Login Link -->
         <div class="mt-6 text-center">

@@ -9,7 +9,6 @@ export default function useAuth() {
   const isAuthenticated = computed(
     () => loggedIn.value && session.value?.user?.id !== undefined,
   );
-
   return {
     loggedIn,
     user: readonly(user),
