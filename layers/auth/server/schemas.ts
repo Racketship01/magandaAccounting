@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const UserRole = z.enum(["admin", "user"]);
+// const UserRole = z.enum(["admin", "user"]);
 
 export const loginSchema = z.object({
   email: z.email("Invalid email address"),
@@ -14,10 +14,14 @@ export const signupSchema = z
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z
       .string()
-      .min(8, "Confirm password must be at least 8 characters"),
+      .min(8, "Confirm password must be at least 8 characters")
+      .optional(),
   })
   .check((data) => {
-    if (data.value.password !== data.value.confirmPassword) {
+    if (
+      data.value.confirmPassword &&
+      data.value.password !== data.value.confirmPassword
+    ) {
       data.issues.push({
         code: "custom",
         path: ["confirmPassword"],

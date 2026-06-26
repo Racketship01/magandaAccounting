@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../private/types/employee";
+import type { EmployeeData } from "../composables/useEmployee";
 import { computed, ref, watch } from "vue";
 import useEmployee from "../composables/useEmployee";
 
 interface Props {
   modelValue: boolean;
-  employee?: Employee | null;
+  employee?: EmployeeData | null;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
-  save: [employee: Employee];
+  save: [employee: EmployeeData];
 }>();
 
 // Form state
@@ -28,15 +28,33 @@ const isEmployeeFormOpen = computed({
   set: (value) => emit("update:modelValue", value),
 });
 
-const handleSaveEmployeeForm = () => {
+const handleSaveEmployeeForm = async () => {
   if (!isFormValid.value) return;
 
-  const employeeData: Employee = {
+  // @ts-expect-error - useToast is auto-imported by NuxtUI
+  const toast = useToast();
+
+
+  try {
+    await $fetch("/api/createEmployeeUser", {
+      method: "POST",
+      body: formData.value,
+    });
+  } catch (err: any) {
+    // Handle errors (e.g. "User already exists", validation failures)
+    console.error("Signup failed:", err?.data || err?.message);
+    return; // Stop — don't close the form or emit save
+  }
+
+  // 2. Proceed with saving the employee record
+  const employeeData: EmployeeData = {
     ...formData.value,
-    id: props.employee?.id || Date.now().toString(),
+    role: "employee",
   };
 
   emit("save", employeeData);
+  toast.add({ title: "Employee added successfully!", color: "success" });
+
   isEmployeeFormOpen.value = false;
 };
 
@@ -48,7 +66,7 @@ watch(
       formData.value = {
         firstName: employee.firstName,
         lastName: employee.lastName,
-        email: employee.email,
+        //email: employee.email,
         phone: employee.phone,
         jobTitle: employee.jobTitle,
         department: employee.department,
@@ -57,7 +75,9 @@ watch(
         currency: employee.currency,
         status: employee.status,
         address: { ...employee.address },
-        credentials: { ...employee.credentials },
+        credentials: {
+          ...employee.credentials,
+        },
         profileImage: employee.profileImage || "",
       };
     } else {
@@ -73,7 +93,7 @@ const isFormValid = computed(() => {
   return (
     formData.value.firstName.trim() &&
     formData.value.lastName.trim() &&
-    formData.value.email.trim() &&
+    //formData.value.email.trim() &&
     formData.value.jobTitle.trim() &&
     formData.value.department.trim() &&
     formData.value.startDate &&
@@ -240,7 +260,7 @@ const currentCurrencySymbol = computed(() => {
             />
           </UFormGroup>
 
-          <UFormGroup label="Email" required>
+          <!-- <UFormGroup label="Email" required>
             <UInput
               v-model="formData.email"
               type="email"
@@ -249,7 +269,7 @@ const currentCurrencySymbol = computed(() => {
               size="lg"
               class="w-full"
             />
-          </UFormGroup>
+          </UFormGroup> -->
 
           <UFormGroup label="Phone">
             <UInput
@@ -404,8 +424,17 @@ const currentCurrencySymbol = computed(() => {
           <UFormGroup label="Username">
             <UInput
               v-model="formData.credentials.username"
-              placeholder="Enter username/email"
+              placeholder="Enter username"
               icon="i-lucide-user"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
+          <UFormGroup label="Email">
+            <UInput
+              v-model="formData.credentials.email"
+              placeholder="Enter email"
+              icon="i-lucide-mail"
               size="lg"
               class="w-full"
             />

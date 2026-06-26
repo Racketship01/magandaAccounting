@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../private/types/employee";
+import type { EmployeeData } from "../composables/useEmployee";
 import { ref, computed } from "vue";
 import useEmployee from "../composables/useEmployee";
 
@@ -7,7 +7,7 @@ import useEmployee from "../composables/useEmployee";
 const { employees, employeeState } = useEmployee();
 const isEmployeeDeleteModalOpen = ref(false);
 const isEmployeeFormModalOpen = ref(false);
-const employeeToDelete = ref<Employee | null>(null);
+const employeeToDelete = ref<EmployeeData | null>(null);
 
 // Computed properties
 const filteredEmployees = computed(() => {
@@ -20,7 +20,7 @@ const filteredEmployees = computed(() => {
       (employee) =>
         employee.firstName.toLowerCase().includes(query) ||
         employee.lastName.toLowerCase().includes(query) ||
-        employee.email.toLowerCase().includes(query) ||
+        //employee.email.toLowerCase().includes(query) ||
         employee.jobTitle.toLowerCase().includes(query) ||
         employee.department.toLowerCase().includes(query),
     );
@@ -71,17 +71,17 @@ const handleAddEmployee = () => {
   isEmployeeFormModalOpen.value = true;
 };
 
-const handleEditEmployee = (employee: Employee) => {
+const handleEditEmployee = (employee: EmployeeData) => {
   employeeState.value.selectedEmployee = employee.id! as string;
   isEmployeeFormModalOpen.value = true;
 };
 
-const handleDeleteEmployee = (employee: Employee) => {
+const handleDeleteEmployee = (employee: EmployeeData) => {
   employeeToDelete.value = employee;
   isEmployeeDeleteModalOpen.value = true;
 };
 
-const handleSaveEmployee = (employeeData: Employee) => {
+const handleSaveEmployee = (employeeData: EmployeeData) => {
   if (employeeState.value.selectedEmployee) {
     // Edit existing employee
     const index = employees.value.findIndex(
@@ -95,7 +95,7 @@ const handleSaveEmployee = (employeeData: Employee) => {
     }
   } else {
     // Add new employee
-    const newEmployee: Employee = {
+    const newEmployee: EmployeeData = {
       ...employeeData,
       id: Date.now().toString(),
     };
@@ -104,7 +104,7 @@ const handleSaveEmployee = (employeeData: Employee) => {
   isEmployeeFormModalOpen.value = false;
 };
 
-const handleConfirmDelete = (employee: Employee) => {
+const handleConfirmDelete = (employee: EmployeeData) => {
   const index = employees.value.findIndex((emp) => emp.id === employee.id);
   if (index !== -1) {
     employees.value.splice(index, 1);
@@ -322,6 +322,7 @@ const formatDate = (dateString: string) => {
           />
         </template>
       </UModal>
+
       <!-- Employee Delete Modal -->
       <UModal
         v-model:open="isEmployeeDeleteModalOpen"
