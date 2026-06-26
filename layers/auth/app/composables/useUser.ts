@@ -10,7 +10,7 @@ interface Signup {
   username?: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
   showPassword: boolean;
   showConfirmPassword: boolean;
   agreeToTerms: boolean;

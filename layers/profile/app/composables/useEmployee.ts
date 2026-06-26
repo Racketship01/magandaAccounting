@@ -1,8 +1,8 @@
-interface EmployeeData {
+export interface EmployeeData {
   id?: string;
   firstName: string;
   lastName: string;
-  email: string;
+  role?: "employee" | "admin";
   phone: string;
   jobTitle: string;
   department: string;
@@ -18,16 +18,17 @@ interface EmployeeData {
   };
   credentials: {
     username: string;
-    password: string;
+    email: string;
+    password?: string;
   };
-  profileImage: string;
+  profileImage?: string;
 }
 
 export default function useEmployee() {
   const formData = useState<EmployeeData>("formData", () => ({
     firstName: "",
     lastName: "",
-    email: "",
+    role: "employee",
     phone: "",
     jobTitle: "",
     department: "",
@@ -43,6 +44,7 @@ export default function useEmployee() {
     },
     credentials: {
       username: "",
+      email: "",
       password: "",
     },
     profileImage: "",
@@ -52,7 +54,7 @@ export default function useEmployee() {
     formData.value = {
       firstName: "",
       lastName: "",
-      email: "",
+      role: "employee",
       phone: "",
       jobTitle: "",
       department: "",
@@ -68,6 +70,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "",
+        email: "",
         password: "",
       },
       profileImage: "",
@@ -79,7 +82,6 @@ export default function useEmployee() {
       id: "1",
       firstName: "John",
       lastName: "Doe",
-      email: "john.doe@company.com",
       phone: "+1 (555) 123-4567",
       jobTitle: "Software Engineer",
       department: "Developer",
@@ -95,7 +97,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "john.doe",
-        password: "password",
+        email: "[EMAIL_ADDRESS]",
       },
       profileImage:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
@@ -104,7 +106,6 @@ export default function useEmployee() {
       id: "2",
       firstName: "Sarah",
       lastName: "Johnson",
-      email: "sarah.johnson@company.com",
       phone: "+1 (555) 234-5678",
       jobTitle: "Product Manager",
       department: "Designer",
@@ -120,7 +121,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "sarah.johnson",
-        password: "password",
+        email: "[EMAIL_ADDRESS]",
       },
       profileImage:
         "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
@@ -129,7 +130,6 @@ export default function useEmployee() {
       id: "3",
       firstName: "Michael",
       lastName: "Brown",
-      email: "michael.brown@company.com",
       phone: "+1 (555) 345-6789",
       jobTitle: "Designer",
       department: "Designer",
@@ -145,7 +145,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "michael.brown",
-        password: "password",
+        email: "[EMAIL_ADDRESS]",
       },
       profileImage:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
@@ -154,7 +154,6 @@ export default function useEmployee() {
       id: "4",
       firstName: "Emma",
       lastName: "Wilson",
-      email: "emma.wilson@company.com",
       phone: "+1 (555) 456-7890",
       jobTitle: "Marketing Director",
       department: "Marketing",
@@ -170,7 +169,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "david.wilson",
-        password: "password",
+        email: "[EMAIL_ADDRESS]",
       },
       profileImage:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
@@ -179,7 +178,6 @@ export default function useEmployee() {
       id: "5",
       firstName: "Alex",
       lastName: "Rodriguez",
-      email: "alex.rodriguez@company.com",
       phone: "+1 (555) 567-8901",
       jobTitle: "Senior Developer",
       department: "Developer",
@@ -195,7 +193,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "jessica.chen",
-        password: "password",
+        email: "[EMAIL_ADDRESS]",
       },
       profileImage:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
@@ -204,7 +202,6 @@ export default function useEmployee() {
       id: "6",
       firstName: "Jessica",
       lastName: "Chen",
-      email: "jessica.chen@company.com",
       phone: "+1 (555) 678-9012",
       jobTitle: "Accountant",
       department: "Accountant",
@@ -220,7 +217,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "kevin.chen",
-        password: "password",
+        email: "[EMAIL_ADDRESS]",
       },
       profileImage:
         "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face",
@@ -229,7 +226,6 @@ export default function useEmployee() {
       id: "7",
       firstName: "Robert",
       lastName: "Taylor",
-      email: "robert.taylor@company.com",
       phone: "+1 (555) 789-0123",
       jobTitle: "Marketing",
       department: "Marketing",
@@ -245,7 +241,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "susan.taylor",
-        password: "password",
+        email: "[EMAIL_ADDRESS]",
       },
       profileImage:
         "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
@@ -254,7 +250,6 @@ export default function useEmployee() {
       id: "8",
       firstName: "Lisa",
       lastName: "Anderson",
-      email: "lisa.anderson@company.com",
       phone: "+1 (555) 890-1234",
       jobTitle: "Designer",
       department: "Designer",
@@ -270,7 +265,7 @@ export default function useEmployee() {
       },
       credentials: {
         username: "tom.anderson",
-        password: "password",
+        email: "[EMAIL_ADDRESS]",
       },
       profileImage:
         "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
@@ -289,7 +284,6 @@ export default function useEmployee() {
     id: "1",
     firstName: "John",
     lastName: "Doe",
-    email: "john.doe@company.com",
     phone: "+1 (555) 123-4567",
     jobTitle: "Software Engineer",
     department: "Engineering",
@@ -305,7 +299,7 @@ export default function useEmployee() {
     },
     credentials: {
       username: "john.doe",
-      password: "password",
+      email: "[EMAIL_ADDRESS]",
     },
     profileImage: "",
   }));

@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../private/types/employee";
+import type { EmployeeData } from "../composables/useEmployee";
 import { computed } from "vue";
 
 interface Props {
   modelValue: boolean;
-  employee?: Employee | null;
+  employee?: EmployeeData | null;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
-  confirmDelete: [employee: Employee];
+  confirmDelete: [employee: EmployeeData];
   cancel: [];
 }>();
 const isEmployeeDeleteOpen = computed({

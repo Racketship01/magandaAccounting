@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { Employee } from "../../../../private/types/employee";
+import type { EmployeeData } from "../composables/useEmployee";
 import { ref, computed, watch } from "vue";
 import useEmployee from "../composables/useEmployee";
 
 interface Props {
   modelValue: boolean;
-  employee?: Employee | null;
+  employee?: EmployeeData | null;
   title?: string;
   buttonText?: string;
 }
@@ -16,7 +16,7 @@ const props = defineProps<Props>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
-  save: [employee: Employee];
+  save: [employee: EmployeeData];
   close: [];
 }>();
 
@@ -33,7 +33,6 @@ watch(
       formData.value = {
         firstName: employee.firstName,
         lastName: employee.lastName,
-        email: employee.email,
         phone: employee.phone,
         jobTitle: employee.jobTitle,
         department: employee.department,
@@ -58,7 +57,6 @@ const isFormValid = computed(() => {
   return (
     formData.value.firstName.trim() &&
     formData.value.lastName.trim() &&
-    formData.value.email.trim() &&
     formData.value.jobTitle.trim() &&
     formData.value.department.trim() &&
     formData.value.startDate &&
@@ -71,7 +69,7 @@ const isFormValid = computed(() => {
 const handleSave = () => {
   if (!isFormValid.value) return;
 
-  const employeeData: Employee = {
+  const employeeData: EmployeeData = {
     ...formData.value,
     id: props.employee?.id || Date.now().toString(),
   };
@@ -235,7 +233,8 @@ const currentCurrencySymbol = computed(() => {
             />
           </UFormGroup>
 
-          <UFormGroup label="Email" required>
+          <!-- 
+           <UFormGroup label="Email" required>
             <UInput
               v-model="formData.email"
               type="email"
@@ -245,6 +244,7 @@ const currentCurrencySymbol = computed(() => {
               class="w-full"
             />
           </UFormGroup>
+          -->
 
           <UFormGroup label="Phone">
             <UInput
