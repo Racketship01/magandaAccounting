@@ -1,7 +1,8 @@
 import { defineEventHandler, readBody, createError } from "h3";
-import { createEmployeeSchema, mapStatus } from "../schemas";
+import { createEmployeeSchema } from "../schemas";
 import { createEmployee } from "../repository/employeeRepository";
 import { findUserByEmail } from "../../../auth/server/repository/userRepository";
+import { hashPassword } from "#imports";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -33,6 +34,7 @@ export default defineEventHandler(async (event) => {
   console.log(result.data);
 
   const { username, email, password } = credentials;
+  const { street, city, state, zipCode } = address;
 
   // Check if user already exists
   const existingUser = await findUserByEmail(email);
@@ -43,14 +45,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // Hash password
+  // Hash password before passing to repository
   const hashedPassword = await hashPassword(password);
 
-  // Create User + Employee in a single transaction
+  // Single call: createEmployee handles both User + Employee in one transaction
   const { user, employee } = await createEmployee({
-    username,
-    email,
-    hashedPassword,
     firstName,
     lastName,
     phone,
@@ -59,26 +58,22 @@ export default defineEventHandler(async (event) => {
     startDate,
     salary,
     currency,
-    status: mapStatus(status),
-    street: address.street,
-    city: address.city,
-    state: address.state,
-    zipCode: address.zipCode,
+    status,
+    address: {
+      street,
+      city,
+      state,
+      zipCode,
+    },
+    credentials: {
+      username,
+      email,
+      password: hashedPassword,
+    },
   });
 
-  return { user, employee };
+  return {
+    employee: { ...employee },
+    user: { ...user },
+  };
 });
-
-// {
-//     success: true,
-//     employee: {
-//       id: employee.id,
-//       firstName: employee.firstName,
-//       lastName: employee.lastName,
-//     },
-//     user: {
-//       id: user.id,
-//       email: user.email,
-//       username: user.username,
-//     },
-//   };

@@ -2,6 +2,7 @@
 import type { EmployeeData } from "../composables/useEmployee";
 import { computed, ref, watch } from "vue";
 import useEmployee from "../composables/useEmployee";
+import { createEmployeeSchema } from "../../server/schemas";
 
 interface Props {
   modelValue: boolean;
@@ -34,7 +35,6 @@ const handleSaveEmployeeForm = async () => {
   // @ts-expect-error - useToast is auto-imported by NuxtUI
   const toast = useToast();
 
-
   try {
     await $fetch("/api/createEmployeeUser", {
       method: "POST",
@@ -66,7 +66,6 @@ watch(
       formData.value = {
         firstName: employee.firstName,
         lastName: employee.lastName,
-        //email: employee.email,
         phone: employee.phone,
         jobTitle: employee.jobTitle,
         department: employee.department,
@@ -90,16 +89,7 @@ watch(
 
 // Form validation
 const isFormValid = computed(() => {
-  return (
-    formData.value.firstName.trim() &&
-    formData.value.lastName.trim() &&
-    //formData.value.email.trim() &&
-    formData.value.jobTitle.trim() &&
-    formData.value.department.trim() &&
-    formData.value.startDate &&
-    formData.value.salary > 0 &&
-    formData.value.currency.trim() !== ""
-  );
+  return createEmployeeSchema.safeParse({ ...formData.value }).success;
 });
 
 // Methods
@@ -151,11 +141,7 @@ const removeImage = () => {
 const departmentOptions = ["Developer", "Designer", "Marketing", "Accountant"];
 
 // Status options
-const statusOptions = [
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
-  { label: "On Leave", value: "On Leave" },
-];
+const statusOptions = ["Active", "Inactive", "On Leave"];
 
 // Currency options
 const currencies = [
@@ -326,8 +312,6 @@ const currentCurrencySymbol = computed(() => {
               v-model="formData.status"
               :items="statusOptions"
               placeholder="Select status"
-              :value-key="'value'"
-              :label-key="'label'"
               icon="i-lucide-check-circle"
               size="lg"
               class="w-full"
@@ -338,6 +322,7 @@ const currentCurrencySymbol = computed(() => {
             <USelect
               v-model="formData.currency"
               :items="currencies"
+              value-key="value"
               placeholder="Select currency"
               size="lg"
               class="w-full"
