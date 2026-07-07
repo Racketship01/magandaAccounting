@@ -1,32 +1,33 @@
 import { prisma } from "../../../auth/server/utils/prisma";
-import type { EmployeeData } from "../../app/composables/useEmployee";
 import { mapStatus } from "../schemas";
 
-// type CreateEmployeeInput = {
-//   // Credentials (User record)
-//   username: string;
-//   email: string;
-//   hashedPassword: string;
+type CreateEmployeeInput = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  jobTitle: string;
+  department: string;
+  startDate: string;
+  salary: number;
+  currency: string;
+  status: "Active" | "Inactive" | "On Leave";
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+  credentials: {
+    username: string;
+    email: string;
+    password: string; // must be pre-hashed
+  };
+};
 
-//   // Employee record
-//   firstName: string;
-//   lastName: string;
-//   phone: string;
-//   jobTitle: string;
-//   department: string;
-//   startDate: string;
-//   salary: number;
-//   currency: string;
-//   status: "active" | "inactive" | "onLeave";
-//   street: string;
-//   city: string;
-//   state: string;
-//   zipCode: string;
-// };
-
-export async function createEmployee(employeeInfo: EmployeeData) {
+export async function createEmployee(employeeInfo: CreateEmployeeInput) {
   return await prisma.$transaction(async (emp) => {
-    // 1. Create the User (credentials)
+    // 1. Create the User (credentials) — must use the transaction client (emp)
+    //    so that if employee creation fails, the User is also rolled back.
     const user = await emp.user.create({
       data: {
         username: employeeInfo.credentials.username,
