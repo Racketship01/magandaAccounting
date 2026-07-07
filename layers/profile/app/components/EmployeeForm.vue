@@ -35,20 +35,26 @@ const handleSaveEmployeeForm = async () => {
   // @ts-expect-error - useToast is auto-imported by NuxtUI
   const toast = useToast();
 
+  let createdEmployee: any;
   try {
-    await $fetch("/api/createEmployeeUser", {
+    const response = await $fetch<{ employee: any; user: any }>("/api/createEmployeeUser", {
       method: "POST",
-      body: formData.value,
+      body: { ...formData.value },
     });
+    createdEmployee = response.employee;
   } catch (err: any) {
     // Handle errors (e.g. "User already exists", validation failures)
+    const message =
+      err?.data?.statusMessage || err?.statusMessage || err?.message || "An unexpected error occurred.";
     console.error("Signup failed:", err?.data || err?.message);
+    toast.add({ title: "Failed to create employee", description: message, color: "error" });
     return; // Stop — don't close the form or emit save
   }
 
-  // 2. Proceed with saving the employee record
+  // Build EmployeeData from the actual DB record so the ID and fields are accurate
   const employeeData: EmployeeData = {
     ...formData.value,
+    id: createdEmployee?.id,
     role: "employee",
   };
 

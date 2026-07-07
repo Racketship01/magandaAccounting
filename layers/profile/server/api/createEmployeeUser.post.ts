@@ -1,7 +1,10 @@
 import { defineEventHandler, readBody, createError } from "h3";
 import { createEmployeeSchema } from "../schemas";
 import { createEmployee } from "../repository/employeeRepository";
-import { findUserByEmail } from "../../../auth/server/repository/userRepository";
+import {
+  findUserByEmail,
+  findUserByUsername,
+} from "../../../auth/server/repository/userRepository";
 import { hashPassword } from "#imports";
 
 export default defineEventHandler(async (event) => {
@@ -36,7 +39,16 @@ export default defineEventHandler(async (event) => {
   const { username, email, password } = credentials;
   const { street, city, state, zipCode } = address;
 
-  // Check if user already exists
+  // Check if username is already taken
+  const existingUsername = await findUserByUsername(username);
+  if (existingUsername) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: "A user with this username already exists",
+    });
+  }
+
+  // Check if email is already registered
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
     throw createError({
