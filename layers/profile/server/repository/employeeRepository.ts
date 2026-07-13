@@ -48,7 +48,7 @@ export async function createEmployee(employeeInfo: CreateEmployeeInput) {
         startDate: employeeInfo.startDate,
         salary: employeeInfo.salary,
         currency: employeeInfo.currency,
-        role: "user",
+        role: "employee",
         status: mapStatus(employeeInfo.status),
         street: employeeInfo.address.street,
         city: employeeInfo.address.city,
