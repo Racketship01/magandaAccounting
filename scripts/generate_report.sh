@@ -4,7 +4,6 @@ set -euo pipefail
 log_dir="${HOME}/.cache/daily-report"
 log_file="${log_dir}/errors.log"
 mkdir -p "$log_dir"
-mkdir -p "$log_dir"
 
 on_error() {
   local exit_code=$?
@@ -21,30 +20,69 @@ on_error() {
 
 trap 'on_error ${LINENO} "${BASH_COMMAND}"' ERR
 
+repo_root=$(git rev-parse --show-toplevel)
 branch=$(git branch --show-current || true)
-commit=$(git rev-parse --short HEAD)
-date=$(date +"%Y-%m-%d")
-status=$(git status --short || true)
+commit=$(git rev-parse --short HEAD || true)
+author=$(git log -1 --format='%an' 2>/dev/null || git config user.name || echo "Unknown")
+date=$(date +"%B %-d, %Y (%A)")
 
-cat > daily-report.md <<EOF
-# Daily Report
+# Format remote origin URL to https url
+remote_url=$(git config --get remote.origin.url || echo "")
+temp=${remote_url#git@}
+temp=${temp/:/\/}
+repo_url="https://${temp%.git}"
 
-**Date:** $date  
-**Branch:** ${branch:-detached-head}  
-**Commit:** $commit
+# Dynamic summary from the last commit
+commit_subject=$(git log -1 --format="%s" 2>/dev/null || echo "No commits yet")
+commit_body=$(git log -1 --format="%b" 2>/dev/null || echo "")
 
-## Summary
-- Automated report generated from a Git hook.
+cat > "$repo_root/report/daily-report.md" <<EOF
+📋 Daily Progress Report
+Date: $date 
+Branch: $branch 
+Author: $author
 
-## Progress
-- Branch: ${branch:-detached-head}
-- Commit: $commit
-- Working tree status: $( [ -n "$status" ] && echo "dirty" || echo "clean" )
+✅ Summary
+Today's work focused on: $commit_subject
+$( [ -n "$commit_body" ] && echo -e "\n$commit_body" || true )
 
-## Blockers
-- None.
+EOF
 
-## Next Steps
-- Continue work.
+# Append files modified
+{
+  echo "📁 Files Modified"
+  i=0
+  emojis=("1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "8️⃣" "9️⃣" "🔟")
+  
+  git diff-tree --no-commit-id --name-status -r HEAD 2>/dev/null | while read -r status filepath; do
+    emoji=${emojis[$i]}
+    if [ -z "$emoji" ]; then
+      emoji="👉"
+    fi
+    
+    case "$status" in
+      M) status_str="Modified" ;;
+      A) status_str="Added" ;;
+      D) status_str="Deleted" ;;
+      R) status_str="Renamed" ;;
+      C) status_str="Copied" ;;
+      *) status_str="Updated" ;;
+    esac
+    
+    printf "%s %s\t%s\n" "$emoji" "$filepath" "$status_str"
+    printf " 👉%s/-/blob/%s/%s?ref_type=heads\n\n" "$repo_url" "$branch" "$filepath"
+    
+    i=$((i+1))
+  done
+} >> "$repo_root/report/daily-report.md"
+
+ 
+  cat >> "$repo_root/report/daily-report.md" <<EOF
+📐 Current Layer Architecture Snapshot
+- No architecture snapshot available for branch $branch.
+
+🚀 Next Steps / Remaining Work
+- Continue implementation.
 - Review pending changes.
 EOF
+fi
