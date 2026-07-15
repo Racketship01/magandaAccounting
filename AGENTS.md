@@ -36,6 +36,7 @@
 - Prepare: `pnpm prepare`
 - Prisma studio: `pnpm prisma studio`
 - Generate Prisma client (after schema changes): `pnpm prisma generate`
+- Generate daily report: `pnpm report` (or `bash ./scripts/generate_report.sh`)
 
 ## Code style & conventions
 
@@ -86,6 +87,14 @@
   2. Use `defineEventHandler(async (event) => { ... })`; read body with `readBody(event)`, return plain objects
   3. Add input validation (Zod preferred) and type-safe responses
 - Always prefer type-safe patterns and existing composables; avoid global state unless necessary.
+- When generating a daily report:
+  1. Make sure to run `pnpm report` to execute `scripts/generate_report.sh`.
+  2. This command automatically structures `report/daily-report.md` with:
+     - 📋 Daily Progress Report (Date, Branch, Author)
+     - ✅ Summary (Today's work based on the last commit message) [Brief overall task accomplished in detailed manner to be filled in by the agent/author]
+     - 📁 Files Modified (with dynamic links to git remote repository) [Plain language explanation of what was done in each file to be filled in by the agent/author]
+     - 📐 Current Layer Architecture Snapshot (to be filled out by the agent/author)
+     - 🚀 Next Steps / Remaining Work (to be filled out by the agent/author)
 
 ## Dependencies to prefer
 

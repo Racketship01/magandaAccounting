@@ -57,6 +57,27 @@ export async function createEmployee(employeeInfo: CreateEmployeeInput) {
       },
     });
 
-    return { user, employee };
+    const profileImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(employee.firstName)}+${encodeURIComponent(employee.lastName)}&background=random&color=fff`;
+
+    return {
+      user,
+      employee: {
+        ...employee,
+        profileImage,
+      },
+    };
   });
+}
+
+export async function getAllEmployee() {
+  const employees = await prisma.employee.findMany({
+    include: {
+      user: true,
+    },
+  });
+
+  return employees.map((employee) => ({
+    ...employee,
+    profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(employee.firstName)}+${encodeURIComponent(employee.lastName)}&background=random&color=fff`,
+  }));
 }

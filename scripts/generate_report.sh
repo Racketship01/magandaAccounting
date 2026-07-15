@@ -44,7 +44,8 @@ Author: $author
 
 ✅ Summary
 Today's work focused on: $commit_subject
-$( [ -n "$commit_body" ] && echo -e "\n$commit_body" || true )
+$( [ -n "$commit_body" ] && echo -e "\n$commit_body" || true ). 
+
 
 EOF
 
@@ -76,13 +77,3 @@ EOF
   done
 } >> "$repo_root/report/daily-report.md"
 
- 
-  cat >> "$repo_root/report/daily-report.md" <<EOF
-📐 Current Layer Architecture Snapshot
-- No architecture snapshot available for branch $branch.
-
-🚀 Next Steps / Remaining Work
-- Continue implementation.
-- Review pending changes.
-EOF
-fi
