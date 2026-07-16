@@ -77,3 +77,11 @@ EOF
   done
 } >> "$repo_root/report/daily-report.md"
 
+cat >> "$repo_root/report/daily-report.md" <<EOF
+
+📐 Task Completed
+• [Explanation of what was accomplished]
+
+🚀 Next Steps / Remaining Work
+• [Explanation about the next steps / remaining work]
+EOF
