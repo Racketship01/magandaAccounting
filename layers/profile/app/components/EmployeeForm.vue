@@ -49,17 +49,27 @@ const handleSaveEmployeeForm = async () => {
 
   let createdEmployee: any;
   try {
-    const response = await $fetch<{ employee: any; user: any }>("/api/createEmployeeUser", {
-      method: "POST",
-      body: { ...formData.value },
-    });
+    const response = await $fetch<{ employee: any; user: any }>(
+      "/api/createEmployeeUser",
+      {
+        method: "POST",
+        body: { ...formData.value },
+      },
+    );
     createdEmployee = response.employee;
   } catch (err: any) {
     // Handle errors (e.g. "User already exists", validation failures)
     const message =
-      err?.data?.statusMessage || err?.statusMessage || err?.message || "An unexpected error occurred.";
+      err?.data?.statusMessage ||
+      err?.statusMessage ||
+      err?.message ||
+      "An unexpected error occurred.";
     console.error("Signup failed:", err?.data || err?.message);
-    toast.add({ title: "Failed to create employee", description: message, color: "error" });
+    toast.add({
+      title: "Failed to create employee",
+      description: message,
+      color: "error",
+    });
     return; // Stop — don't close the form or emit save
   }
 
@@ -263,17 +273,6 @@ const currentCurrencySymbol = computed(() => {
               class="w-full"
             />
           </UFormGroup>
-
-          <!-- <UFormGroup label="Email" required>
-            <UInput
-              v-model="formData.email"
-              type="email"
-              placeholder="Enter email address"
-              icon="i-lucide-mail"
-              size="lg"
-              class="w-full"
-            />
-          </UFormGroup> -->
 
           <UFormGroup label="Phone">
             <UInput

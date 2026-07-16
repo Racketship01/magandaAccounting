@@ -10,7 +10,11 @@ const isEmployeeFormModalOpen = ref(false);
 const employeeToDelete = ref<EmployeeData | null>(null);
 
 const selectedEmployee = computed(() => {
-  return employees.value.find((emp) => emp.id === employeeState.value.selectedEmployee) || null;
+  return (
+    employees.value.find(
+      (emp) => emp.id === employeeState.value.selectedEmployee,
+    ) || null
+  );
 });
 
 // Computed properties
