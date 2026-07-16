@@ -9,6 +9,10 @@ const isEmployeeDeleteModalOpen = ref(false);
 const isEmployeeFormModalOpen = ref(false);
 const employeeToDelete = ref<EmployeeData | null>(null);
 
+const selectedEmployee = computed(() => {
+  return employees.value.find((emp) => emp.id === employeeState.value.selectedEmployee) || null;
+});
+
 // Computed properties
 const filteredEmployees = computed(() => {
   let filtered = employees.value;
@@ -316,7 +320,7 @@ const formatDate = (dateString: string) => {
         <template #body>
           <EmployeeForm
             v-model="isEmployeeFormModalOpen"
-            :employee="employeeState.selectedEmployee as unknown as Employee"
+            :employee="selectedEmployee"
             @save="handleSaveEmployee"
             @close="handleCancelEmployee"
           />

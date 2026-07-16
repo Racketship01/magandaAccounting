@@ -35,6 +35,18 @@ const handleSaveEmployeeForm = async () => {
   // @ts-expect-error - useToast is auto-imported by NuxtUI
   const toast = useToast();
 
+  if (props.employee) {
+    const employeeData: EmployeeData = {
+      ...formData.value,
+      id: props.employee.id,
+      role: "employee",
+    };
+    emit("save", employeeData);
+    toast.add({ title: "Employee updated successfully!", color: "success" });
+    isEmployeeFormOpen.value = false;
+    return;
+  }
+
   let createdEmployee: any;
   try {
     const response = await $fetch<{ employee: any; user: any }>("/api/createEmployeeUser", {
