@@ -4,10 +4,18 @@ import { ref, computed } from "vue";
 import useEmployee from "../composables/useEmployee";
 
 // state
-const { employees, employeeState } = useEmployee();
+const { employees, employeeState, refresh } = useEmployee();
 const isEmployeeDeleteModalOpen = ref(false);
 const isEmployeeFormModalOpen = ref(false);
 const employeeToDelete = ref<EmployeeData | null>(null);
+
+const selectedEmployee = computed(() => {
+  return (
+    employees.value.find(
+      (emp) => emp.id === employeeState.value.selectedEmployee,
+    ) || null
+  );
+});
 
 // Computed properties
 const filteredEmployees = computed(() => {
@@ -81,7 +89,7 @@ const handleDeleteEmployee = (employee: EmployeeData) => {
   isEmployeeDeleteModalOpen.value = true;
 };
 
-const handleSaveEmployee = (employeeData: EmployeeData) => {
+const handleSaveEmployee = async (employeeData: EmployeeData) => {
   if (employeeState.value.selectedEmployee) {
     // Edit existing employee
     const index = employees.value.findIndex(
@@ -95,11 +103,7 @@ const handleSaveEmployee = (employeeData: EmployeeData) => {
     }
   } else {
     // Add new employee
-    const newEmployee: EmployeeData = {
-      ...employeeData,
-      id: Date.now().toString(),
-    };
-    employees.value.push(newEmployee);
+    await refresh();
   }
   isEmployeeFormModalOpen.value = false;
 };
@@ -316,7 +320,7 @@ const formatDate = (dateString: string) => {
         <template #body>
           <EmployeeForm
             v-model="isEmployeeFormModalOpen"
-            :employee="employeeState.selectedEmployee as unknown as Employee"
+            :employee="selectedEmployee"
             @save="handleSaveEmployee"
             @close="handleCancelEmployee"
           />

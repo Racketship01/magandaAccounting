@@ -35,19 +35,41 @@ const handleSaveEmployeeForm = async () => {
   // @ts-expect-error - useToast is auto-imported by NuxtUI
   const toast = useToast();
 
+  if (props.employee) {
+    const employeeData: EmployeeData = {
+      ...formData.value,
+      id: props.employee.id,
+      role: "employee",
+    };
+    emit("save", employeeData);
+    toast.add({ title: "Employee updated successfully!", color: "success" });
+    isEmployeeFormOpen.value = false;
+    return;
+  }
+
   let createdEmployee: any;
   try {
-    const response = await $fetch<{ employee: any; user: any }>("/api/createEmployeeUser", {
-      method: "POST",
-      body: { ...formData.value },
-    });
+    const response = await $fetch<{ employee: any; user: any }>(
+      "/api/createEmployeeUser",
+      {
+        method: "POST",
+        body: { ...formData.value },
+      },
+    );
     createdEmployee = response.employee;
   } catch (err: any) {
     // Handle errors (e.g. "User already exists", validation failures)
     const message =
-      err?.data?.statusMessage || err?.statusMessage || err?.message || "An unexpected error occurred.";
+      err?.data?.statusMessage ||
+      err?.statusMessage ||
+      err?.message ||
+      "An unexpected error occurred.";
     console.error("Signup failed:", err?.data || err?.message);
-    toast.add({ title: "Failed to create employee", description: message, color: "error" });
+    toast.add({
+      title: "Failed to create employee",
+      description: message,
+      color: "error",
+    });
     return; // Stop — don't close the form or emit save
   }
 
@@ -189,7 +211,7 @@ const currentCurrencySymbol = computed(() => {
             <img
               :src="
                 formData.profileImage ||
-                'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
+                'https://d2u1z1lopyfwlx.cloudfront.net/thumbnails/0d3b6f33-7772-53c6-b146-2c1b09f3e7e1/8f037b8a-487e-5bc4-8aef-95264a468c03.jpg'
               "
               :alt="`${formData.firstName} ${formData.lastName}`"
               class="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
@@ -251,17 +273,6 @@ const currentCurrencySymbol = computed(() => {
               class="w-full"
             />
           </UFormGroup>
-
-          <!-- <UFormGroup label="Email" required>
-            <UInput
-              v-model="formData.email"
-              type="email"
-              placeholder="Enter email address"
-              icon="i-lucide-mail"
-              size="lg"
-              class="w-full"
-            />
-          </UFormGroup> -->
 
           <UFormGroup label="Phone">
             <UInput

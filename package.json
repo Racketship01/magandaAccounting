@@ -10,8 +10,9 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "echo \"No tests yet\" && exit 0",
-    "prepare": "husky"
+    "prepare": "husky",
+    "report": "bash ./scripts/generate_report.sh",
+    "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
     "@nuxt/eslint": "1.10.0",
