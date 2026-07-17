@@ -87,7 +87,7 @@
   2. Use `defineEventHandler(async (event) => { ... })`; read body with `readBody(event)`, return plain objects
   3. Add input validation (Zod preferred) and type-safe responses
 - Always prefer type-safe patterns and existing composables; avoid global state unless necessary.
-- When generating a daily report: Whenever a task is completed, at the end of the session, or when the user asks for a "daily report" or "summary for non-developers", the agent MUST output a summary
+- When generating a daily report: Whenever user asks for a "daily report" or "summary for non-developers", the agent MUST output a summary. The summary should be written in a way that is easy for non-technical people to understand.
   1. Make sure to run `pnpm report` to execute `scripts/generate_report.sh`.
   2. This command automatically structures `report/daily-report.md` with:
      - 📋 Daily Progress Report (Date, Branch, Author)
