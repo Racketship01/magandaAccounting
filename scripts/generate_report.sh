@@ -37,7 +37,7 @@ commit_subject=$(git log -1 --format="%s" 2>/dev/null || echo "No commits yet")
 commit_body=$(git log -1 --format="%b" 2>/dev/null || echo "")
 
 cat > "$repo_root/report/daily-report.md" <<EOF
-📋 Daily Progress Report
+📋 Daily Progress Report - Accounting Project
 Date: $date 
 Branch: $branch 
 Author: $author
