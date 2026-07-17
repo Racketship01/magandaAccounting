@@ -211,7 +211,7 @@ const currentCurrencySymbol = computed(() => {
             <img
               :src="
                 formData.profileImage ||
-                'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
+                'https://d2u1z1lopyfwlx.cloudfront.net/thumbnails/0d3b6f33-7772-53c6-b146-2c1b09f3e7e1/8f037b8a-487e-5bc4-8aef-95264a468c03.jpg'
               "
               :alt="`${formData.firstName} ${formData.lastName}`"
               class="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"

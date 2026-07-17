@@ -80,7 +80,7 @@ export default function useEmployee() {
   const employees = useState<EmployeeData[]>("employees", () => []);
 
   // Fetch employees from the backend endpoint and override the employees useState
-  useAsyncData("getAllEmployee", async () => {
+  const { refresh } = useAsyncData("getAllEmployee", async () => {
     const response = await $fetch<{ employees: EmployeeData[] }>("/api/getAllEmployee");
     if (response?.employees) {
       employees.value = response.employees;
@@ -120,5 +120,5 @@ export default function useEmployee() {
     profileImage: "",
   }));
 
-  return { formData, resetForm, employees, employeeState, currentUser };
+  return { formData, resetForm, employees, employeeState, currentUser, refresh };
 }
