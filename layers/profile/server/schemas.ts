@@ -36,3 +36,14 @@ export type CreateEmployeeSchema = z.infer<typeof createEmployeeSchema>;
 export function mapStatus(status: CreateEmployeeSchema["status"]) {
   return statusMap[status];
 }
+
+const reverseStatusMap = {
+  active: "Active",
+  inactive: "Inactive",
+  onLeave: "On Leave",
+} as const;
+
+// Maps the Prisma enum value back to the UI status string
+export function mapPrismaStatus(status: keyof typeof reverseStatusMap) {
+  return reverseStatusMap[status];
+}

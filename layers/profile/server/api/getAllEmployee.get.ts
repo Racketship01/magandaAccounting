@@ -1,5 +1,6 @@
 import { defineEventHandler, createError } from "h3";
 import { getAllEmployee } from "../repository/employeeRepository";
+import { mapPrismaStatus } from "../schemas";
 
 export default defineEventHandler(async () => {
   const employees = await getAllEmployee();
@@ -23,7 +24,7 @@ export default defineEventHandler(async () => {
       startDate: employee.startDate,
       salary: employee.salary,
       currency: employee.currency,
-      status: employee.status,
+      status: mapPrismaStatus(employee.status),
       // Map flat DB columns to the nested address object
       address: {
         street: employee.street,
