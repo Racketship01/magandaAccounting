@@ -2,7 +2,10 @@
 import type { EmployeeData } from "../composables/useEmployee";
 import { computed, ref, watch } from "vue";
 import useEmployee from "../composables/useEmployee";
-import { createEmployeeSchema } from "../../server/schemas";
+import {
+  createEmployeeSchema,
+  updateEmployeeSchema,
+} from "../../server/schemas";
 
 interface Props {
   modelValue: boolean;
@@ -35,18 +38,40 @@ const handleSaveEmployeeForm = async () => {
   // @ts-expect-error - useToast is auto-imported by NuxtUI
   const toast = useToast();
 
+  // UPDATE Employee
   if (props.employee) {
-    const employeeData: EmployeeData = {
-      ...formData.value,
-      id: props.employee.id,
-      role: "employee",
-    };
-    emit("save", employeeData);
-    toast.add({ title: "Employee updated successfully!", color: "success" });
-    isEmployeeFormOpen.value = false;
+    try {
+      const response = await $fetch<{ employee: any }>(
+        `/api/updateEmployee/${props.employee.id}`,
+        {
+          method: "PATCH",
+          body: { ...formData.value },
+        },
+      );
+      const employeeData: EmployeeData = {
+        ...formData.value,
+        id: response.employee?.id || props.employee.id,
+      };
+      emit("save", employeeData);
+      toast.add({ title: "Employee updated successfully!", color: "success" });
+      isEmployeeFormOpen.value = false;
+    } catch (err: any) {
+      const message =
+        err?.data?.statusMessage ||
+        err?.statusMessage ||
+        err?.message ||
+        "An unexpected error occurred.";
+      console.error("Update failed:", err?.data || err?.message);
+      toast.add({
+        title: "Failed to update employee",
+        description: message,
+        color: "error",
+      });
+    }
     return;
   }
 
+  // CREATE Employee
   let createdEmployee: any;
   try {
     const response = await $fetch<{ employee: any; user: any }>(
@@ -117,7 +142,8 @@ watch(
 
 // Form validation
 const isFormValid = computed(() => {
-  return createEmployeeSchema.safeParse({ ...formData.value }).success;
+  const schema = props.employee ? updateEmployeeSchema : createEmployeeSchema;
+  return schema.safeParse({ ...formData.value }).success;
 });
 
 // Methods
@@ -441,7 +467,7 @@ const currentCurrencySymbol = computed(() => {
               class="w-full"
             />
           </UFormGroup>
-          <UFormGroup label="Password">
+          <UFormGroup v-if="!employee" label="Password">
             <UInput
               v-model="formData.credentials.password"
               placeholder="Enter password"
