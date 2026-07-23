@@ -1,4 +1,4 @@
-import { prisma } from "../../../auth/server/utils/prisma";
+import { prisma } from "../../../../prisma/utils/prisma";
 import { mapStatus, type UpdateEmployeeSchema } from "../schemas";
 
 type CreateEmployeeInput = {

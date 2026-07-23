@@ -1,6 +1,6 @@
 // server/utils/prisma.ts (Prisma 7 with SQLite adapter)
 
-import { PrismaClient } from "../../../../prisma/generated/prisma/client";
+import { PrismaClient } from "../generated/prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import path from "path";
 
