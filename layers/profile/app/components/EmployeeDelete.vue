@@ -21,10 +21,21 @@ const isEmployeeDeleteOpen = computed({
 
 const employeeToDelete = computed(() => props.employee);
 
-const confirmDelete = () => {
+const confirmDelete = async () => {
+  //@ts-expect-error - useToast is not defined in this scope
+  const toast = useToast();
+
   if (employeeToDelete.value) {
-    emit("confirmDelete", employeeToDelete.value);
-    isEmployeeDeleteOpen.value = false;
+    try {
+      await $fetch(`/api/deleteEmployee/${employeeToDelete.value.id}`, {
+        method: "DELETE",
+      });
+      emit("confirmDelete", employeeToDelete.value);
+      toast.add({ title: "Employee deleted successfully!", color: "success" });
+      isEmployeeDeleteOpen.value = false;
+    } catch (err) {
+      console.log(err);
+    }
   }
 };
 
