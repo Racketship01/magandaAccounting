@@ -6,9 +6,12 @@ import {
   findUserByUsername,
 } from "../../../auth/server/repository/userRepository";
 import { hashPassword } from "#imports";
+import roleSession from "../utils/roleSession";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
+
+  roleSession(event);
 
   // Validate the full employee form body
   const result = createEmployeeSchema.safeParse(body);

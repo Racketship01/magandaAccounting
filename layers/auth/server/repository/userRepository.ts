@@ -12,6 +12,10 @@ export async function createUser(
 
 export async function findUserByEmail(email: string) {
   return await prisma.user.findUnique({
+    include: {
+      admin: true,
+      employees: true,
+    },
     where: {
       email,
     },
@@ -20,6 +24,10 @@ export async function findUserByEmail(email: string) {
 
 export async function findUserByUsername(username: string) {
   return await prisma.user.findUnique({
+    include: {
+      admin: true,
+      employees: true,
+    },
     where: {
       username,
     },

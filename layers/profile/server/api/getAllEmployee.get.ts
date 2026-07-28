@@ -1,9 +1,12 @@
 import { defineEventHandler, createError } from "h3";
 import { getAllEmployee } from "../repository/employeeRepository";
 import { mapPrismaStatus } from "../schemas";
+import roleSession from "../utils/roleSession";
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   const employees = await getAllEmployee();
+
+  roleSession(event);
 
   if (!employees) {
     throw createError({

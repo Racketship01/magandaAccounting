@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eu
 
 log_dir="${HOME}/.cache/daily-report"
 log_file="${log_dir}/errors.log"
@@ -45,6 +45,7 @@ Author: $author
 ✅ Summary
 Today's work focused on: $commit_subject
 $( [ -n "$commit_body" ] && echo -e "\n$commit_body" || true ). 
+[Brief explanation of today accomplished, what was done and the progress].
 
 
 EOF
