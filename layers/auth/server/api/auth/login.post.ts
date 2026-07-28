@@ -34,9 +34,19 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: "Invalid credentials" });
   }
 
-  //   delete user.password;
+  let role: "admin" | "employee" | undefined = undefined;
+  if (user.admin && user.admin.length > 0) {
+    role = "admin";
+  } else if (user.employees && user.employees.length > 0) {
+    role = "employee";
+  }
   await setUserSession(event, {
-    user,
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role,
+    },
     loggedInAt: new Date(),
   });
 

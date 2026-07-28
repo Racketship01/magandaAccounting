@@ -5,6 +5,7 @@ declare module "#auth-utils" {
       id: string;
       email: string;
       username: string;
+      role?: "admin" | "employee";
     };
     loggedInAt: Date;
   }

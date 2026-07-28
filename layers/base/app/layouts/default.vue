@@ -1,7 +1,10 @@
 <!-- eslint-disable @typescript-eslint/no-unused-expressions -->
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import useColor from "../composables/useColorMode";
+import useAuth from "../../../auth/app/composables/useAuth";
+
+const { user } = useAuth();
 
 // Reactive state
 const open = ref(false);
@@ -27,8 +30,8 @@ onMounted(() => {
 });
 
 // Navigation links
-const links = [
-  [
+const links = computed(() => {
+  const baseLinks = [
     {
       label: "Dashboard",
       icon: "i-lucide-house",
@@ -53,24 +56,31 @@ const links = [
         open.value = false;
       },
     },
-    {
-      label: "Bills Management",
-      icon: "i-lucide-bell-ring",
-      to: "/bills",
-      onSelect: () => {
-        open.value = false;
+  ];
+
+  if (user.value?.role === "admin") {
+    baseLinks.push(
+      {
+        label: "Employee Records",
+        icon: "i-lucide-clipboard-list",
+        to: "/employee",
+        onSelect: () => {
+          open.value = false;
+        },
       },
-    },
-    {
-      label: "Employee Records",
-      icon: "i-lucide-clipboard-list",
-      to: "/employee",
-      onSelect: () => {
-        open.value = false;
+      {
+        label: "Bills Management",
+        icon: "i-lucide-bell-ring",
+        to: "/bills",
+        onSelect: () => {
+          open.value = false;
+        },
       },
-    },
-  ],
-];
+    );
+  }
+
+  return [baseLinks];
+});
 </script>
 
 <template>
