@@ -116,7 +116,7 @@ export default function useEmployee() {
     },
     credentials: {
       username: "john.doe",
-      email: "[EMAIL_ADDRESS]",
+      email: "johndoe@gmail.com",
     },
     profileImage: "",
   }));

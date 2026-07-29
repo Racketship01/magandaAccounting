@@ -1,52 +1,32 @@
 📋 Daily Progress Report - Accounting Project
-Date: July 23, 2026 (Thursday) 
-Branch: employee 
+Date: July 29, 2026 (Wednesday)
+Branch: bill
 Author: racketship01
 
-✅ Summary
-Today's work focused on: done: prisma seed for admin && merge employee branch to main.
+✅ Summary - Clean Up Employee State & Type Checking, Add Profile Image Field
 
-In detail, we established a standardized database seeding process (`prisma/seed.ts`) to programmatically insert a default administrator account ("admin@gmail.com") into the SQLite database. The administrator account has its password securely hashed using the Scrypt algorithm to ensure authentication security. Additionally, the Prisma client instantiation was centralized to `prisma/utils/prisma.ts` so that both the backend server APIs and the database seed runner can use a single, shared connection pool. We also updated the repository layers (`userRepository.ts`, `employeeRepository.ts`) and endpoint files to import from the new centralized client path. Lastly, we merged the employee management feature changes, ensuring complete synchronization of our codebase, and successfully ran the typechecker, linter, and database seed commands in the development environment.
+Today's work focused on cleaning up and standardizing the employee management code by adding strict TypeScript type check protections and introducing a new employee profile image capability. We updated the database structure (Prisma schema) to support optional profile images for both employees and administrators, and created a corresponding database migration. The backend APIs and repositories were enhanced with robust input validation using schemas and explicit return types to ensure codebase safety and prevent runtime errors. Finally, standard database utility commands were added to the package configuration to simplify resetting and seeding the development database.
 
 📁 Files Modified
-1️⃣ dev.db	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/dev.db?ref_type=heads
+1️⃣ layers/profile/server/api/createEmployeeUser.post.ts Modified
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/profile/server/api/createEmployeeUser.post.ts?ref_type=heads
 
-2️⃣ layers/auth/server/api/auth/test.post.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/layers/auth/server/api/auth/test.post.ts?ref_type=heads
+2️⃣ layers/profile/server/repository/employeeRepository.ts Modified
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/profile/server/repository/employeeRepository.ts?ref_type=heads
 
-3️⃣ layers/auth/server/repository/userRepository.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/layers/auth/server/repository/userRepository.ts?ref_type=heads
+3️⃣ layers/profile/server/schemas.ts Modified
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/profile/server/schemas.ts?ref_type=heads
 
-4️⃣ layers/auth/server/utils/prisma.ts	Deleted
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/layers/auth/server/utils/prisma.ts?ref_type=heads
-
-5️⃣ layers/profile/server/repository/employeeRepository.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/layers/profile/server/repository/employeeRepository.ts?ref_type=heads
-
-6️⃣ package.json	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/package.json?ref_type=heads
-
-7️⃣ pnpm-lock.yaml	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/pnpm-lock.yaml?ref_type=heads
-
-8️⃣ prisma.config.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/prisma.config.ts?ref_type=heads
-
-9️⃣ prisma/seed.ts	Added
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/prisma/seed.ts?ref_type=heads
-
-🔟 prisma/utils/prisma.ts	Added
- 👉https://git.next1.ph/imelda/accounting/-/blob/employee/prisma/utils/prisma.ts?ref_type=heads
-
+4️⃣ prisma/schema.prisma Modified
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/prisma/schema.prisma?ref_type=heads
 
 📐 Task Completed
-• **Administrator Seed Implementation**: Created a standardized database seeding script (`prisma/seed.ts`) to auto-populate a default administrator account ("admin@gmail.com") securely hashed using the Scrypt algorithm.
-• **Database Configuration Update**: Configured `prisma.config.ts` and `package.json` to link the new seeding script, enabling automated database preparation when setting up the development environment.
-• **Prisma Client Centralization**: Refactored the database client instance location from `layers/auth/server/utils/prisma.ts` to a global `prisma/utils/prisma.ts` directory to share connection handling between seed scripts, authentication logic, and repository methods.
-• **Repository & API Endpoint Updates**: Updated imports for the centralized database client across `userRepository.ts`, `employeeRepository.ts`, and test API endpoints.
+• **Profile Image Integration**: Updated the Prisma database schema and generated database migrations to add a new `profileImage` field to the `Employee` and `Admin` models.
+• **Type Safety & Data Integrity**: Standardized the employee CRUD repository operations and creation API endpoints with strict TypeScript return and input type checking using Zod schemas (`CreateEmployeeSchema`, `UpdateEmployeeSchema`).
+• **Development Tooling**: Configured a `db:reset` script in package dependencies to bundle database resets and seeding. Corrected the seeding configuration in the Prisma config file to use `tsx` directly.
+• **Cleanup**: Removed redundant/obsolete type declaration file `layers/auth/server/types/auth.d.ts` to keep the authentication layer clean.
 
 🚀 Next Steps / Remaining Work
-• Execute `pnpm prisma db seed` locally to verify administrative user setup in the SQLite development database.
-• Implement permission checks to ensure only accounts with the 'admin' role can create, modify, or delete employee data.
-• Conduct cross-feature testing on the merged employee branch to ensure no regressions in auth or user sessions.
+• Test the profile image upload/display UI flow to ensure the newly added `profileImage` field functions properly from the frontend interface.
+• Run the development server (`pnpm dev`) and perform user testing on employee creation and edit forms.
+• Verify role permissions session handling to confirm that employee management endpoints are restricted only to admin users.

@@ -1,12 +1,12 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable vue/html-self-closing -->
 <script setup lang="ts">
-import useBillForm from "../composables/useBillForm";
 import useBill from "../composables/useBill";
 import { ref, watch } from "vue";
+import type { Bill } from "../composables/useBill";
 
 interface Props {
-  bill?: typeof BillProps.value | null;
+  bill?: Bill | null;
   title: string;
   subtitle: string;
   icon: string;
@@ -47,8 +47,7 @@ const reminderOptions = [
 ];
 
 // Form data
-const { formData } = useBillForm();
-const { bill: BillProps } = useBill();
+const { bills, billFormData, resetForm: resetBillForm } = useBill();
 
 // Image upload state
 const isUploading = ref(false);
@@ -58,17 +57,7 @@ const receiptImage = ref<string>("");
 
 // Reset form function
 const resetForm = () => {
-  formData.value = {
-    title: "",
-    amount: 0,
-    category: "",
-    dueDate: "",
-    isRecurring: false,
-    recurringType: "monthly",
-    reminderDays: 7,
-    reminderEnabled: true,
-    currency: "USD",
-  };
+  resetBillForm();
   receiptImage.value = "";
   uploadError.value = "";
 };
@@ -78,12 +67,13 @@ watch(
   () => props.bill,
   (bill) => {
     if (bill) {
-      formData.value = {
+      billFormData.value = {
         title: bill.title,
         amount: bill.amount,
         category: bill.category,
         dueDate: bill.dueDate,
         isRecurring: bill.isRecurring,
+        isPaid: bill.isPaid,
         recurringType: bill.recurringType || "monthly",
         reminderDays: bill.reminderDays,
         reminderEnabled: bill.reminderEnabled,
@@ -101,14 +91,11 @@ watch(
 const handleSaveBill = () => {
   // Emit the complete form data including receipt image
   const billData = {
-    ...formData.value,
+    ...billFormData.value,
     receiptImage: receiptImage.value,
   };
 
   emit("save", billData);
-
-  // Close the modal by emitting close event
-  emit("close");
 };
 
 const handleCancel = () => {
@@ -195,7 +182,7 @@ const getCurrencySymbol = (currency: string) => {
           <div class="grid grid-cols-1 md:grid-cols-1 gap-5 mb-4">
             <UFormGroup label="Bill Title" required>
               <UInput
-                v-model="formData.title"
+                v-model="billFormData.title"
                 placeholder="e.g., Water Bill - January 2024"
                 size="lg"
                 class="w-full"
@@ -206,7 +193,7 @@ const getCurrencySymbol = (currency: string) => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
             <UFormGroup label="Currency" class="md:col-span-1">
               <USelect
-                v-model="formData.currency"
+                v-model="billFormData.currency"
                 :items="currencies"
                 placeholder="Select currency"
                 size="lg"
@@ -216,16 +203,16 @@ const getCurrencySymbol = (currency: string) => {
 
             <UFormGroup label="Amount" required>
               <UInput
-                v-model.number="formData.amount"
+                v-model.number="billFormData.amount"
                 type="number"
                 step="0.01"
-                :placeholder="`0.00 ${getCurrencySymbol(formData.currency)}`"
+                :placeholder="`0.00 ${getCurrencySymbol(billFormData.currency)}`"
                 size="lg"
                 class="w-full"
               >
                 <template #leading>
                   <span class="text-gray-500 font-medium">
-                    {{ getCurrencySymbol(formData.currency) }}
+                    {{ getCurrencySymbol(billFormData.currency) }}
                   </span>
                 </template>
               </UInput>
@@ -235,7 +222,7 @@ const getCurrencySymbol = (currency: string) => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
             <UFormGroup label="Category" required>
               <USelect
-                v-model="formData.category"
+                v-model="billFormData.category"
                 :items="billCategories"
                 placeholder="Select category"
                 size="lg"
@@ -245,7 +232,7 @@ const getCurrencySymbol = (currency: string) => {
 
             <UFormGroup label="Due Date" required>
               <UInput
-                v-model="formData.dueDate"
+                v-model="billFormData.dueDate"
                 type="date"
                 size="lg"
                 class="w-full"
@@ -317,15 +304,15 @@ const getCurrencySymbol = (currency: string) => {
 
           <UFormGroup label="Recurring Bill">
             <UCheckbox
-              v-model="formData.isRecurring"
+              v-model="billFormData.isRecurring"
               label="This is a recurring bill"
               class="w-full mr-4 mb-4"
             />
           </UFormGroup>
 
-          <UFormGroup v-if="formData.isRecurring" label="Recurring Type">
+          <UFormGroup v-if="billFormData.isRecurring" label="Recurring Type">
             <USelect
-              v-model="formData.recurringType"
+              v-model="billFormData.recurringType"
               :items="recurringTypes"
               placeholder="Select frequency"
               size="lg"
@@ -336,7 +323,7 @@ const getCurrencySymbol = (currency: string) => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UFormGroup label="Reminder">
               <USelect
-                v-model="formData.reminderDays"
+                v-model="billFormData.reminderDays"
                 :items="reminderOptions"
                 placeholder="When to remind"
                 size="lg"
@@ -346,7 +333,7 @@ const getCurrencySymbol = (currency: string) => {
 
             <UFormGroup label="Enable Reminder">
               <UCheckbox
-                v-model="formData.reminderEnabled"
+                v-model="billFormData.reminderEnabled"
                 label="Send reminder notifications"
                 class="mt-2 ml-7 justify-self-end"
               />
@@ -363,10 +350,10 @@ const getCurrencySymbol = (currency: string) => {
         <UButton
           color="primary"
           :disabled="
-            !formData.title ||
-            !formData.amount ||
-            !formData.category ||
-            !formData.dueDate
+            !billFormData.title ||
+            !billFormData.amount ||
+            !billFormData.category ||
+            !billFormData.dueDate
           "
           icon="i-lucide-save"
           @click="handleSaveBill()"
