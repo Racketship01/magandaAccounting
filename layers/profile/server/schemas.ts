@@ -27,6 +27,7 @@ export const createEmployeeSchema = z.object({
     email: z.email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
   }),
+  profileImage: z.string().default(""),
 });
 
 export type CreateEmployeeSchema = z.infer<typeof createEmployeeSchema>;
@@ -52,6 +53,7 @@ export const updateEmployeeSchema = createEmployeeSchema.extend({
     email: z.email("Invalid email address"),
     password: z.string().optional(),
   }),
+  profileImage: z.string().default(""),
 });
 
 export type UpdateEmployeeSchema = z.infer<typeof updateEmployeeSchema>;

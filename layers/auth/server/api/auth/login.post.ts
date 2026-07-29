@@ -34,11 +34,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: "Invalid credentials" });
   }
 
-  let role: "admin" | "employee" | undefined = undefined;
+  let role: "admin" | "employee";
   if (user.admin && user.admin.length > 0) {
     role = "admin";
   } else if (user.employees && user.employees.length > 0) {
     role = "employee";
+  } else {
+    throw createError({
+      statusCode: 403,
+      message: "No role assigned to this user",
+    });
   }
   await setUserSession(event, {
     user: {
