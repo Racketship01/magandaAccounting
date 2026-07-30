@@ -1,32 +1,33 @@
 📋 Daily Progress Report - Accounting Project
 Date: July 29, 2026 (Wednesday)
-Branch: bill
-Author: racketship01
 
-✅ Summary - Clean Up Employee State & Type Checking, Add Profile Image Field
-
-Today's work focused on cleaning up and standardizing the employee management code by adding strict TypeScript type check protections and introducing a new employee profile image capability. We updated the database structure (Prisma schema) to support optional profile images for both employees and administrators, and created a corresponding database migration. The backend APIs and repositories were enhanced with robust input validation using schemas and explicit return types to ensure codebase safety and prevent runtime errors. Finally, standard database utility commands were added to the package configuration to simplify resetting and seeding the development database.
+✅ Summary - **Implement Bill Creation and Retrieval Backend APIs, Clean Up Bill Form Handling**
+Today's work focused on implementing the backend logic for managing and tracking bills, including the creation and retrieval of bill records. Created database repository methods and secure backend API endpoints with input validation via Zod schemas.
 
 📁 Files Modified
-1️⃣ layers/profile/server/api/createEmployeeUser.post.ts Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/profile/server/api/createEmployeeUser.post.ts?ref_type=heads
+1️⃣ layers/bill/server/schemas.ts Added
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/server/schemas.ts?ref_type=heads
 
-2️⃣ layers/profile/server/repository/employeeRepository.ts Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/profile/server/repository/employeeRepository.ts?ref_type=heads
+2️⃣ layers/bill/server/api/createBill.post.ts Added
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/server/api/createBill.post.ts?ref_type=heads
 
-3️⃣ layers/profile/server/schemas.ts Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/profile/server/schemas.ts?ref_type=heads
+3️⃣ layers/bill/app/composables/useBill.ts Modified
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/app/composables/useBill.ts?ref_type=heads
 
-4️⃣ prisma/schema.prisma Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/bill/prisma/schema.prisma?ref_type=heads
+4️⃣ layers/bill/server/api/getBills.get.ts Added
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/server/api/getBills.get.ts?ref_type=heads
+
+5️⃣ layers/bill/server/repository/billRepository.ts Added
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/server/repository/billRepository.ts?ref_type=heads
 
 📐 Task Completed
-• **Profile Image Integration**: Updated the Prisma database schema and generated database migrations to add a new `profileImage` field to the `Employee` and `Admin` models.
-• **Type Safety & Data Integrity**: Standardized the employee CRUD repository operations and creation API endpoints with strict TypeScript return and input type checking using Zod schemas (`CreateEmployeeSchema`, `UpdateEmployeeSchema`).
-• **Development Tooling**: Configured a `db:reset` script in package dependencies to bundle database resets and seeding. Corrected the seeding configuration in the Prisma config file to use `tsx` directly.
-• **Cleanup**: Removed redundant/obsolete type declaration file `layers/auth/server/types/auth.d.ts` to keep the authentication layer clean.
+• **Backend APIs & Routing**: Created secure API endpoints for creating bills (`POST /api/createBill`) and retrieving bills (`GET /api/getBills`), verified against administrator session roles.
+• **Database Repository Layer**: Added `billRepository` functions for creating and querying bills from the database using Prisma.
+• **Input Validation Schemas**: Integrated Zod validation schemas (`createBillSchema` and `updateBillSchema`) to ensure all incoming bill data (e.g. title, amount, category, recurrence, reminder days, currency) is fully type-safe and validated.
+• **Frontend Integration**: Updated `BillsManagement`, `BillAdd`, and `BillForm` components to call the API endpoints and save bills to the database.
+• **Form Composable Clean Up**: Removed the redundant `useBillForm.ts` file, consolidating form state and functions directly within `useBill.ts` and component emitters.
 
 🚀 Next Steps / Remaining Work
-• Test the profile image upload/display UI flow to ensure the newly added `profileImage` field functions properly from the frontend interface.
-• Run the development server (`pnpm dev`) and perform user testing on employee creation and edit forms.
-• Verify role permissions session handling to confirm that employee management endpoints are restricted only to admin users.
+• Run the development server and test the entire bill creation flow manually, including the category select, payment status toggles, and optional receipt fields.
+• Address the `403 Forbidden` error reported in the console when loading bills (`Failed to load bills: [GET] "/api/getBills": 403 Forbidden: Only admins can manage employee records`) to ensure the role check behaves correctly for non-employee endpoints.
+• Write unit or integration tests for the bill APIs and database repository functions.

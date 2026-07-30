@@ -47,7 +47,7 @@ const reminderOptions = [
 ];
 
 // Form data
-const { bills, billFormData, resetForm: resetBillForm } = useBill();
+const { billFormData, resetForm: resetBillForm } = useBill();
 
 // Image upload state
 const isUploading = ref(false);

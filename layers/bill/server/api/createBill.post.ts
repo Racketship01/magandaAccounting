@@ -4,8 +4,8 @@ import { defineEventHandler, readBody, createError, H3Error } from "h3";
 import roleSession from "../../../../layers/profile/server/utils/roleSession";
 import { prisma } from "../../../../prisma/utils/prisma";
 
-export default defineEventHandler(async (event) => {
-  const user = await roleSession(event);
+export default defineEventHandler(async (event: any) => {
+  const adminSession = await roleSession(event);
 
   const body = await readBody(event);
 
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const admin = await prisma.admin.findFirst({
-    where: { userId: user.id },
+    where: { userId: adminSession.id },
   });
 
   if (!admin) {

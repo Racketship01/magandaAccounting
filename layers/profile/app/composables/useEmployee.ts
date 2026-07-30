@@ -82,6 +82,9 @@ export default function useEmployee() {
   const { refresh } = useAsyncData("getAllEmployee", async () => {
     const response = await $fetch<{ employees: EmployeeData[] }>(
       "/api/getAllEmployee",
+      {
+        headers: useRequestHeaders(["cookie"]),
+      },
     );
     if (response?.employees) {
       employees.value = response.employees;

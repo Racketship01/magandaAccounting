@@ -92,7 +92,6 @@ const handleEditBill = (bill: any) => {
 
 const handleSaveBill = async (bill: Bill) => {
   if (isBillAddModalOpen.value) {
-    await refresh();
     isBillAddModalOpen.value = false;
   } else if (isEditBillModalOpen.value) {
     const index = bills.value.findIndex((b) => b.id === bill.id);
@@ -102,8 +101,10 @@ const handleSaveBill = async (bill: Bill) => {
         id: bill.id as string,
       };
     }
+    await refresh();
     isEditBillModalOpen.value = false;
   }
+
   selectedBill.value = null;
 };
 

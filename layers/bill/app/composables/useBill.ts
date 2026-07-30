@@ -53,7 +53,9 @@ export default function useBill() {
 
   const { refresh } = useAsyncData("getBills", async () => {
     try {
-      const response = await $fetch<{ bills: Bill[] }>("/api/getBills");
+      const response = await $fetch<{ bills: Bill[] }>("/api/getBills", {
+        headers: useRequestHeaders(["cookie"]),
+      });
       if (response?.bills) {
         bills.value = response.bills;
       }

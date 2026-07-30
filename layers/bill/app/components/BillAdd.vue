@@ -1,9 +1,6 @@
 <script setup lang="ts">
 // Bill interface
 import type { Bill } from "../composables/useBill";
-import useBill from "../composables/useBill";
-
-const { billFormData } = useBill();
 
 interface Props {
   bill?: Bill | null;
