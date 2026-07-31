@@ -17,8 +17,29 @@ const handleClose = () => {
   emit("close");
 };
 
-const handleSaveBill = (updatedBill: typeof BillProps.value) => {
-  emit("save", updatedBill);
+const handleSaveBill = async (updatedBill: typeof BillProps.value) => {
+  // @ts-expect-error - useToast is auto-imported by NuxtUI
+  const toast = useToast();
+
+  try {
+    const response = await $fetch("/api/bill/updateBill/" + updatedBill?.id, {
+      method: "PATCH",
+      body: updatedBill,
+    });
+
+    emit("save", response);
+    toast.add({
+      title: "Bill updated",
+      description: "The bill has been updated successfully",
+      color: "success",
+    });
+  } catch (error: any) {
+    toast.add({
+      title: "Error",
+      description: error.data.statusMessage,
+      color: "error",
+    });
+  }
 };
 </script>
 
