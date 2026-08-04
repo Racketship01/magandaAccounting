@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Bill interface
 import type { Bill } from "../composables/useBill";
+import useBill from "../composables/useBill";
 
 interface Props {
   bill?: Bill | null;
@@ -8,6 +9,8 @@ interface Props {
 
 const _props = defineProps<Props>();
 const emit = defineEmits(["close", "save"]);
+
+const { refresh } = useBill();
 
 const handleClose = () => {
   emit("close");
@@ -35,6 +38,7 @@ const handleSaveBill = async (billData: Bill) => {
 
     emit("save", savedBillData);
     toast.add({ title: "Bill added successfully!", color: "success" });
+    await refresh();
   } catch (error: any) {
     toast.add({
       title: "Failed to create Bill",

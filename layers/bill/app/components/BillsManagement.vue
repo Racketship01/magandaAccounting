@@ -150,11 +150,12 @@ const handleMarkAsPaidFromModal = (billId: string) => {
     bill.paidDate = new Date().toISOString().split("T")[0];
     isViewBillModalOpen.value = false;
   }
+  isBillViewEditModalOpen.value = false;
 };
 
 const handleRemoveBillFromModal = (billId: string) => {
   bills.value = bills.value.filter((b: { id: string }) => b.id !== billId);
-  isViewBillModalOpen.value = false;
+  isBillViewEditModalOpen.value = false;
 };
 
 const getCategoryLabel = (category: string) => {

@@ -1,8 +1,15 @@
 import { prisma } from "../../../../prisma/utils/prisma";
-import { type CreateBillSchema, mapStatus } from "../schemas";
+import {
+  type CreateBillSchema,
+  mapStatus,
+  type UpdateBillSchema,
+} from "../schemas";
 import type { Bill } from "../../../../prisma/generated/prisma/client";
 
-export async function createBill(bill: CreateBillSchema, adminId: string): Promise<Bill> {
+export async function createBill(
+  bill: CreateBillSchema,
+  adminId: string,
+): Promise<Bill> {
   const {
     title,
     amount,
@@ -11,7 +18,6 @@ export async function createBill(bill: CreateBillSchema, adminId: string): Promi
     isRecurring,
     recurringType,
     reminderDays,
-    isPaid,
     paidDate,
     reminderEnabled,
     receiptImage,
@@ -28,7 +34,7 @@ export async function createBill(bill: CreateBillSchema, adminId: string): Promi
       recurringType: mapStatus(recurringType),
       adminId,
       reminderDays,
-      isPaid,
+      isPaid: false,
       paidDate,
       reminderEnabled,
       receiptImage,
@@ -44,6 +50,46 @@ export async function getBills(adminId: string): Promise<Bill[]> {
     },
     orderBy: {
       createdAt: "desc",
+    },
+  });
+}
+
+export async function updateBill(
+  id: string,
+  bill: UpdateBillSchema,
+): Promise<Bill> {
+  const {
+    title,
+    amount,
+    category,
+    dueDate,
+    isRecurring,
+    recurringType,
+    isPaid,
+    reminderDays,
+    paidDate,
+    reminderEnabled,
+    receiptImage,
+    currency,
+  } = bill;
+
+  return await prisma.bill.update({
+    where: {
+      id,
+    },
+    data: {
+      title,
+      amount,
+      category,
+      dueDate,
+      isRecurring,
+      recurringType: mapStatus(recurringType),
+      reminderDays,
+      isPaid,
+      paidDate,
+      reminderEnabled,
+      receiptImage,
+      currency,
     },
   });
 }

@@ -1,24 +1,44 @@
 <script setup lang="ts">
 import type { Bill } from "../composables/useBill";
+import useBill from "../composables/useBill";
 
 interface Props {
   bill: Bill | null;
 }
 
-const props = defineProps<Props>();
+const { bill: _BillProps, refresh } = useBill();
 
-const emit = defineEmits<{
-  paid: [billId: string];
-  remove: [billId: string];
-  close: [];
-}>();
+const _props = defineProps<Props>();
 
-const handlePaid = (id: string) => {
-  emit("paid", id);
-};
+const emit = defineEmits(["close", "paid"]);
 
-const handleRemove = (id: string) => {
-  emit("remove", id);
+// @ts-expect-error - useToast is auto-imported by NuxtUI
+const toast = useToast();
+
+const handlePaid = async (updatedBill: typeof _BillProps.value) => {
+  try {
+    const response = await $fetch<{ bill: Bill }>(
+      `/api/updateBill/${updatedBill?.id}`,
+      {
+        method: "PATCH",
+        body: { ...updatedBill, isPaid: true, paidDate: new Date() },
+      },
+    );
+
+    emit("paid", response);
+    toast.add({
+      title: "Bill updated",
+      description: "The bill has been updated successfully",
+      color: "success",
+    });
+    await refresh();
+  } catch (error: any) {
+    toast.add({
+      title: "Error",
+      description: error.data.statusMessage,
+      color: "error",
+    });
+  }
 };
 
 const handleClose = () => {
@@ -29,12 +49,11 @@ const handleClose = () => {
 <template>
   <View
     title="Bill Details"
-    :data="props.bill"
+    :data="bill"
     type="bill"
     :show-actions="true"
     :show-remove-button="false"
-    @paid="handlePaid"
-    @remove="handleRemove"
+    @paid="handlePaid(bill)"
     @close="handleClose"
   />
 </template>

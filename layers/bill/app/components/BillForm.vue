@@ -68,6 +68,7 @@ watch(
   (bill) => {
     if (bill) {
       billFormData.value = {
+        id: bill.id,
         title: bill.title,
         amount: bill.amount,
         category: bill.category,

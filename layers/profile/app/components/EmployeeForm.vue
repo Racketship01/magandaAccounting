@@ -52,6 +52,7 @@ const handleSaveEmployeeForm = async () => {
         ...formData.value,
         id: response.employee?.id || props.employee.id,
       };
+
       emit("save", employeeData);
       toast.add({ title: "Employee updated successfully!", color: "success" });
       isEmployeeFormOpen.value = false;

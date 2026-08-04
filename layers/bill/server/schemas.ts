@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-const billTypeMap = {
-  Monthly: "monthly",
-  Quarterly: "quarterly",
-  Yearly: "yearly",
-} as const;
+// const billTypeMap = {
+//   Monthly: "monthly",
+//   Quarterly: "quarterly",
+//   Yearly: "yearly",
+// } as const;
 
 export const createBillSchema = z.object({
   title: z.string(),

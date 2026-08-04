@@ -160,7 +160,7 @@ const _handleClose = () => {
 const isExpense = computed(() => props.type === "expense");
 const isBill = computed(() => props.type === "bill");
 const expense = computed(() =>
-  isExpense.value ? (props.data as ExpenseItem) : null
+  isExpense.value ? (props.data as ExpenseItem) : null,
 );
 const bill = computed(() => (isBill.value ? (props.data as Bill) : null));
 
@@ -174,7 +174,7 @@ const isOverdue = computed(() => {
 // Currency selector for bills
 const selectedCurrency = ref<string>("");
 const _showCurrencySelector = computed(
-  () => isBill.value && bill.value !== null
+  () => isBill.value && bill.value !== null,
 );
 
 // Initialize selected currency from bill
@@ -187,7 +187,7 @@ watch(
       selectedCurrency.value = "USD";
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Currency options
@@ -264,7 +264,7 @@ const displayCurrency = computed(() => {
                   isExpense
                     ? formatCurrency(
                         expense?.amount || 0,
-                        expense?.currency || "USD"
+                        expense?.currency || "USD",
                       )
                     : formatCurrency(bill?.amount || 0, displayCurrency)
                 }}
@@ -279,8 +279,8 @@ const displayCurrency = computed(() => {
                 isExpense
                   ? 'i-lucide-check-circle'
                   : bill?.isPaid
-                  ? 'i-lucide-check-circle'
-                  : 'i-lucide-clock'
+                    ? 'i-lucide-check-circle'
+                    : 'i-lucide-clock'
               "
               class="mx-auto h-8 w-8 text-amber-500 mb-2"
             />
@@ -310,7 +310,7 @@ const displayCurrency = computed(() => {
           <UBadge
             :label="
               getCategoryLabel(
-                isExpense ? expense?.category || '' : bill?.category || ''
+                isExpense ? expense?.category || '' : bill?.category || '',
               )
             "
             variant="soft"
@@ -414,7 +414,7 @@ const displayCurrency = computed(() => {
                   Math.ceil(
                     (new Date().getTime() -
                       new Date(bill?.dueDate || "").getTime()) /
-                      (1000 * 60 * 60 * 24)
+                      (1000 * 60 * 60 * 24),
                   )
                 }}
                 days
