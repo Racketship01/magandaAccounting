@@ -54,7 +54,6 @@ export default function useEmployee() {
     formData.value = {
       firstName: "",
       lastName: "",
-      role: "employee",
       phone: "",
       jobTitle: "",
       department: "",
@@ -81,7 +80,12 @@ export default function useEmployee() {
 
   // Fetch employees from the backend endpoint and override the employees useState
   const { refresh } = useAsyncData("getAllEmployee", async () => {
-    const response = await $fetch<{ employees: EmployeeData[] }>("/api/getAllEmployee");
+    const response = await $fetch<{ employees: EmployeeData[] }>(
+      "/api/getAllEmployee",
+      {
+        headers: useRequestHeaders(["cookie"]),
+      },
+    );
     if (response?.employees) {
       employees.value = response.employees;
     }
@@ -115,10 +119,17 @@ export default function useEmployee() {
     },
     credentials: {
       username: "john.doe",
-      email: "[EMAIL_ADDRESS]",
+      email: "johndoe@gmail.com",
     },
     profileImage: "",
   }));
 
-  return { formData, resetForm, employees, employeeState, currentUser, refresh };
+  return {
+    formData,
+    resetForm,
+    employees,
+    employeeState,
+    currentUser,
+    refresh,
+  };
 }

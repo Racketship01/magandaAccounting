@@ -46,22 +46,23 @@ model User {
 }
 
 model Employee {
-  id         String         @id @default(uuid())
-  firstName  String
-  lastName   String
-  phone      String
-  jobTitle   String
-  department String
-  startDate  String
-  currency   String
-  role       UserRole
-  status     EmployeeStatus
-  street     String
-  city       String
-  state      String
-  zipCode    String
-  salary     Float
-  expenses   Expense[]
+  id           String         @id @default(uuid())
+  firstName    String
+  lastName     String
+  phone        String
+  jobTitle     String
+  department   String
+  startDate    String
+  currency     String
+  role         UserRole
+  status       EmployeeStatus
+  street       String
+  city         String
+  state        String
+  zipCode      String
+  salary       Float
+  profileImage String?
+  expenses     Expense[]
 
   user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId String
@@ -74,23 +75,24 @@ model Employee {
 }
 
 model Admin {
-  id         String         @id @default(uuid())
-  firstName  String
-  lastName   String
-  phone      String
-  jobTitle   String
-  department String
-  startDate  String
-  currency   String
-  role       UserRole
-  salary     Float
-  status     EmployeeStatus
-  street     String
-  city       String
-  state      String
-  zipCode    String
-  expenses   Expense[]
-  bills      Bill[]
+  id           String         @id @default(uuid())
+  firstName    String
+  lastName     String
+  phone        String
+  jobTitle     String
+  department   String
+  startDate    String
+  currency     String
+  role         UserRole
+  salary       Float
+  status       EmployeeStatus
+  street       String
+  city         String
+  state        String
+  zipCode      String
+  profileImage String?
+  expenses     Expense[]
+  bills        Bill[]
 
   user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId String

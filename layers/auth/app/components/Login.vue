@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import useColor from "../../../base/app/composables/useColorMode";
+import useToastGlobal from "../../../base/app/composables/useToast";
 import useUser from "../composables/useUser";
 import { loginSchema } from "../../server/schemas";
 import useAuth from "../composables/useAuth";
@@ -33,8 +34,7 @@ const isFormValid = computed(() => {
   }).success;
 });
 
-// @ts-expect-error - useToast is auto-imported by NuxtUI
-const toast = useToast();
+const { toast } = useToastGlobal();
 
 // Handle login
 const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {

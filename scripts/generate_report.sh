@@ -42,7 +42,7 @@ Date: $date
 Branch: $branch 
 Author: $author
 
-✅ Summary
+✅ Summary - [Summary Title]
 Today's work focused on: $commit_subject
 $( [ -n "$commit_body" ] && echo -e "\n$commit_body" || true ). 
 [Brief explanation of today accomplished, what was done and the progress].
@@ -57,8 +57,9 @@ EOF
   emojis=("1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "8️⃣" "9️⃣" "🔟")
   
   git diff-tree --no-commit-id --name-status -r HEAD 2>/dev/null | while read -r status filepath; do
-    emoji=${emojis[$i]}
-    if [ -z "$emoji" ]; then
+    if [ "$i" -lt "${#emojis[@]}" ]; then
+      emoji=${emojis[$i]}
+    else
       emoji="👉"
     fi
     

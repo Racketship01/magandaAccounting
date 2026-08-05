@@ -6,6 +6,7 @@ import {
   createEmployeeSchema,
   updateEmployeeSchema,
 } from "../../server/schemas";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 interface Props {
   modelValue: boolean;
@@ -35,8 +36,7 @@ const isEmployeeFormOpen = computed({
 const handleSaveEmployeeForm = async () => {
   if (!isFormValid.value) return;
 
-  // @ts-expect-error - useToast is auto-imported by NuxtUI
-  const toast = useToast();
+  const { toast } = useToastGlobal();
 
   // UPDATE Employee
   if (props.employee) {
@@ -52,6 +52,7 @@ const handleSaveEmployeeForm = async () => {
         ...formData.value,
         id: response.employee?.id || props.employee.id,
       };
+
       emit("save", employeeData);
       toast.add({ title: "Employee updated successfully!", color: "success" });
       isEmployeeFormOpen.value = false;

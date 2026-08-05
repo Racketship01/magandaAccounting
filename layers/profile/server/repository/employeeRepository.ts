@@ -1,33 +1,22 @@
 import { prisma } from "../../../../prisma/utils/prisma";
-import { mapStatus, type UpdateEmployeeSchema } from "../schemas";
+import {
+  mapStatus,
+  type UpdateEmployeeSchema,
+  type CreateEmployeeSchema,
+} from "../schemas";
+import type {
+  Employee,
+  User,
+} from "../../../../prisma/generated/prisma/client";
 
-type CreateEmployeeInput = {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  jobTitle: string;
-  department: string;
-  startDate: string;
-  salary: number;
-  currency: string;
-  status: "Active" | "Inactive" | "On Leave";
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-  credentials: {
-    username: string;
-    email: string;
-    password: string; // must be pre-hashed
-  };
-};
-
-export async function createEmployee(employeeInfo: CreateEmployeeInput) {
+export async function createEmployee(
+  employeeInfo: CreateEmployeeSchema,
+): Promise<{
+  user: User;
+  employee: Employee & { profileImage: string };
+}> {
   return await prisma.$transaction(async (emp) => {
-    // 1. Create the User (credentials) — must use the transaction client (emp)
-    //    so that if employee creation fails, the User is also rolled back.
+    // 1. Create the User
     const user = await emp.user.create({
       data: {
         username: employeeInfo.credentials.username,
@@ -69,13 +58,14 @@ export async function createEmployee(employeeInfo: CreateEmployeeInput) {
   });
 }
 
-export async function getAllEmployee() {
+export async function getAllEmployee(): Promise<
+  (Employee & { user: User; profileImage: string })[]
+> {
   const employees = await prisma.employee.findMany({
     include: {
       user: true,
     },
   });
-
   return employees.map((employee) => ({
     ...employee,
     profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(employee.firstName)}+${encodeURIComponent(employee.lastName)}&background=random&color=fff`,
@@ -85,7 +75,7 @@ export async function getAllEmployee() {
 export async function updateEmployee(
   id: string,
   employeeInfo: UpdateEmployeeSchema,
-) {
+): Promise<{ employee: Employee; user: User }> {
   return await prisma.$transaction(async (emp) => {
     const employee = await emp.employee.update({
       where: {
@@ -125,7 +115,9 @@ export async function updateEmployee(
   });
 }
 
-export async function deleteEmployee(id: string) {
+export async function deleteEmployee(
+  id: string,
+): Promise<{ employee: Employee; user: User }> {
   return await prisma.$transaction(async (emp) => {
     const employee = await emp.employee.delete({
       where: {

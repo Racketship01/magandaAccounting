@@ -35,7 +35,12 @@ export default defineEventHandler(async (event) => {
   );
 
   return await setUserSession(event, {
-    user: { ...signup },
+    user: {
+      id: signup.id,
+      email: signup.email,
+      username: signup.username,
+      role: "employee",
+    },
     loggedInAt: new Date(),
   });
 });

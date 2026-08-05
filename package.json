@@ -12,7 +12,8 @@
     "lint:fix": "eslint --fix .",
     "prepare": "husky",
     "report": "bash ./scripts/generate_report.sh",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "echo \"No tests yet\" && exit 0",
+    "db:reset": "prisma migrate reset && prisma db seed"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

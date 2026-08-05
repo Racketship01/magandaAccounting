@@ -5,7 +5,6 @@ import {
   findUserByEmail,
   findUserByUsername,
 } from "../../../auth/server/repository/userRepository";
-import { hashPassword } from "#imports";
 import roleSession from "../utils/roleSession";
 
 export default defineEventHandler(async (event) => {
@@ -36,6 +35,7 @@ export default defineEventHandler(async (event) => {
     status,
     address,
     credentials,
+    profileImage,
   } = result.data;
   console.log(result.data);
 
@@ -74,6 +74,7 @@ export default defineEventHandler(async (event) => {
     salary,
     currency,
     status,
+    profileImage,
     address: {
       street,
       city,

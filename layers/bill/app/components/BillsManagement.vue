@@ -5,7 +5,7 @@ import useBill from "../composables/useBill";
 
 import type { Bill } from "../composables/useBill";
 
-const { bills } = useBill();
+const { bills, billState, refresh } = useBill();
 
 // Bill categories
 const billCategories = [
@@ -29,18 +29,13 @@ const isDeleteBillModalOpen = ref(false);
 const isBillViewEditModalOpen = ref(false);
 const selectedBill = ref<Bill | null>(null);
 
-// Filter state
-const searchQuery = ref("");
-const selectedCategory = ref("");
-const selectedStatus = ref("");
-
 // Computed properties
 const filteredBills = computed(() => {
   let filtered = bills.value;
 
   // Filter by search query
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
+  if (billState.value.searchQuery) {
+    const query = billState.value.searchQuery.toLowerCase();
     filtered = filtered.filter(
       (bill: { title: string; category: string }) =>
         bill.title.toLowerCase().includes(query) ||
@@ -49,19 +44,26 @@ const filteredBills = computed(() => {
   }
 
   // Filter by category
-  if (selectedCategory.value && selectedCategory.value !== "all") {
+  if (
+    billState.value.selectedCategory &&
+    billState.value.selectedCategory !== "all"
+  ) {
     filtered = filtered.filter(
-      (bill: { category: string }) => bill.category === selectedCategory.value,
+      (bill: { category: string }) =>
+        bill.category === billState.value.selectedCategory,
     );
   }
 
   // Filter by status
-  if (selectedStatus.value && selectedStatus.value !== "all") {
-    if (selectedStatus.value === "paid") {
+  if (
+    billState.value.selectedStatus &&
+    billState.value.selectedStatus !== "all"
+  ) {
+    if (billState.value.selectedStatus === "paid") {
       filtered = filtered.filter((bill: { isPaid: any }) => bill.isPaid);
-    } else if (selectedStatus.value === "unpaid") {
+    } else if (billState.value.selectedStatus === "unpaid") {
       filtered = filtered.filter((bill: { isPaid: any }) => !bill.isPaid);
-    } else if (selectedStatus.value === "overdue") {
+    } else if (billState.value.selectedStatus === "overdue") {
       filtered = filtered.filter(
         (bill: { isPaid: any; dueDate: string | number | Date }) =>
           !bill.isPaid && new Date(bill.dueDate) < new Date(),
@@ -88,45 +90,21 @@ const handleEditBill = (bill: any) => {
   isEditBillModalOpen.value = true;
 };
 
-const handleSaveBill = (data: any) => {
+const handleSaveBill = async (bill: Bill) => {
   if (isBillAddModalOpen.value) {
-    // Add new bill
-    const newBill: Bill = {
-      id: Date.now().toString(),
-      title: data.title,
-      amount: data.amount,
-      category: data.category,
-      dueDate: data.dueDate,
-      isRecurring: data.isRecurring,
-      recurringType: data.recurringType as "monthly" | "quarterly" | "yearly",
-      reminderDays: data.reminderDays,
-      isPaid: false,
-      createdAt:
-        new Date().toISOString().split("T")[0] || new Date().toISOString(),
-      receiptImage: data.receiptImage,
-      reminderEnabled: data.reminderEnabled,
-      currency: data.currency || "USD",
-    };
-    bills.value.push(newBill);
     isBillAddModalOpen.value = false;
-  } else if (isEditBillModalOpen.value && selectedBill.value) {
-    // Edit existing bill
-    const index = bills.value.findIndex(
-      (bill: { id: any }) => bill.id === selectedBill.value!.id,
-    );
+  } else if (isEditBillModalOpen.value) {
+    const index = bills.value.findIndex((b) => b.id === bill.id);
     if (index !== -1) {
       bills.value[index] = {
-        ...data,
-        id: selectedBill.value.id,
-        createdAt: selectedBill.value.createdAt,
-        isPaid: selectedBill.value.isPaid,
-        paidDate: selectedBill.value.paidDate,
+        ...bill,
+        id: bill.id as string,
       };
     }
+    await refresh();
     isEditBillModalOpen.value = false;
   }
 
-  // resetForm();
   selectedBill.value = null;
 };
 
@@ -172,12 +150,13 @@ const handleMarkAsPaidFromModal = (billId: string) => {
     bill.paidDate = new Date().toISOString().split("T")[0];
     isViewBillModalOpen.value = false;
   }
+  isBillViewEditModalOpen.value = false;
 };
 
-const handleRemoveBillFromModal = (billId: string) => {
-  bills.value = bills.value.filter((b: { id: string }) => b.id !== billId);
-  isViewBillModalOpen.value = false;
-};
+// const handleRemoveBillFromModal = (billId: string) => {
+//   bills.value = bills.value.filter((b: { id: string }) => b.id !== billId);
+//   isBillViewEditModalOpen.value = false;
+// }
 
 const getCategoryLabel = (category: string) => {
   return (
@@ -252,7 +231,7 @@ const isOverdue = (dueDate: string) => {
       <!-- Search Bar -->
       <div class="flex-1">
         <UInput
-          v-model="searchQuery"
+          v-model="billState.searchQuery"
           icon="i-lucide-search"
           placeholder="Search bills..."
           size="lg"
@@ -263,7 +242,7 @@ const isOverdue = (dueDate: string) => {
       <!-- Category Filter -->
       <div class="w-full sm:w-48">
         <USelect
-          v-model="selectedCategory"
+          v-model="billState.selectedCategory"
           :items="[
             { label: 'All Categories', value: 'all' },
             ...billCategories,
@@ -277,7 +256,7 @@ const isOverdue = (dueDate: string) => {
       <!-- Category Filter -->
       <div class="w-full sm:w-48">
         <USelect
-          v-model="selectedStatus"
+          v-model="billState.selectedStatus"
           :items="[
             { label: 'All Status', value: 'all' },
             { label: 'Paid', value: 'paid' },
@@ -444,7 +423,6 @@ const isOverdue = (dueDate: string) => {
             v-if="selectedBill"
             :bill="selectedBill"
             @paid="handleMarkAsPaidFromModal"
-            @remove="handleRemoveBillFromModal"
             @close="handleCloseViewBill"
           />
         </template>

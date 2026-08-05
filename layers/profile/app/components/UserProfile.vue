@@ -249,7 +249,7 @@ const convertToBase64 = (file: File): Promise<string> => {
                 <UIcon name="i-lucide-mail" class="w-4 h-4 text-gray-500" />
                 <span class="text-sm text-gray-500">Email</span>
               </div>
-              <p class="font-medium">{{ currentUser.email }}</p>
+              <p class="font-medium">{{ currentUser.credentials.email }}</p>
             </div>
 
             <div class="space-y-2">

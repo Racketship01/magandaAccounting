@@ -6,6 +6,7 @@ import useUser from "../composables/useUser";
 import { computed, onMounted, ref } from "vue";
 import useColor from "../../../base/app/composables/useColorMode";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 const { colorMode, isMounted, currentLogo } = useColor();
 
@@ -39,8 +40,7 @@ const isFormValid = computed(() => {
   }).success;
 });
 
-// @ts-expect-error - useToast is auto-imported by NuxtUI
-const toast = useToast();
+const { toast } = useToastGlobal();
 
 const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
   signup.value.errorMessage = "";
