@@ -93,3 +93,11 @@ export async function updateBill(
     },
   });
 }
+
+export async function deleteBill(id: string): Promise<Bill> {
+  return await prisma.bill.delete({
+    where: {
+      id,
+    },
+  });
+}

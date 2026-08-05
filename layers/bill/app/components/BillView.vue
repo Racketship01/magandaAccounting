@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Bill } from "../composables/useBill";
 import useBill from "../composables/useBill";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 interface Props {
   bill: Bill | null;
@@ -12,8 +13,7 @@ const _props = defineProps<Props>();
 
 const emit = defineEmits(["close", "paid"]);
 
-// @ts-expect-error - useToast is auto-imported by NuxtUI
-const toast = useToast();
+const { toast } = useToastGlobal();
 
 const handlePaid = async (updatedBill: typeof _BillProps.value) => {
   try {

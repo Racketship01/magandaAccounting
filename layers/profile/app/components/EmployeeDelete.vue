@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
 import { computed } from "vue";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 interface Props {
   modelValue: boolean;
@@ -22,8 +23,7 @@ const isEmployeeDeleteOpen = computed({
 const employeeToDelete = computed(() => props.employee);
 
 const confirmDelete = async () => {
-  //@ts-expect-error - useToast is not defined in this scope
-  const toast = useToast();
+  const { toast } = useToastGlobal();
 
   if (employeeToDelete.value) {
     try {

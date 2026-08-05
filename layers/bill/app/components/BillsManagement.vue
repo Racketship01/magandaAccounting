@@ -153,10 +153,10 @@ const handleMarkAsPaidFromModal = (billId: string) => {
   isBillViewEditModalOpen.value = false;
 };
 
-const handleRemoveBillFromModal = (billId: string) => {
-  bills.value = bills.value.filter((b: { id: string }) => b.id !== billId);
-  isBillViewEditModalOpen.value = false;
-};
+// const handleRemoveBillFromModal = (billId: string) => {
+//   bills.value = bills.value.filter((b: { id: string }) => b.id !== billId);
+//   isBillViewEditModalOpen.value = false;
+// }
 
 const getCategoryLabel = (category: string) => {
   return (
@@ -423,7 +423,6 @@ const isOverdue = (dueDate: string) => {
             v-if="selectedBill"
             :bill="selectedBill"
             @paid="handleMarkAsPaidFromModal"
-            @remove="handleRemoveBillFromModal"
             @close="handleCloseViewBill"
           />
         </template>

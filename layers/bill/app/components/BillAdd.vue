@@ -2,6 +2,7 @@
 // Bill interface
 import type { Bill } from "../composables/useBill";
 import useBill from "../composables/useBill";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 interface Props {
   bill?: Bill | null;
@@ -19,8 +20,7 @@ const handleClose = () => {
 const handleSaveBill = async (billData: Bill) => {
   let createdBill: any;
 
-  // @ts-expect-error - useToast is auto-imported by NuxtUI
-  const toast = useToast();
+  const { toast } = useToastGlobal();
 
   try {
     const response = await $fetch<any>("/api/createBill", {

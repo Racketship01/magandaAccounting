@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import useBill from "../composables/useBill";
 import type { Bill } from "../composables/useBill";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 interface Props {
   bill?: Bill | null;
@@ -19,8 +20,7 @@ const handleClose = () => {
 };
 
 const handleSaveBill = async (updatedBill: typeof BillProps.value) => {
-  // @ts-expect-error - useToast is auto-imported by NuxtUI
-  const toast = useToast();
+  const { toast } = useToastGlobal();
 
   try {
     const response = await $fetch<{ bill: Bill }>(
