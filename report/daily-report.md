@@ -1,28 +1,30 @@
-📋 Daily Progress Report - Accounting Project
-Date: August 4, 2026 (Tuesday)
+📋 Daily Progress Report - **Accounting Project**
+Date: August 5, 2026 (Wednesday)
 
-✅ Summary - **Implement Bill Update and PATCH Endpoint**
-This includes creating a backend repository update function, adjusting schemas to support updates, exposing an API endpoint to modify bills, and modifying frontend Vue components (like bill view/edit forms, bill listing management, and add actions) to allow editing and viewing bill details dynamically.
+#️⃣ Summary - **Secure Bill Deletion and System-wide Notifications**
+Today's work focused on introducing secure deletion capabilities for bills and standardizing system-wide pop-up notifications (toasts) across the application.
 
 📁 Files Modified
-1️⃣ layers/bill/app/components/BillEdit.vue
-👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/app/components/BillEdit.vue?ref_type=heads
+1️⃣ layers/base/app/composables/useToast.ts Added
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/base/app/composables/useToast.ts?ref_type=heads
 
-2️⃣ layers/bill/app/components/BillView.vue
-👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/app/components/BillView.vue?ref_type=heads
+2️⃣ layers/bill/app/components/BillDelete.vue Modified
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/app/components/BillDelete.vue?ref_type=heads
 
-3️⃣ layers/bill/app/components/BillsManagement.vue
-👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/app/components/BillsManagement.vue?ref_type=heads
+3️⃣ layers/bill/server/api/deleteBill/[idBill].delete.ts Added
+👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/server/api/deleteBill/[idBill].delete.ts?ref_type=heads
 
 4️⃣ layers/bill/server/repository/billRepository.ts Modified
 👉https://git.next1.ph/imelda/accounting/-/blob/bill/layers/bill/server/repository/billRepository.ts?ref_type=heads
 
 📐 Task Completed
-• **Added Database Update Functionality**: Added `updateBill` function to `billRepository.ts` to update bill details directly using Prisma.
-• **Backend PATCH Endpoint**: Created/updated the API endpoint to support partial data updates validation using Zod schemas.
-• **Frontend Bill Edit Form Integration**: Connected the editing components `BillEdit.vue`, `BillForm.vue`, and `BillView.vue` to allow modifying bill values and sending those updates to the server.
-• **Minor Layout adjustments**: Refactored view wrappers `View.vue` and `EmployeeForm.vue` to clean up spacing and formatting issues.
+• **Added Secure Bill Deletion Backend**: Created a `deleteBill` utility in the database repository layer and a matching secure DELETE API endpoint with role-based session verification (`deleteBill/[idBill].delete.ts`).
+• **Unified Toast Notification Composable**: Introduced `useToastGlobal` in `layers/base/app/composables/useToast.ts` as a reliable wrapper for showing user notifications, resolving TypeScript compilation warnings.
+• **Refactored Components to Unified Notifications**: Refactored multiple UI components (Login, Signup, Bill Add/Edit/View, Employee Delete/Form) to use the new global notification utility.
+• **Implemented Functional Bill Deletion UI**: Connected the `BillDelete.vue` confirm-modal directly to the new API, enabling users to delete bills with dynamic list refreshing and immediate feedback.
+• **Cleaned Up Obsolete Frontend Logic**: Cleaned up the management views by removing dummy client-side filter logic in favor of database-backed refreshing.
 
 🚀 Next Steps / Remaining Work
-• Perform end-to-end integration tests to verify the bill creation and updating flows work seamlessly.
-• Implement permissions check on the update endpoints to ensure only authorized administrators can modify bills.
+• Run validation and manual end-to-end user checks to verify that adding, editing, and deleting bills behaves as expected.
+• Write automated test suites to cover the new bill deletion endpoint and role-based permissions rules.
+• Review database constraints and transaction boundaries for deleted data records.
