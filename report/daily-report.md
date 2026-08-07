@@ -1,56 +1,80 @@
 📋 Daily Progress Report - **Accounting Project**
-Date: August 6, 2026 (Thursday)
-Branch: expense
+Date: August 7, 2026 (Friday) 
+Branch: expense 
 Author: racketship01
 
-✅ Summary - **AI-Powered Receipt Scanning and OCR Integration**
-Today's work focused on: added: receipt-scan feature.
+✅ Summary - **Expense Submission Pipeline and Session Authentication Refactoring**
+Today's work focused on: added: create expense features.
 
-We implemented an automated, AI-powered receipt scanning capability using OpenAI's `gpt-4o-mini` model with vision capabilities. Users can upload a receipt image, and the system will automatically extract the merchant name, total transaction amount, and purchase date, pre-filling the expense entry forms.
+We successfully built the database persistence pipeline for expense submissions, including server-side receipt image storage. Additionally, we refactored session-handling utilities to secure admin and employee endpoints across the bills, profile, and expense domains.
 
 📁 Files Modified / Added
-1️⃣ dev.db Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/dev.db?ref_type=heads
+1️⃣ dev.db	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/dev.db?ref_type=heads
 
-2️⃣ layers/expense/app/components/RecieptScanner.vue Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/app/components/RecieptScanner.vue?ref_type=heads
+2️⃣ layers/auth/server/repository/userRepository.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/auth/server/repository/userRepository.ts?ref_type=heads
 
-3️⃣ layers/expense/server/api/expense/scan.post.ts Added
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/server/api/expense/scan.post.ts?ref_type=heads
+3️⃣ layers/base/app/composables/useUploadImage.ts	Added
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/base/app/composables/useUploadImage.ts?ref_type=heads
 
-4️⃣ layers/expense/server/schemas.ts Added
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/server/schemas.ts?ref_type=heads
+4️⃣ layers/bill/server/api/createBill.post.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/bill/server/api/createBill.post.ts?ref_type=heads
 
-5️⃣ layers/expense/server/services/ai-service.ts Added
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/server/services/ai-service.ts?ref_type=heads
+5️⃣ layers/bill/server/api/deleteBill/[idBill].delete.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/bill/server/api/deleteBill/[idBill].delete.ts?ref_type=heads
 
-6️⃣ package.json Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/package.json?ref_type=heads
+6️⃣ layers/bill/server/api/getBills.get.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/bill/server/api/getBills.get.ts?ref_type=heads
 
-7️⃣ pnpm-lock.yaml Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/pnpm-lock.yaml?ref_type=heads
+7️⃣ layers/bill/server/api/updateBill/[idBill].patch.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/bill/server/api/updateBill/[idBill].patch.ts?ref_type=heads
 
-8️⃣ report/daily-report.md Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/report/daily-report.md?ref_type=heads
+8️⃣ layers/expense/app/components/RecieptScanner.vue	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/app/components/RecieptScanner.vue?ref_type=heads
 
-9️⃣ scripts/generate_report.sh Modified
-👉https://git.next1.ph/imelda/accounting/-/blob/expense/scripts/generate_report.sh?ref_type=heads
+9️⃣ layers/expense/server/api/expense/createExpense.post.ts	Added
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/server/api/expense/createExpense.post.ts?ref_type=heads
+
+🔟 layers/expense/server/repository/expenseRepository.ts	Added
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/server/repository/expenseRepository.ts?ref_type=heads
+
+👉 layers/profile/server/api/createEmployeeUser.post.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/api/createEmployeeUser.post.ts?ref_type=heads
+
+👉 layers/profile/server/api/deleteEmployee/[id].delete.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/api/deleteEmployee/[id].delete.ts?ref_type=heads
+
+👉 layers/profile/server/api/getAllEmployee.get.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/api/getAllEmployee.get.ts?ref_type=heads
+
+👉 layers/profile/server/api/updateEmployee/[id].patch.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/api/updateEmployee/[id].patch.ts?ref_type=heads
+
+👉 layers/profile/server/utils/roleSession.ts	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/utils/roleSession.ts?ref_type=heads
+
+👉 layers/profile/server/utils/userSession.ts	Added
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/utils/userSession.ts?ref_type=heads
+
+👉 public/uploads/receipt_1786098169051.png	Added
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/public/uploads/receipt_1786098169051.png?ref_type=heads
+
+👉 public/uploads/receipt_1786098317392.png	Added
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/public/uploads/receipt_1786098317392.png?ref_type=heads
+
+👉 report/daily-report.md	Modified
+ 👉https://git.next1.ph/imelda/accounting/-/blob/expense/report/daily-report.md?ref_type=heads
+
 
 📐 Task Completed
-• **Created OpenAI Integration Service**: Initialized the OpenAI SDK client helper
-👉 ([ai-service.ts](file:///c:/MagandaTeam-Project/accounting/layers/expense/server/services/ai-service.ts)) configured through the standard environment variable keys.
-
-• **Developed OCR Extraction API**: Formulated backend route using Zod schemas to validate OpenAI's structured Vision outputs, extracting the merchant name, decimal total amount, and transaction date in `YYYY-MM-DD` format.
-👉 [/api/expense/scan](file:///c:/MagandaTeam-Project/accounting/layers/expense/server/api/expense/scan.post.ts)
-
-👉 ([schemas.ts](file:///c:/MagandaTeam-Project/accounting/layers/expense/server/schemas.ts))
-
-• **Refactored Frontend Receipt Scanner**: Upgraded to convert uploaded receipt images to base64 Data URLs and send them to the server-side OCR scanner API.
-[RecieptScanner.vue](file:///c:/MagandaTeam-Project/accounting/layers/expense/app/components/RecieptScanner.vue)
-
-• **Tested Local Dev Environments**: Confirmed successful build integration of the receipt scanning libraries and dependencies.
+• **Created Expense Creation API Endpoint**: Built the backend route [/api/expense/createExpense](file:///c:/MagandaTeam-Project/accounting/layers/expense/server/api/expense/createExpense.post.ts) to receive, parse, and save user expenses.
+• **Implemented Receipt Image Storage**: Added [useUploadImage.ts](file:///c:/MagandaTeam-Project/accounting/layers/base/app/composables/useUploadImage.ts) to decode base64-encoded receipt images and store them as physical files in the server's public uploads directory.
+• **Developed Expense Repository**: Built [expenseRepository.ts](file:///c:/MagandaTeam-Project/accounting/layers/expense/server/repository/expenseRepository.ts) to resolve session users, dynamically assign the submitter's first name, and insert new expense records using Prisma.
+• **Refactored Session Authentication**: Standardized authentication checking utilities (renamed `roleSession` to `adminSession` and introduced `employeeSession`/`userSession`) and corrected un-awaited authentication calls across employee management and bill endpoints.
+• **Integrated Scanner Frontend**: Connected [RecieptScanner.vue](file:///c:/MagandaTeam-Project/accounting/layers/expense/app/components/RecieptScanner.vue) to the submission API, integrated user-friendly success/error toast alerts, and implemented form resetting.
 
 🚀 Next Steps / Remaining Work
-• Verify user-facing UI flows when loading receipt scanning states, ensuring clear spinner loading animations.
-• Implement graceful error fallback messages when low-quality images are uploaded or the OCR scanner is unable to parse information.
-• Ensure the OpenAI API key configurations are properly documented in `.env.example`.
+• Conduct end-to-end integration testing of the scanning-to-submission flow.
+• Implement frontend validation and validation schema checks for input fields.
+• Build dashboard views to browse, approve, or reject submitted expenses.
