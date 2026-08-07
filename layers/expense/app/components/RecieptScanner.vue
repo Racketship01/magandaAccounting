@@ -2,10 +2,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useReceipt } from "../composables/useReceipt";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 const { extractedData, formData, uploadedImage, resetForm } = useReceipt();
 const isProcessing = ref(false);
-
+const { toast } = useToastGlobal();
 const categories = [
   { label: "Food & Dining", value: "food", icon: "i-lucide-utensils" },
   { label: "Transportation", value: "transport", icon: "i-lucide-car" },
@@ -63,7 +64,7 @@ const handleFileUpload = async (files: FileList | null) => {
 
   const file = files[0];
   if (!file || !file.type.startsWith("image/")) {
-    alert("Please upload an image file");
+    toast.add({ title: "Please upload an image file", color: "error" });
     return;
   }
 
@@ -89,7 +90,10 @@ const handleFileUpload = async (files: FileList | null) => {
     formData.value.merchantName = extracted.merchantName;
   } catch (error) {
     console.error("Error processing receipt:", error);
-    alert("Error processing receipt. Please try again.");
+    toast.add({
+      title: "Error processing receipt. Please try again.",
+      color: "error",
+    });
   } finally {
     isProcessing.value = false;
   }
@@ -105,18 +109,42 @@ const handleDragOver = (e: DragEvent) => {
   e.preventDefault();
 };
 
-const submitExpense = () => {
+const submitExpense = async () => {
   if (
     !formData.value?.amount ||
     !formData.value.date ||
     !formData.value.merchantName
   ) {
-    alert("Please fill in all required fields");
+    toast.add({ title: "Please fill in all required fields", color: "error" });
     return;
   }
+  try {
+    isProcessing.value = true;
 
-  console.log("Submitting expense:", formData.value);
-  alert("Expense submitted successfully!");
+    // Save to server database
+    const savedExpense = await $fetch("/api/expense/createExpense", {
+      method: "POST",
+      body: {
+        amount: formData.value.amount,
+        date: formData.value.date,
+        merchantName: formData.value.merchantName,
+        category: formData.value.category,
+        description: formData.value.description,
+        currency: formData.value.currency, // Holds the raw base64 data url
+        image: uploadedImage.value,
+      },
+    });
+    console.log("Saved Expense:", savedExpense);
+    toast.add({ title: "Expense added successfully!", color: "success" });
+
+    // Reset scanner states
+    resetForm();
+  } catch (error) {
+    console.error("Failed to save expense:", error);
+    toast.add({ title: "Error adding expense!", color: "error" });
+  } finally {
+    isProcessing.value = false;
+  }
 
   // Reset form
   resetForm();

@@ -1,9 +1,9 @@
 import { updateBill } from "../../repository/billRepository";
 import { updateBillSchema } from "../../schemas";
-import roleSession from "../../../../profile/server/utils/roleSession";
+import adminSession from "../../../../profile/server/utils/roleSession";
 
 export default defineEventHandler(async (event: any) => {
-  roleSession(event);
+  await adminSession(event);
   // 1. Validate input schema
   const body = await readBody(event);
   const validationResult = updateBillSchema.safeParse(body);

@@ -5,12 +5,12 @@ import {
   findUserByEmail,
   findUserByUsername,
 } from "../../../auth/server/repository/userRepository";
-import roleSession from "../utils/roleSession";
+import adminSession from "../utils/roleSession";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  roleSession(event);
+  await adminSession(event);
 
   // Validate the full employee form body
   const result = createEmployeeSchema.safeParse(body);

@@ -7,10 +7,10 @@ import {
 } from "h3";
 import { updateEmployee } from "../../repository/employeeRepository";
 import { updateEmployeeSchema } from "../../schemas";
-import roleSession from "../../utils/roleSession";
+import adminSession from "../../utils/roleSession";
 
 export default defineEventHandler(async (event) => {
-  roleSession(event);
+  await adminSession(event);
 
   const id = getRouterParam(event, "id");
   const body = await readBody(event);
