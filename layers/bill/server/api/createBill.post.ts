@@ -1,11 +1,11 @@
 import { createBill } from "../repository/billRepository";
 import { createBillSchema } from "../schemas";
 import { defineEventHandler, readBody, createError, H3Error } from "h3";
-import roleSession from "../../../../layers/profile/server/utils/roleSession";
+import adminSession from "../../../../layers/profile/server/utils/roleSession";
 import { prisma } from "../../../../prisma/utils/prisma";
 
 export default defineEventHandler(async (event: any) => {
-  const adminSession = await roleSession(event);
+  const user = await adminSession(event);
 
   const body = await readBody(event);
 
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event: any) => {
   }
 
   const admin = await prisma.admin.findFirst({
-    where: { userId: adminSession.id },
+    where: { userId: user.id },
   });
 
   if (!admin) {

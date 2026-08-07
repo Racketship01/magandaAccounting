@@ -2,10 +2,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useReceipt } from "../composables/useReceipt";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 const { extractedData, formData, uploadedImage, resetForm } = useReceipt();
 const isProcessing = ref(false);
-
+const { toast } = useToastGlobal();
 const categories = [
   { label: "Food & Dining", value: "food", icon: "i-lucide-utensils" },
   { label: "Transportation", value: "transport", icon: "i-lucide-car" },
@@ -33,17 +34,29 @@ const getCurrencySymbol = (currency: string) => {
 // TODO: Implement OCR service-----------------
 // SCANNER: Mock OCR function - In production, you'd use a service like Google Vision API, AWS Textract, or Tesseract.js
 const extractReceiptData = async (
-  imageFile: File
+  imageFile: File,
 ): Promise<typeof extractedData.value> => {
-  // Simulate processing time
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  // 1. Convert file to base64 Data URL
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target?.result as string);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(imageFile);
+  });
 
-  // Mock extracted data - replace with actual OCR service
-  return {
-    amount: extractedData.value?.amount || "",
-    date: new Date().toISOString().split("T")[0] || "",
-    merchantName: "Sample Store",
-  };
+  // 2. Call the server api endpoint
+  const response = await $fetch("/api/expense/scan", {
+    method: "POST",
+    body: { image: base64 },
+  });
+
+  // 3. Return the parsed fields
+  console.log(response);
+  extractedData.value.amount = response.amount;
+  extractedData.value.date = response.date;
+  extractedData.value.merchantName = response.merchantName;
+
+  return response;
 };
 
 const handleFileUpload = async (files: FileList | null) => {
@@ -51,7 +64,7 @@ const handleFileUpload = async (files: FileList | null) => {
 
   const file = files[0];
   if (!file || !file.type.startsWith("image/")) {
-    alert("Please upload an image file");
+    toast.add({ title: "Please upload an image file", color: "error" });
     return;
   }
 
@@ -77,7 +90,10 @@ const handleFileUpload = async (files: FileList | null) => {
     formData.value.merchantName = extracted.merchantName;
   } catch (error) {
     console.error("Error processing receipt:", error);
-    alert("Error processing receipt. Please try again.");
+    toast.add({
+      title: "Error processing receipt. Please try again.",
+      color: "error",
+    });
   } finally {
     isProcessing.value = false;
   }
@@ -93,18 +109,42 @@ const handleDragOver = (e: DragEvent) => {
   e.preventDefault();
 };
 
-const submitExpense = () => {
+const submitExpense = async () => {
   if (
     !formData.value?.amount ||
     !formData.value.date ||
     !formData.value.merchantName
   ) {
-    alert("Please fill in all required fields");
+    toast.add({ title: "Please fill in all required fields", color: "error" });
     return;
   }
+  try {
+    isProcessing.value = true;
 
-  console.log("Submitting expense:", formData.value);
-  alert("Expense submitted successfully!");
+    // Save to server database
+    const savedExpense = await $fetch("/api/expense/createExpense", {
+      method: "POST",
+      body: {
+        amount: formData.value.amount,
+        date: formData.value.date,
+        merchantName: formData.value.merchantName,
+        category: formData.value.category,
+        description: formData.value.description,
+        currency: formData.value.currency, // Holds the raw base64 data url
+        image: uploadedImage.value,
+      },
+    });
+    console.log("Saved Expense:", savedExpense);
+    toast.add({ title: "Expense added successfully!", color: "success" });
+
+    // Reset scanner states
+    resetForm();
+  } catch (error) {
+    console.error("Failed to save expense:", error);
+    toast.add({ title: "Error adding expense!", color: "error" });
+  } finally {
+    isProcessing.value = false;
+  }
 
   // Reset form
   resetForm();

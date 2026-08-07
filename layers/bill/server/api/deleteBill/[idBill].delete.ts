@@ -1,9 +1,9 @@
 import { deleteBill } from "../../repository/billRepository";
 import { createError, getRouterParam } from "h3";
-import roleSession from "../../../../profile/server/utils/roleSession";
+import adminSession from "../../../../profile/server/utils/roleSession";
 
 export default defineEventHandler(async (event) => {
-  roleSession(event);
+  await adminSession(event);
 
   const id = getRouterParam(event, "idBill");
   if (!id) {

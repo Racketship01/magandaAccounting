@@ -37,12 +37,12 @@ commit_subject=$(git log -1 --format="%s" 2>/dev/null || echo "No commits yet")
 commit_body=$(git log -1 --format="%b" 2>/dev/null || echo "")
 
 cat > "$repo_root/report/daily-report.md" <<EOF
-📋 Daily Progress Report - Accounting Project
+📋 Daily Progress Report - **Accounting Project**
 Date: $date 
 Branch: $branch 
 Author: $author
 
-✅ Summary - [Summary Title]
+✅ Summary - **[Summary Title]**
 Today's work focused on: $commit_subject
 $( [ -n "$commit_body" ] && echo -e "\n$commit_body" || true ). 
 [Brief explanation of today accomplished, what was done and the progress].
@@ -52,7 +52,7 @@ EOF
 
 # Append files modified
 {
-  echo "📁 Files Modified"
+  echo "📁 Files Modified / Added"
   i=0
   emojis=("1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "8️⃣" "9️⃣" "🔟")
   

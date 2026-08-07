@@ -33,3 +33,16 @@ export async function findUserByUsername(username: string) {
     },
   });
 }
+
+export async function getUserFirstName(userId: string): Promise<string | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      admin: true,
+      employees: true,
+    },
+  });
+  if (!user) return null;
+  // Return the first name from whichever profile relation exists
+  return user.admin?.[0]?.firstName || user.employees?.[0]?.firstName || null;
+}
