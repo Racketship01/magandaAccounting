@@ -3,8 +3,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import useExpense from "../composables/useExpense";
+import useAuth from "~~/layers/auth/app/composables/useAuth";
 
 const { selectedExpense } = useExpense();
+const { user } = useAuth();
+
+const isAdmin = computed(() => user.value?.role === "admin");
 
 interface Props {
   expense: typeof selectedExpense.value | null;
@@ -41,7 +45,7 @@ const expenseData = computed(() => {
     :data="expenseData"
     title="Expense Details"
     type="expense"
-    :show-actions="true"
+    :show-actions="isAdmin"
     @approve="handleApprove"
     @reject="handleReject"
     @close="handleClose"

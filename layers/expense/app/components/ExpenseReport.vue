@@ -1,10 +1,13 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import useExpense from "../composables/useExpense";
+import useToastGlobal from "../../../base/app/composables/useToast";
+import userSession from "@/layers/profile/server/utils/userSession";
 
-const { expenseState, availableExpenses, selectedExpense } = useExpense();
-
+const { expenseState, availableExpenses, selectedExpense, refresh } =
+  useExpense();
+const { toast } = useToastGlobal();
 // Modal state
 const isModalOpen = ref(false);
 const selectedExpenses = computed(() => expenseState.value.selectedExpenses);
@@ -192,6 +195,14 @@ const formatDate = (dateString: string) => {
     day: "numeric",
   });
 };
+
+watch(
+  () => expenseState.value.searchQuery,
+  async () => {
+    await refresh();
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
