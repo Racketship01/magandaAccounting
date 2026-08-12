@@ -1,80 +1,32 @@
 📋 Daily Progress Report - **Accounting Project**
-Date: August 7, 2026 (Friday) 
-Branch: expense 
-Author: racketship01
+Date: August 12, 2026 (Wednesday)
 
-✅ Summary - **Expense Submission Pipeline and Session Authentication Refactoring**
-Today's work focused on: added: create expense features.
-
-We successfully built the database persistence pipeline for expense submissions, including server-side receipt image storage. Additionally, we refactored session-handling utilities to secure admin and employee endpoints across the bills, profile, and expense domains.
-
-📁 Files Modified / Added
-1️⃣ dev.db	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/dev.db?ref_type=heads
-
-2️⃣ layers/auth/server/repository/userRepository.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/auth/server/repository/userRepository.ts?ref_type=heads
-
-3️⃣ layers/base/app/composables/useUploadImage.ts	Added
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/base/app/composables/useUploadImage.ts?ref_type=heads
-
-4️⃣ layers/bill/server/api/createBill.post.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/bill/server/api/createBill.post.ts?ref_type=heads
-
-5️⃣ layers/bill/server/api/deleteBill/[idBill].delete.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/bill/server/api/deleteBill/[idBill].delete.ts?ref_type=heads
-
-6️⃣ layers/bill/server/api/getBills.get.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/bill/server/api/getBills.get.ts?ref_type=heads
-
-7️⃣ layers/bill/server/api/updateBill/[idBill].patch.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/bill/server/api/updateBill/[idBill].patch.ts?ref_type=heads
-
-8️⃣ layers/expense/app/components/RecieptScanner.vue	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/app/components/RecieptScanner.vue?ref_type=heads
-
-9️⃣ layers/expense/server/api/expense/createExpense.post.ts	Added
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/server/api/expense/createExpense.post.ts?ref_type=heads
-
-🔟 layers/expense/server/repository/expenseRepository.ts	Added
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/server/repository/expenseRepository.ts?ref_type=heads
-
-👉 layers/profile/server/api/createEmployeeUser.post.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/api/createEmployeeUser.post.ts?ref_type=heads
-
-👉 layers/profile/server/api/deleteEmployee/[id].delete.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/api/deleteEmployee/[id].delete.ts?ref_type=heads
-
-👉 layers/profile/server/api/getAllEmployee.get.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/api/getAllEmployee.get.ts?ref_type=heads
-
-👉 layers/profile/server/api/updateEmployee/[id].patch.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/api/updateEmployee/[id].patch.ts?ref_type=heads
-
-👉 layers/profile/server/utils/roleSession.ts	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/utils/roleSession.ts?ref_type=heads
-
-👉 layers/profile/server/utils/userSession.ts	Added
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/profile/server/utils/userSession.ts?ref_type=heads
-
-👉 public/uploads/receipt_1786098169051.png	Added
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/public/uploads/receipt_1786098169051.png?ref_type=heads
-
-👉 public/uploads/receipt_1786098317392.png	Added
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/public/uploads/receipt_1786098317392.png?ref_type=heads
-
-👉 report/daily-report.md	Modified
- 👉https://git.next1.ph/imelda/accounting/-/blob/expense/report/daily-report.md?ref_type=heads
-
+✅ Summary - **Expense System Integration and Real-Time Receipt Rendering**
+Today's work focused on replaced the local frontend mock data in the expense module with a real-time database pipeline, connecting the UI to dynamic user-specific expense queries. We also enhanced the receipt viewer interface to support real-time physical rendering of uploaded receipts and restricted moderation actions to administrators.
 
 📐 Task Completed
-• **Created Expense Creation API Endpoint**: Built the backend route [/api/expense/createExpense](file:///c:/MagandaTeam-Project/accounting/layers/expense/server/api/expense/createExpense.post.ts) to receive, parse, and save user expenses.
-• **Implemented Receipt Image Storage**: Added [useUploadImage.ts](file:///c:/MagandaTeam-Project/accounting/layers/base/app/composables/useUploadImage.ts) to decode base64-encoded receipt images and store them as physical files in the server's public uploads directory.
-• **Developed Expense Repository**: Built [expenseRepository.ts](file:///c:/MagandaTeam-Project/accounting/layers/expense/server/repository/expenseRepository.ts) to resolve session users, dynamically assign the submitter's first name, and insert new expense records using Prisma.
-• **Refactored Session Authentication**: Standardized authentication checking utilities (renamed `roleSession` to `adminSession` and introduced `employeeSession`/`userSession`) and corrected un-awaited authentication calls across employee management and bill endpoints.
-• **Integrated Scanner Frontend**: Connected [RecieptScanner.vue](file:///c:/MagandaTeam-Project/accounting/layers/expense/app/components/RecieptScanner.vue) to the submission API, integrated user-friendly success/error toast alerts, and implemented form resetting.
+1️⃣ **Integrated Real-Time Expense Queries**: Added backend endpoint `/api/expense/getAllExpense` and repository function `getExpenses` to fetch database expenses filtered by user role (admin sees all, employee sees only their own).
+2️⃣ **Implemented Receipt Render & Zoom**: Refactored the base `View.vue` detail component to show real-time receipt images and bills with a hover-zoom overlay, custom labels, and direct download links.
+3️⃣ **Applied Role-Based Expense Controls**: Modified `ExpenseView.vue` and `View.vue` to conditionally render expense moderation actions (Approve/Reject buttons) only if the authenticated user has an `admin` role.
+4️⃣ **Introduced Reactive Query Refreshes**: Linked the search and filter query states to trigger automatic re-fetching of database expenses in `ExpenseReport.vue`.
+
+📁 Files Modified / Added
+👉[getAllExpense.get.ts](https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/server/api/expense/getAllExpense.get.ts?ref_type=heads)
+New backend API endpoint to retrieve database-stored expenses.
+
+👉[expenseRepository.ts](https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/server/repository/expenseRepository.ts?ref_type=heads)
+Implemented database queries to filter expenses by user role (admins view all, employees view their own).
+
+👉[View.vue](https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/base/app/components/View.vue?ref_type=heads)
+Upgraded receipt preview rendering to support interactive mouse-hover zoom effects and external link attachments.
+
+👉[ExpenseReport.vue](https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/app/components/ExpenseReport.vue?ref_type=heads)
+Integrated automatic list refresh when search filters or inputs change.
+
+👉[useExpense.ts](https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/app/composables/useExpense.ts?ref_type=heads)
+Replaced state mocks with real-time fetching logic.
 
 🚀 Next Steps / Remaining Work
-• Conduct end-to-end integration testing of the scanning-to-submission flow.
-• Implement frontend validation and validation schema checks for input fields.
-• Build dashboard views to browse, approve, or reject submitted expenses.
+• Complete backend API handler for updating expense statuses (Approve/Reject).
+• Write unit tests for database schema validation and repository level queries.
+• Add frontend validation schemas for expense submission parameters.
