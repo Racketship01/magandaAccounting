@@ -1,43 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-
-// Expense interface
-interface ExpenseItem {
-  id: string;
-  date: string;
-  category: string;
-  amount: number;
-  price?: number;
-  currency: string;
-  merchantName: string;
-  description: string;
-  employeeName: string;
-  status: string;
-  receiptUrl?: string;
-  notes?: string;
-  projectCode?: string;
-  isSelected: boolean;
-}
-
-// Bill interface
-interface Bill {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  dueDate: string;
-  isRecurring: boolean;
-  recurringType?: "monthly" | "quarterly" | "yearly";
-  reminderDays: number;
-  isPaid: boolean;
-  paidDate?: string;
-  createdAt: string;
-  notes?: string;
-  receiptImage?: string;
-  reminderEnabled: boolean;
-  currency?: string;
-}
+import type { ExpenseItem } from "@/layers/expense/app/composables/useExpense";
+import type { Bill } from "@/layers/bill/app/composables/useBill";
+import adminSession from "../../../profile/server/utils/roleSession";
 
 interface Props {
   title: string;
@@ -78,12 +44,13 @@ const formatDate = (dateString: string) => {
 
 const getStatusColor = (data: any) => {
   if (props.type === "expense") {
-    switch (data.status) {
-      case "Approved":
+    const status = data.status?.toLowerCase();
+    switch (status) {
+      case "approved":
         return "success";
-      case "Rejected":
+      case "rejected":
         return "error";
-      case "Pending":
+      case "pending":
         return "warning";
       default:
         return "neutral";
@@ -98,7 +65,17 @@ const getStatusColor = (data: any) => {
 
 const getStatusLabel = (data: any) => {
   if (props.type === "expense") {
-    return data.status;
+    const status = data.status?.toLowerCase();
+    switch (status) {
+      case "approved":
+        return "Approved";
+      case "rejected":
+        return "Rejected";
+      case "pending":
+        return "Pending";
+      default:
+        return data.status;
+    }
   } else {
     // Bill status
     if (data.isPaid) return "Paid";
@@ -427,7 +404,9 @@ const displayCurrency = computed(() => {
       <!-- Action Buttons -->
       <div v-if="showActions" class="flex justify-end gap-4">
         <!-- Expense Actions -->
-        <template v-if="isExpense && expense?.status === 'Pending'">
+        <template
+          v-if="isExpense && expense?.status?.toLowerCase() === 'pending'"
+        >
           <UButton
             color="success"
             variant="subtle"
@@ -482,40 +461,102 @@ const displayCurrency = computed(() => {
           Receipt
         </label>
 
-        <div
-          v-if="isExpense"
-          class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center"
-        >
-          <UIcon
-            name="i-lucide-file-image"
-            class="mx-auto h-12 w-12 text-gray-400 mb-3"
-          />
-          <p class="text-gray-500 dark:text-gray-400 mb-2">Receipt Document</p>
-          <p class="text-sm text-gray-400">
-            {{ expense?.receiptUrl || "No receipt available" }}
-          </p>
-          <!-- Receipt preview placeholder -->
+        <div v-if="isExpense" class="space-y-4">
+          <!-- Receipt Preview -->
+          <div v-if="expense?.receiptUrl" class="space-y-3">
+            <div class="relative group">
+              <a
+                :href="expense.receiptUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 mx-auto max-w-md"
+              >
+                <img
+                  :src="expense.receiptUrl"
+                  alt="Receipt preview"
+                  class="w-full h-auto rounded-lg object-contain cursor-zoom-in"
+                />
+                <!-- Hover Overlay -->
+                <div
+                  class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200"
+                >
+                  <div
+                    class="flex items-center gap-2 text-white bg-black/60 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm"
+                  >
+                    <UIcon name="i-lucide-external-link" class="h-4 w-4" />
+                    Open in new tab
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="flex justify-center mt-2">
+              <UButton
+                :href="expense.receiptUrl"
+                target="_blank"
+                variant="ghost"
+                color="neutral"
+                icon="i-lucide-external-link"
+                size="sm"
+              >
+                Open original receipt
+              </UButton>
+            </div>
+          </div>
+
+          <!-- No Receipt -->
           <div
-            class="mt-4 bg-gray-100 dark:bg-gray-800 rounded-lg p-4 min-h-42 flex items-center justify-center"
+            v-else
+            class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center"
           >
-            <p class="text-gray-500 dark:text-gray-400">Receipt Preview</p>
+            <UIcon
+              name="i-lucide-receipt"
+              class="h-12 w-12 text-gray-400 mx-auto mb-4"
+            />
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              No receipt uploaded
+            </p>
           </div>
         </div>
 
         <div v-if="isBill" class="space-y-4">
           <!-- Receipt Preview -->
           <div v-if="bill?.receiptImage" class="space-y-3">
-            <div class="relative">
-              <img
-                :src="bill.receiptImage"
-                alt="Receipt preview"
-                class="w-full max-w-md h-64 rounded-lg object-cover border border-gray-200 dark:border-gray-600 mx-auto"
-              />
+            <div class="relative group">
+              <a
+                :href="bill.receiptImage"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 mx-auto max-w-md"
+              >
+                <img
+                  :src="bill.receiptImage"
+                  alt="Receipt preview"
+                  class="w-full h-auto rounded-lg object-contain cursor-zoom-in"
+                />
+                <!-- Hover Overlay -->
+                <div
+                  class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200"
+                >
+                  <div
+                    class="flex items-center gap-2 text-white bg-black/60 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm"
+                  >
+                    <UIcon name="i-lucide-external-link" class="h-4 w-4" />
+                    Open in new tab
+                  </div>
+                </div>
+              </a>
             </div>
-            <div class="text-center">
-              <p class="text-sm text-gray-600 dark:text-gray-400">
-                Receipt available
-              </p>
+            <div class="flex justify-center mt-2">
+              <UButton
+                :href="bill.receiptImage"
+                target="_blank"
+                variant="ghost"
+                color="neutral"
+                icon="i-lucide-external-link"
+                size="sm"
+              >
+                Open original receipt
+              </UButton>
             </div>
           </div>
 
