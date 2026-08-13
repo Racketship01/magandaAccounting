@@ -33,7 +33,7 @@ export const updateExpenseStatusSchema = z.object({
 export type UpdateExpenseStatus = z.infer<typeof updateExpenseStatusSchema>;
 
 export const mapStatus = (status: string) => {
-  switch (status) {
+  switch (status.toUpperCase()) {
     case "PENDING":
       return "pending";
     case "APPROVED":
