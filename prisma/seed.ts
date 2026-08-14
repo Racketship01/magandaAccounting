@@ -47,6 +47,26 @@ async function main() {
       },
     });
 
+    await tx.employee.create({
+      data: {
+        userId: user.id,
+        firstName: "Juan",
+        lastName: "Dela Cruz",
+        phone: "09123456789",
+        jobTitle: "Admin/Employee",
+        department: "Admin",
+        status: "active",
+        startDate: new Date().toISOString(),
+        salary: 50000,
+        currency: "PHP",
+        role: "admin",
+        street: "123 Main St",
+        city: "Manila",
+        state: "Metro Manila",
+        zipCode: "1000",
+      },
+    });
+
     const profileImage = `https://ui-avatars.com/api/?name=${admin.firstName}+${admin.lastName}&background=random&color=fff`;
 
     return {

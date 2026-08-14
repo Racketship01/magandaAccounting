@@ -1,10 +1,13 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import useExpense from "../composables/useExpense";
+import useToastGlobal from "../../../base/app/composables/useToast";
+import userSession from "@/layers/profile/server/utils/userSession";
 
-const { expenseState, availableExpenses, selectedExpense } = useExpense();
-
+const { expenseState, availableExpenses, selectedExpense, refresh } =
+  useExpense();
+const { toast } = useToastGlobal();
 // Modal state
 const isModalOpen = ref(false);
 const selectedExpenses = computed(() => expenseState.value.selectedExpenses);
@@ -110,7 +113,7 @@ const deleteSelectedExpenses = () => {
   isExpenseDeleteModalOpen.value = true;
 };
 
-const confirmDeleteExpenses = () => {
+const confirmDeleteExpenses = async () => {
   // Store the count before clearing
   const deletedCount = selectedExpenses.value.length;
 
@@ -119,14 +122,32 @@ const confirmDeleteExpenses = () => {
     (expense) => !selectedExpenses.value.includes(expense.id),
   );
 
+  try {
+    await Promise.all(
+      selectedExpenses.value.map((id) =>
+        $fetch(`/api/deleteExpense/${id}`, {
+          method: "DELETE",
+        }),
+      ),
+    );
+    toast.add({
+      title: "Success",
+      description: "Selected Expense Deleted Successfully",
+      color: "success",
+    });
+  } catch (error) {
+    toast.add({
+      title: "Failed to Delete",
+      description: `Failed to delete selected expense`,
+      color: "error",
+    });
+  }
+
   // Clear the selection
   expenseState.value.selectedExpenses = [];
 
   // Close the modal
   isExpenseDeleteModalOpen.value = false;
-
-  // Show success message
-  alert(`Successfully deleted ${deletedCount} expense(s)!`);
 };
 
 // Modal functions
@@ -140,7 +161,6 @@ const handleApprove = (expenseId: string) => {
   if (expense) {
     expense.status = "Approved";
     isModalOpen.value = false;
-    alert("Expense approved successfully!");
   }
 };
 
@@ -149,7 +169,6 @@ const handleReject = (expenseId: string) => {
   if (expense) {
     expense.status = "Rejected";
     isModalOpen.value = false;
-    alert("Expense rejected!");
   }
 };
 
@@ -192,6 +211,14 @@ const formatDate = (dateString: string) => {
     day: "numeric",
   });
 };
+
+watch(
+  () => expenseState.value.searchQuery,
+  async () => {
+    await refresh();
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
