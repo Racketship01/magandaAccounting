@@ -4,6 +4,9 @@
 import { computed } from "vue";
 import useExpense from "../composables/useExpense";
 import useAuth from "~~/layers/auth/app/composables/useAuth";
+import useToastGlobal from "~~/layers/base/app/composables/useToast";
+
+const { toast } = useToastGlobal();
 
 const { selectedExpense } = useExpense();
 const { user } = useAuth();
@@ -22,12 +25,50 @@ const emit = defineEmits<{
   close: [];
 }>();
 
-const handleApprove = (id: string) => {
-  emit("approve", id);
+const handleApprove = async (id: string) => {
+  try {
+    await $fetch(`/api/updateExpense/${id}`, {
+      method: "PATCH",
+      body: {
+        status: "approved",
+      },
+    });
+    toast.add({
+      title: "Success",
+      description: "Expense approved successfully",
+      color: "success",
+    });
+    emit("approve", id);
+  } catch (error) {
+    toast.add({
+      title: "Error",
+      description: "Failed to approve expense",
+      color: "error",
+    });
+  }
 };
 
-const handleReject = (id: string) => {
-  emit("reject", id);
+const handleReject = async (id: string) => {
+  try {
+    await $fetch(`/api/updateExpense/${id}`, {
+      method: "PATCH",
+      body: {
+        status: "rejected",
+      },
+    });
+    toast.add({
+      title: "Success",
+      description: "Expense rejected successfully",
+      color: "success",
+    });
+    emit("reject", id);
+  } catch (error) {
+    toast.add({
+      title: "Error",
+      description: "Failed to reject expense",
+      color: "error",
+    });
+  }
 };
 
 const handleClose = () => {

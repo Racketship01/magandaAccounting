@@ -81,7 +81,7 @@ export const createExpense = async (
   });
 };
 
-export async function getExpenses(event: any) {
+export async function getExpenses(event: any): Promise<Expense[]> {
   const user = await userSession(event);
 
   if (user.role === "admin") {
@@ -109,4 +109,41 @@ export async function getExpenses(event: any) {
   } else {
     return [];
   }
+}
+
+export async function updateExpenseStatus(
+  id: string,
+  status: UpdateExpenseStatus,
+  event: any,
+): Promise<Expense> {
+  const user = await userSession(event);
+
+  if (user.role === "employee") {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Employee cannot update expense status",
+    });
+  }
+
+  const admin = await prisma.admin.findFirst({
+    where: { userId: user.id },
+  });
+
+  if (!admin) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Admin profile not found",
+    });
+  }
+
+  return await prisma.expense.update({
+    where: { id },
+    data: { status: mapStatus(status) },
+  });
+}
+
+export async function deleteExpense(id: string): Promise<Expense> {
+  return await prisma.expense.delete({
+    where: { id },
+  });
 }

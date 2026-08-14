@@ -14,6 +14,8 @@ export const useReceipt = () => {
     merchantName: "",
   }));
 
+  const isProcessing = useState<boolean>("isProcessing", () => false);
+
   const formData = useState<FormData>("formData", () => ({
     amount: "",
     currency: "USD",
@@ -46,5 +48,6 @@ export const useReceipt = () => {
     formData,
     uploadedImage,
     resetForm,
+    isProcessing,
   };
 };

@@ -113,7 +113,7 @@ const deleteSelectedExpenses = () => {
   isExpenseDeleteModalOpen.value = true;
 };
 
-const confirmDeleteExpenses = () => {
+const confirmDeleteExpenses = async () => {
   // Store the count before clearing
   const deletedCount = selectedExpenses.value.length;
 
@@ -122,14 +122,32 @@ const confirmDeleteExpenses = () => {
     (expense) => !selectedExpenses.value.includes(expense.id),
   );
 
+  try {
+    await Promise.all(
+      selectedExpenses.value.map((id) =>
+        $fetch(`/api/deleteExpense/${id}`, {
+          method: "DELETE",
+        }),
+      ),
+    );
+    toast.add({
+      title: "Success",
+      description: "Selected Expense Deleted Successfully",
+      color: "success",
+    });
+  } catch (error) {
+    toast.add({
+      title: "Failed to Delete",
+      description: `Failed to delete selected expense`,
+      color: "error",
+    });
+  }
+
   // Clear the selection
   expenseState.value.selectedExpenses = [];
 
   // Close the modal
   isExpenseDeleteModalOpen.value = false;
-
-  // Show success message
-  alert(`Successfully deleted ${deletedCount} expense(s)!`);
 };
 
 // Modal functions
@@ -143,7 +161,6 @@ const handleApprove = (expenseId: string) => {
   if (expense) {
     expense.status = "Approved";
     isModalOpen.value = false;
-    alert("Expense approved successfully!");
   }
 };
 
@@ -152,7 +169,6 @@ const handleReject = (expenseId: string) => {
   if (expense) {
     expense.status = "Rejected";
     isModalOpen.value = false;
-    alert("Expense rejected!");
   }
 };
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import type { Bill } from "../composables/useBill";
 import useBill from "../composables/useBill";
 import useToastGlobal from "../../../base/app/composables/useToast";
@@ -10,18 +11,21 @@ interface Props {
 const { bill: _BillProps, refresh } = useBill();
 
 const _props = defineProps<Props>();
-
 const emit = defineEmits(["close", "paid"]);
-
 const { toast } = useToastGlobal();
 
-const handlePaid = async (updatedBill: typeof _BillProps.value) => {
+const handlePaid = async (updatedBill: typeof _BillProps.value, uploadedReceipt?: string) => {
   try {
     const response = await $fetch<{ bill: Bill }>(
       `/api/updateBill/${updatedBill?.id}`,
       {
         method: "PATCH",
-        body: { ...updatedBill, isPaid: true, paidDate: new Date() },
+        body: {
+          ...updatedBill,
+          isPaid: true,
+          paidDate: new Date(),
+          receiptImage: uploadedReceipt || updatedBill?.receiptImage || "",
+        },
       },
     );
 
@@ -53,7 +57,7 @@ const handleClose = () => {
     type="bill"
     :show-actions="true"
     :show-remove-button="false"
-    @paid="handlePaid(bill)"
+    @paid="(id, receiptImage) => handlePaid(bill, receiptImage)"
     @close="handleClose"
   />
 </template>

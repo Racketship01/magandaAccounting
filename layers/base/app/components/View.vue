@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   approve: [id: string];
   reject: [id: string];
-  paid: [id: string];
+  paid: [id: string, receiptImage?: string];
   remove: [id: string];
   close: [];
 }>();
@@ -119,7 +119,7 @@ const handleReject = () => {
 
 const handlePaid = () => {
   if (props.data) {
-    emit("paid", props.data.id);
+    emit("paid", props.data.id, receiptImage.value);
   }
 };
 
@@ -184,6 +184,75 @@ const displayCurrency = computed(() => {
   }
   return "USD";
 });
+
+// Image upload state
+const isUploading = ref(false);
+const uploadError = ref("");
+const fileInput = ref<HTMLInputElement | null>(null);
+const receiptImage = ref<string>("");
+
+// Image upload functions
+const handleUploadClick = () => {
+  fileInput.value?.click();
+};
+
+const handleFileSelect = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (!file) return;
+
+  // Validate file type
+  if (!file.type.startsWith("image/")) {
+    uploadError.value = "Please select a valid image file";
+    return;
+  }
+
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    uploadError.value = "File size must be less than 5MB";
+    return;
+  }
+
+  isUploading.value = true;
+  uploadError.value = "";
+
+  try {
+    // Convert file to base64 for preview
+    const base64 = await convertToBase64(file);
+    receiptImage.value = base64;
+    console.log("Receipt uploaded successfully");
+  } catch (error) {
+    uploadError.value = "Failed to process image";
+    console.error("Upload error:", error);
+  } finally {
+    isUploading.value = false;
+    // Clear the file input
+    if (target) target.value = "";
+  }
+};
+
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+// Synchronize receiptImage state with the bill data
+watch(
+  () => bill.value?.receiptImage,
+  (img) => {
+    receiptImage.value = img || "";
+  },
+  { immediate: true },
+);
+
+const clearReceipt = () => {
+  receiptImage.value = "";
+};
 </script>
 
 <template>
@@ -519,60 +588,125 @@ const displayCurrency = computed(() => {
         </div>
 
         <div v-if="isBill" class="space-y-4">
-          <!-- Receipt Preview -->
-          <div v-if="bill?.receiptImage" class="space-y-3">
-            <div class="relative group">
-              <a
-                :href="bill.receiptImage"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="block relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 mx-auto max-w-md"
-              >
+          <!-- Unpaid Bill: Upload Image File interface -->
+          <template v-if="!bill?.isPaid">
+            <div v-if="receiptImage" class="space-y-3">
+              <div class="relative group mx-auto max-w-md">
                 <img
-                  :src="bill.receiptImage"
-                  alt="Receipt preview"
-                  class="w-full h-auto rounded-lg object-contain cursor-zoom-in"
+                  :src="receiptImage"
+                  alt="Uploaded receipt preview"
+                  class="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700 object-contain"
                 />
-                <!-- Hover Overlay -->
+                <!-- Remove Overlay / Clear Button -->
                 <div
-                  class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200"
+                  class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200 rounded-lg"
                 >
-                  <div
-                    class="flex items-center gap-2 text-white bg-black/60 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm"
+                  <UButton
+                    color="error"
+                    variant="solid"
+                    icon="i-lucide-trash-2"
+                    size="sm"
+                    @click="clearReceipt"
                   >
-                    <UIcon name="i-lucide-external-link" class="h-4 w-4" />
-                    Open in new tab
-                  </div>
+                    Remove Photo
+                  </UButton>
                 </div>
-              </a>
+              </div>
             </div>
-            <div class="flex justify-center mt-2">
-              <UButton
-                :href="bill.receiptImage"
-                target="_blank"
-                variant="ghost"
-                color="neutral"
-                icon="i-lucide-external-link"
-                size="sm"
-              >
-                Open original receipt
-              </UButton>
-            </div>
-          </div>
 
-          <!-- No Receipt -->
-          <div
-            v-else
-            class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center"
-          >
-            <UIcon
-              name="i-lucide-receipt"
-              class="h-12 w-12 text-gray-400 mx-auto mb-4"
-            />
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              No receipt uploaded
-            </p>
-          </div>
+            <!-- Upload Area if no image -->
+
+            <div
+              v-else
+              class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center"
+              @click="handleUploadClick"
+            >
+              <UIcon
+                name="i-lucide-upload"
+                class="h-8 w-8 text-gray-400 mx-auto mb-2"
+              />
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                Upload receipt photo
+              </p>
+              <UButton
+                :loading="isUploading"
+                :disabled="isUploading"
+                icon="i-lucide-camera"
+                variant="outline"
+                size="sm"
+                @click="handleUploadClick"
+              >
+                {{ isUploading ? "Uploading..." : "Choose File" }}
+              </UButton>
+              <input
+                ref="fileInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleFileSelect"
+              />
+            </div>
+            <div v-if="uploadError" class="text-red-500 text-xs">
+              {{ uploadError }}
+            </div>
+          </template>
+
+          <!-- Paid Bill: Read-only Receipt View -->
+          <template v-else>
+            <div v-if="bill?.receiptImage" class="space-y-3">
+              <div class="relative group">
+                <a
+                  :href="bill.receiptImage"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 mx-auto max-w-md"
+                >
+                  <img
+                    :src="bill.receiptImage"
+                    alt="Receipt preview"
+                    class="w-full h-auto rounded-lg object-contain cursor-zoom-in"
+                  />
+                  <!-- Hover Overlay -->
+                  <div
+                    class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200"
+                  >
+                    <div
+                      class="flex items-center gap-2 text-white bg-black/60 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm"
+                    >
+                      <UIcon name="i-lucide-external-link" class="h-4 w-4" />
+                      Open in new tab
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="flex justify-center mt-2">
+                <UButton
+                  :href="bill.receiptImage"
+                  target="_blank"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-lucide-external-link"
+                  size="sm"
+                >
+                  Open original receipt
+                </UButton>
+              </div>
+            </div>
+
+            <!-- No Receipt -->
+            <div
+              v-else
+              class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center"
+            >
+              <UIcon
+                name="i-lucide-receipt"
+                class="h-12 w-12 text-gray-400 mx-auto mb-4"
+              />
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                No receipt uploaded
+              </p>
+            </div>
+          </template>
         </div>
       </div>
 
