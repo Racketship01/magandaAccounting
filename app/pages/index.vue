@@ -1,10 +1,16 @@
-<!-- @format -->
-
 <script setup lang="ts">
-// Set page title
+import { useHead } from "nuxt/app";
+
 useHead({
   title: "Home",
 });
+
+definePageMeta({
+  layout: "auth",
+  title: "Login - NextOne",
+});
 </script>
 
-<template></template>
+<template>
+  <Login />
+</template>

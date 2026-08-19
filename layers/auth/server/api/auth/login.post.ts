@@ -1,0 +1,59 @@
+import { loginSchema } from "../../schemas";
+import { findUserByEmail } from "../../repository/userRepository";
+import { defineEventHandler, readBody, createError } from "h3";
+
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+
+  // parse — throws on failure
+  const result = loginSchema.safeParse(body);
+
+  if (!result.success) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Validation failed",
+      data: result.error.flatten().fieldErrors,
+    });
+  }
+
+  const { email, password } = result.data;
+
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "User not found",
+    });
+  }
+
+  // Verify stored hash against input
+  const isValid = await verifyPassword(user.password, password);
+
+  if (!isValid) {
+    throw createError({ statusCode: 401, message: "Invalid credentials" });
+  }
+
+  let role: "admin" | "employee";
+  if (user.admin && user.admin.length > 0) {
+    role = "admin";
+  } else if (user.employees && user.employees.length > 0) {
+    role = "employee";
+  } else {
+    throw createError({
+      statusCode: 403,
+      message: "No role assigned to this user",
+    });
+  }
+  await setUserSession(event, {
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role,
+    },
+    loggedInAt: new Date(),
+  });
+
+  return await getUserSession(event);
+});
