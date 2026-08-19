@@ -3,7 +3,7 @@
 import { ref, computed, watch } from "vue";
 import useExpense from "../composables/useExpense";
 import useToastGlobal from "../../../base/app/composables/useToast";
-import userSession from "../../../profile/server/utils/userSession";
+import userSession from "../../../auth/server/utils/userSession";
 import useEmployee from "../../../profile/app/composables/useEmployee";
 
 const { expenseState, availableExpenses, selectedExpense, refresh } =

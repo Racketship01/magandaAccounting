@@ -1,10 +1,11 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
-import { ref, computed } from "vue";
-import useEmployee from "../composables/useEmployee";
+import { ref, computed, watch, onMounted } from "vue";
+import useProfile from "../composables/useProfile";
 
-const { currentUser } = useEmployee();
+const { currentUser, refresh } = useProfile();
+
 const isEditProfileOpen = ref(false);
 
 // Image upload state
@@ -14,12 +15,8 @@ const fileInput = ref<HTMLInputElement | null>(null);
 
 // Computed properties
 const fullName = computed(
-  () => `${currentUser.value.firstName} ${currentUser.value.lastName}`,
+  () => `${currentUser?.value?.firstName} ${currentUser?.value?.lastName}`,
 );
-const _fullAddress = computed(() => {
-  const addr = currentUser.value.address;
-  return `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`;
-});
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -36,7 +33,7 @@ const getStatusColor = (status: string) => {
 
 const formatCurrency = (
   amount: number,
-  currency: string = currentUser.value.currency,
+  currency: string = currentUser?.value?.currency || "",
 ) => {
   const currencySymbol =
     currencies.find((c) => c.value === currency)?.symbol || "$";
@@ -52,7 +49,7 @@ const currencies = [
 
 const _currentCurrencySymbol = computed(() => {
   const currency = currencies.find(
-    (c) => c.value === currentUser.value.currency,
+    (c) => c.value === currentUser?.value?.currency,
   );
   return currency?.symbol || "$";
 });
@@ -89,9 +86,9 @@ const handleSaveProfile = (employeeData: EmployeeData) => {
   // Update current user
   currentUser.value = {
     ...employeeData,
-    id: currentUser.value.id,
+    id: currentUser?.value?.id || "",
     profileImage:
-      employeeData.profileImage || currentUser.value.profileImage || "",
+      employeeData.profileImage || currentUser?.value?.profileImage || "",
   };
   isEditProfileOpen.value = false;
 };
@@ -129,7 +126,7 @@ const handleFileSelect = async (event: Event) => {
   try {
     // Convert file to base64 for preview
     const base64 = await convertToBase64(file);
-    currentUser.value.profileImage = base64;
+    //currentUser?.value?.profileImage = base64;
 
     // In a real app, you would upload to a server here
     // For now, we'll just use the base64 data
@@ -152,6 +149,10 @@ const convertToBase64 = (file: File): Promise<string> => {
     reader.readAsDataURL(file);
   });
 };
+
+watch(refresh, () => {
+  refresh();
+});
 </script>
 
 <template>
@@ -177,16 +178,16 @@ const convertToBase64 = (file: File): Promise<string> => {
             <!-- Profile Image Display -->
             <div class="relative">
               <img
-                v-if="currentUser.profileImage"
-                :src="currentUser.profileImage"
-                :alt="`${currentUser.firstName} ${currentUser.lastName}`"
+                v-if="currentUser?.profileImage"
+                :src="currentUser?.profileImage"
+                :alt="`${currentUser?.firstName} ${currentUser?.lastName}`"
                 class="w-32 h-32 rounded-full object-cover border-4 border-gray-200 dark:border-gray-600"
               />
               <div
                 v-else
                 class="w-32 h-32 rounded-full bg-linear-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-gray-200 dark:border-gray-600"
               >
-                {{ currentUser.firstName[0] }}{{ currentUser.lastName[0] }}
+                {{ currentUser?.firstName?.[0] }}{{ currentUser?.lastName[0] }}
               </div>
             </div>
 
@@ -239,7 +240,7 @@ const convertToBase64 = (file: File): Promise<string> => {
               </UButton>
             </div>
             <p class="text-lg text-gray-600 dark:text-gray-400">
-              {{ currentUser.jobTitle }}
+              {{ currentUser?.jobTitle }}
             </p>
           </div>
 
@@ -249,7 +250,7 @@ const convertToBase64 = (file: File): Promise<string> => {
                 <UIcon name="i-lucide-mail" class="w-4 h-4 text-gray-500" />
                 <span class="text-sm text-gray-500">Email</span>
               </div>
-              <p class="font-medium">{{ currentUser.credentials.email }}</p>
+              <p class="font-medium">{{ currentUser?.credentials?.email }}</p>
             </div>
 
             <div class="space-y-2">
@@ -257,7 +258,7 @@ const convertToBase64 = (file: File): Promise<string> => {
                 <UIcon name="i-lucide-phone" class="w-4 h-4 text-gray-500" />
                 <span class="text-sm text-gray-500">Phone</span>
               </div>
-              <p class="font-medium">{{ currentUser.phone }}</p>
+              <p class="font-medium">{{ currentUser?.phone }}</p>
             </div>
 
             <div class="space-y-2">
@@ -266,7 +267,7 @@ const convertToBase64 = (file: File): Promise<string> => {
                 <span class="text-sm text-gray-500">Department</span>
               </div>
               <UBadge
-                :label="currentUser.department"
+                :label="currentUser?.department"
                 variant="soft"
                 color="primary"
               />
@@ -277,7 +278,9 @@ const convertToBase64 = (file: File): Promise<string> => {
                 <UIcon name="i-lucide-calendar" class="w-4 h-4 text-gray-500" />
                 <span class="text-sm text-gray-500">Start Date</span>
               </div>
-              <p class="font-medium">{{ formatDate(currentUser.startDate) }}</p>
+              <p class="font-medium">
+                {{ formatDate(currentUser?.startDate) }}
+              </p>
             </div>
           </div>
         </div>
@@ -299,20 +302,20 @@ const convertToBase64 = (file: File): Promise<string> => {
           <div class="grid grid-cols-1 gap-4">
             <div class="space-y-2">
               <span class="text-sm text-gray-500">Job Title</span>
-              <p class="font-medium">{{ currentUser.jobTitle }}</p>
+              <p class="font-medium">{{ currentUser?.jobTitle }}</p>
             </div>
 
             <div class="space-y-2">
               <span class="text-sm text-gray-500">Department</span>
-              <p class="font-medium">{{ currentUser.department }}</p>
+              <p class="font-medium">{{ currentUser?.department }}</p>
             </div>
 
             <div class="space-y-2">
               <span class="text-sm text-gray-500">Employment Status</span>
               <p>
                 <UBadge
-                  :label="currentUser.status"
-                  :color="getStatusColor(currentUser.status)"
+                  :label="currentUser?.status"
+                  :color="getStatusColor(currentUser?.status)"
                   variant="soft"
                 />
               </p>
@@ -328,7 +331,7 @@ const convertToBase64 = (file: File): Promise<string> => {
             <div class="space-y-2">
               <span class="text-sm text-gray-500">Monthly Salary</span>
               <p class="font-medium text-green-600">
-                {{ formatCurrency(currentUser.salary) }}
+                {{ formatCurrency(currentUser?.salary) }}
               </p>
             </div>
           </div>
@@ -347,21 +350,22 @@ const convertToBase64 = (file: File): Promise<string> => {
         <div class="space-y-4">
           <div class="space-y-2">
             <span class="text-sm text-gray-500">Email Address</span>
-            <p class="font-medium">{{ currentUser.email }}</p>
+            <p class="font-medium">{{ currentUser?.credentials?.email }}</p>
           </div>
 
           <div class="space-y-2">
             <span class="text-sm text-gray-500">Phone Number</span>
-            <p class="font-medium">{{ currentUser.phone }}</p>
+            <p class="font-medium">{{ currentUser?.phone }}</p>
           </div>
 
           <div class="space-y-2">
             <span class="text-sm text-gray-500">Address</span>
             <div class="space-y-1">
-              <p class="font-medium">{{ currentUser.address.street }}</p>
+              <p class="font-medium">{{ currentUser?.address?.street }}</p>
               <p class="text-gray-600">
-                {{ currentUser.address.city }}, {{ currentUser.address.state }}
-                {{ currentUser.address.zipCode }}
+                {{ currentUser?.address?.city }},
+                {{ currentUser?.address?.state }}
+                {{ currentUser?.address?.zipCode }}
               </p>
             </div>
           </div>
@@ -380,12 +384,7 @@ const convertToBase64 = (file: File): Promise<string> => {
         <div class="space-y-4">
           <div class="space-y-2">
             <span class="text-sm text-gray-500">Username</span>
-            <p class="font-medium">{{ currentUser.credentials.username }}</p>
-          </div>
-
-          <div class="space-y-2">
-            <span class="text-sm text-gray-500">Password</span>
-            <p class="font-medium">{{ currentUser.credentials.password }}</p>
+            <p class="font-medium">{{ currentUser?.credentials?.username }}</p>
           </div>
         </div>
       </UCard>

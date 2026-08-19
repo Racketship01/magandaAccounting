@@ -100,36 +100,11 @@ export default function useEmployee() {
     selectedEmployees: [] as string[],
   }));
 
-  const currentUser = useState<EmployeeData>("currentUser", () => ({
-    id: "1",
-    firstName: "John",
-    lastName: "Doe",
-    phone: "+1 (555) 123-4567",
-    jobTitle: "Software Engineer",
-    department: "Engineering",
-    startDate: "2022-03-15",
-    salary: 85000,
-    currency: "USD",
-    status: "Active",
-    address: {
-      street: "123 Main St",
-      city: "San Francisco",
-      state: "CA",
-      zipCode: "94105",
-    },
-    credentials: {
-      username: "john.doe",
-      email: "johndoe@gmail.com",
-    },
-    profileImage: "",
-  }));
-
   return {
     formData,
     resetForm,
     employees,
     employeeState,
-    currentUser,
     refresh,
   };
 }

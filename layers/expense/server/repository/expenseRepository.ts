@@ -1,6 +1,6 @@
 import { prisma } from "~~/prisma/utils/prisma";
 import type { Expense } from "~~/prisma/generated/prisma/client";
-import userSession from "~~/layers/profile/server/utils/userSession";
+import userSession from "~~/layers/auth/server/utils/userSession";
 import {
   mapStatus,
   type UpdateExpenseStatus,
