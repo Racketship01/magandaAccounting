@@ -12,7 +12,11 @@ const { handleFileUpload } = useScan();
 const categories = [
   { label: "Food & Dining", value: "food", icon: "i-lucide-utensils" },
   { label: "Transportation", value: "transport", icon: "i-lucide-car" },
-  { label: "Office Supplies", value: "office", icon: "i-lucide-paperclip" },
+  {
+    label: "Office Supplies",
+    value: "office supplies",
+    icon: "i-lucide-paperclip",
+  },
   { label: "Utilities", value: "utilities", icon: "i-lucide-zap" },
   {
     label: "Healthcare",

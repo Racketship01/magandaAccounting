@@ -3,11 +3,14 @@
 import { ref, computed, watch } from "vue";
 import useExpense from "../composables/useExpense";
 import useToastGlobal from "../../../base/app/composables/useToast";
-import userSession from "@/layers/profile/server/utils/userSession";
+import userSession from "../../../profile/server/utils/userSession";
+import useEmployee from "../../../profile/app/composables/useEmployee";
 
 const { expenseState, availableExpenses, selectedExpense, refresh } =
   useExpense();
 const { toast } = useToastGlobal();
+const { employees } = useEmployee();
+
 // Modal state
 const isModalOpen = ref(false);
 const selectedExpenses = computed(() => expenseState.value.selectedExpenses);
@@ -15,28 +18,20 @@ const isExpenseDeleteModalOpen = ref(false);
 
 const categories = [
   { label: "All Categories", value: "all", icon: "i-lucide-clipboard-list" },
-  { label: "Food & Dining", value: "Food & Dining", icon: "i-lucide-utensils" },
-  { label: "Transportation", value: "Transportation", icon: "i-lucide-car" },
+  { label: "Food & Dining", value: "food", icon: "i-lucide-utensils" },
+  { label: "Transportation", value: "transport", icon: "i-lucide-car" },
   {
     label: "Office Supplies",
-    value: "Office Supplies",
+    value: "office supplies",
     icon: "i-lucide-paperclip",
   },
-  { label: "Utilities", value: "Utilities", icon: "i-lucide-zap" },
+  { label: "Utilities", value: "utilities", icon: "i-lucide-zap" },
   {
     label: "Healthcare",
-    value: "Healthcare",
+    value: "healthcare",
     icon: "i-lucide-heart-handshake",
   },
   { label: "Other", value: "Other", icon: "i-lucide-list-check" },
-];
-
-const employees = [
-  { label: "All Employees", value: "all" },
-  { label: "John Doe", value: "John Doe" },
-  { label: "Jane Smith", value: "Jane Smith" },
-  { label: "Mike Johnson", value: "Mike Johnson" },
-  { label: "Sarah Wilson", value: "Sarah Wilson" },
 ];
 
 const statusOptions = [
@@ -45,6 +40,18 @@ const statusOptions = [
   { label: "Approved", value: "Approved" },
   { label: "Rejected", value: "Rejected" },
 ];
+
+const employeeOptions = computed(() => {
+  return [
+    { label: "All Employees", value: "all" },
+    ...employees.value.map((employee) => {
+      return {
+        label: employee.firstName + " " + employee.lastName,
+        value: employee.firstName + " " + employee.lastName,
+      };
+    }),
+  ];
+});
 
 // Computed filtered expenses
 const filteredExpenses = computed(() => {
@@ -256,7 +263,7 @@ watch(
       <div class="w-full sm:w-48">
         <USelect
           v-model="expenseState.selectedEmployee"
-          :items="employees"
+          :items="employeeOptions"
           placeholder="Employee"
           icon="i-lucide-user"
           size="lg"
