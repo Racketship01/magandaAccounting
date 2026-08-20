@@ -14,7 +14,10 @@ const _props = defineProps<Props>();
 const emit = defineEmits(["close", "paid"]);
 const { toast } = useToastGlobal();
 
-const handlePaid = async (updatedBill: typeof _BillProps.value, uploadedReceipt?: string) => {
+const handlePaid = async (
+  updatedBill: typeof _BillProps.value,
+  uploadedReceipt?: string,
+) => {
   try {
     const response = await $fetch<{ bill: Bill }>(
       `/api/updateBill/${updatedBill?.id}`,

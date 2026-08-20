@@ -69,8 +69,14 @@ const isFormValid = computed(() => {
 const handleSave = () => {
   if (!isFormValid.value) return;
 
+  const credentials = { ...formData.value.credentials };
+  if (!credentials.password || credentials.password.trim() === "") {
+    delete (credentials as { password?: string }).password;
+  }
+
   const employeeData: EmployeeData = {
     ...formData.value,
+    credentials,
     id: props.employee?.id || Date.now().toString(),
   };
 

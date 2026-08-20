@@ -101,14 +101,28 @@ export async function updateEmployee(
       throw new Error("Employee not found");
     }
 
+    const userUpdateData: {
+      username: string;
+      email: string;
+      password?: string;
+    } = {
+      username: employeeInfo.credentials.username,
+      email: employeeInfo.credentials.email,
+    };
+    if (
+      employeeInfo.credentials.password &&
+      employeeInfo.credentials.password.trim() !== ""
+    ) {
+      userUpdateData.password = await hashPassword(
+        employeeInfo.credentials.password,
+      );
+    }
+
     const user = await emp.user.update({
       where: {
         id: employee.userId,
       },
-      data: {
-        username: employeeInfo.credentials.username,
-        email: employeeInfo.credentials.email,
-      },
+      data: userUpdateData,
     });
 
     return { employee, user };

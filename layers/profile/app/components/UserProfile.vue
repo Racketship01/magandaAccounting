@@ -1,7 +1,7 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch } from "vue";
 import useProfile from "../composables/useProfile";
 
 const { currentUser, refresh } = useProfile();
@@ -82,13 +82,13 @@ const handleEditProfile = () => {
   isEditProfileOpen.value = true;
 };
 
-const handleSaveProfile = (employeeData: EmployeeData) => {
+const handleSaveProfile = (profileData: EmployeeData) => {
   // Update current user
   currentUser.value = {
-    ...employeeData,
+    ...profileData,
     id: currentUser?.value?.id || "",
     profileImage:
-      employeeData.profileImage || currentUser?.value?.profileImage || "",
+      profileData.profileImage || currentUser?.value?.profileImage || "",
   };
   isEditProfileOpen.value = false;
 };

@@ -1,3 +1,5 @@
+import type { EmployeeData } from "./useEmployee";
+
 export default function useProfile() {
   const profileForm = useState("profileData", () => ({
     firstName: "",

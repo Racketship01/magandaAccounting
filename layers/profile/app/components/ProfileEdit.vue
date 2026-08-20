@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
 import { computed } from "vue";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 interface Props {
   modelValue: boolean;
-  employee: EmployeeData;
+  employee?: EmployeeData | null;
 }
+const { toast } = useToastGlobal();
 
 const props = defineProps<Props>();
 
@@ -20,9 +22,29 @@ const isOpen = computed({
   set: (value) => emit("update:modelValue", value),
 });
 
-const handleSaveProfile = (employee: EmployeeData) => {
-  emit("save", employee);
-  isOpen.value = false;
+const handleSaveProfile = async (employee: EmployeeData) => {
+  try {
+    const response = await $fetch<{ profile: any }>(`/api/updateProfile`, {
+      method: "PATCH",
+      body: { ...employee },
+    });
+
+    emit("save", employee);
+    isOpen.value = false;
+    toast.add({ title: "Profile updated successfully!", color: "success" });
+  } catch (err: any) {
+    const message =
+      err?.data?.statusMessage ||
+      err?.statusMessage ||
+      err?.message ||
+      "An unexpected error occurred.";
+    console.error("Update failed:", err?.data || err?.message);
+    toast.add({
+      title: "Failed to update profile",
+      description: message,
+      color: "error",
+    });
+  }
 };
 
 const handleCancel = () => {
