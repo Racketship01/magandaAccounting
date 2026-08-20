@@ -1,27 +1,24 @@
 📋 Daily Progress Report - **Accounting Project**
-Date: August 13, 2026 (Thursday)
+Date: August 20, 2026 (Thursday)
 
-✅ Summary - **Expense Status Update (PATCH) and Deletion (DELETE) Endpoints Integration**
-Today's work focused on successfully integrated backend APIs for managing expense life cycles, specifically implementing the PATCH endpoint to approve or reject expenses (restricted to admins) and the DELETE endpoint to remove expenses. The frontend components (ExpenseReport and ExpenseView) were updated to make direct asynchronous calls to these endpoints using Nuxt's $fetch and to show users real-time toast feedback instead of static UI alerts.
+✅ Summary - **Expense Filter Bug Fixes & Dynamic Employee Data Integration**
+Key work completed today involved fixing critical bugs in the Expense module related to category filtering inconsistencies and integrating dynamic employee data from the database instead of using hardcoded placeholder lists.
 
 📐 Task Completed
-1️⃣ **Implemented PATCH Endpoint**: Created a secure server-side endpoint that allows admins to update the status (approved/rejected/pending) of an employee's submitted expense with input validation via Zod.
-👉https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/server/api/updateExpense/[idExpense].patch.ts?ref_type=heads
+1️⃣ **Fixed Category Value Mismatch in ExpenseReport**: Updated all category dropdown values (Food & Dining, Transportation, Office Supplies, Utilities, Healthcare) to use the exact same lowercase keys that are stored in the database (e.g., "food" instead of "Food & Dining"). This resolves the bug where filtering expenses by category returned no results due to mismatched values.
+👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/app/components/ExpenseReport.vue?ref_type=heads
 
-2️⃣ **Implemented DELETE Endpoint**: Created an endpoint to permanently remove expense records from the database using Prisma.
-👉https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/server/api/deleteExpense/[idExpense].delete.ts?ref_type=heads
+2️⃣ **Replaced Hardcoded Employee List with Live Data**: Removed the static demo employee array (John Doe, Jane Smith, etc.) from ExpenseReport.vue and integrated the `useEmployee` composable to dynamically load real employees from the database. The employee dropdown now automatically reflects any new employees added to the system.
+👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/app/components/ExpenseReport.vue?ref_type=heads
 
-3️⃣ **Updated ExpenseView Component**: Integrated the PATCH API call into the Approve/Reject actions in and replaced alert overlays with clean global toast notifications.
-👉https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/app/components/ExpenseView.vue?ref_type=heads
+3️⃣ **Fixed Import Path Resolution**: Corrected the import statement for `userSession` utility and added the proper import for `useEmployee` composable using relative paths to ensure the module resolution works correctly in the layered Nuxt architecture.
+👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/app/components/ExpenseReport.vue?ref_type=heads
 
-4️⃣ **Updated ExpenseReport Component**: Refactored to delete multi-selected expenses via parallel asynchronous DELETE API calls and added success/error toasts.
-👉https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/app/components/ExpenseReport.vue?ref_type=heads
+4️⃣ **Fixed Office Supplies Category in Receipt Scanner**: Updated the "Office Supplies" category value from "office" to "office supplies" in RecieptScanner.vue to match the database schema, ensuring that newly scanned receipts are categorized consistently with the rest of the system.
+👉https://git.next1.ph/imelda/accounting/-/blob/expense/layers/expense/app/components/RecieptScanner.vue?ref_type=heads
 
-5️⃣ **Refactored Repository & Schemas**: Enhanced to handle admin-only authorization for updates and updated status mapping in to be case-insensitive.
-👉https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/server/repository/expenseRepository.ts?ref_type=heads
-
-👉https://git.next1.ph/imelda/accounting/-/blob/expenseUI/layers/expense/server/schemas.ts?ref_type=heads
+5️⃣ **Updated Development Database**: The local SQLite development database (dev.db) was updated with the latest seed data and schema to reflect the current application state for testing.
+👉https://git.next1.ph/imelda/accounting/-/blob/expense/dev.db?ref_type=heads
 
 🚀 Next Steps / Remaining Work
-• Conduct thorough end-to-end user testing for the role-based dashboard view to verify that only admins can trigger status updates.
-• Add frontend page navigation link checks and ensure that error handling catches database disconnects or session timeouts gracefully.
+• Review and standardize category value naming across all layers (bill module, reports, etc.) to prevent similar mismatches in the future.
