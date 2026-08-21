@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
 import { ref, computed, watch } from "vue";
-import useEmployee from "../composables/useEmployee";
+import useProfile from "../composables/useProfile";
 
 interface Props {
   modelValue: boolean;
@@ -10,7 +10,19 @@ interface Props {
   buttonText?: string;
 }
 
-const { formData, resetForm } = useEmployee();
+const { profileForm, resetForm, currentUser } = useProfile();
+
+const userDisplayImage = computed(() => currentUser.value?.profileImage || "");
+
+const resolvedProfileImage = computed(
+  () => profileForm.value.profileImage || userDisplayImage.value,
+);
+
+const profileInitials = computed(() => {
+  const first = profileForm.value.firstName?.[0] ?? "";
+  const last = profileForm.value.lastName?.[0] ?? "";
+  return (first + last).toUpperCase();
+});
 
 const props = defineProps<Props>();
 
@@ -30,7 +42,7 @@ watch(
   () => props.employee,
   (employee) => {
     if (employee) {
-      formData.value = {
+      profileForm.value = {
         firstName: employee.firstName,
         lastName: employee.lastName,
         phone: employee.phone,
@@ -55,13 +67,13 @@ watch(
 // Form validation
 const isFormValid = computed(() => {
   return (
-    formData.value.firstName.trim() &&
-    formData.value.lastName.trim() &&
-    formData.value.jobTitle.trim() &&
-    formData.value.department.trim() &&
-    formData.value.startDate &&
-    formData.value.salary > 0 &&
-    formData.value.currency.trim() !== ""
+    profileForm.value.firstName.trim() &&
+    profileForm.value.lastName.trim() &&
+    profileForm.value.jobTitle.trim() &&
+    profileForm.value.department.trim() &&
+    profileForm.value.startDate &&
+    profileForm.value.salary > 0 &&
+    profileForm.value.currency.trim() !== ""
   );
 });
 
@@ -69,13 +81,13 @@ const isFormValid = computed(() => {
 const handleSave = () => {
   if (!isFormValid.value) return;
 
-  const credentials = { ...formData.value.credentials };
+  const credentials = { ...profileForm.value.credentials };
   if (!credentials.password || credentials.password.trim() === "") {
     delete (credentials as { password?: string }).password;
   }
 
   const employeeData: EmployeeData = {
-    ...formData.value,
+    ...profileForm.value,
     credentials,
     id: props.employee?.id || Date.now().toString(),
   };
@@ -116,14 +128,14 @@ const handleImageUpload = (event: Event) => {
     // Convert to base64 for preview
     const reader = new FileReader();
     reader.onload = (e) => {
-      formData.value.profileImage = e.target?.result as string;
+      profileForm.value.profileImage = e.target?.result as string;
     };
     reader.readAsDataURL(file);
   }
 };
 
 const removeImage = () => {
-  formData.value.profileImage = "";
+  profileForm.value.profileImage = "";
   if (fileInput.value) {
     fileInput.value.value = "";
   }
@@ -147,7 +159,9 @@ const currencies = [
 ];
 
 const currentCurrencySymbol = computed(() => {
-  const currency = currencies.find((c) => c.value === formData.value.currency);
+  const currency = currencies.find(
+    (c) => c.value === profileForm.value.currency,
+  );
   return currency?.symbol || "";
 });
 </script>
@@ -174,13 +188,17 @@ const currentCurrencySymbol = computed(() => {
         <div class="flex items-center gap-4 mb-4">
           <div class="shrink-0">
             <img
-              :src="
-                formData.profileImage ||
-                'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
-              "
-              :alt="`${formData.firstName} ${formData.lastName}`"
+              v-if="resolvedProfileImage"
+              :src="resolvedProfileImage"
+              :alt="`${profileForm.firstName} ${profileForm.lastName}`"
               class="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
             />
+            <div
+              v-else
+              class="w-16 h-16 rounded-full bg-linear-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold border-2 border-gray-200 dark:border-gray-600"
+            >
+              {{ profileInitials || "?" }}
+            </div>
           </div>
           <div class="flex-1">
             <UFormGroup label="Profile Picture">
@@ -201,7 +219,7 @@ const currentCurrencySymbol = computed(() => {
                   Upload Image
                 </UButton>
                 <UButton
-                  v-if="formData.profileImage"
+                  v-if="profileForm.profileImage"
                   icon="i-lucide-x"
                   variant="outline"
                   size="sm"
@@ -221,7 +239,7 @@ const currentCurrencySymbol = computed(() => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
           <UFormGroup label="First Name" required>
             <UInput
-              v-model="formData.firstName"
+              v-model="profileForm.firstName"
               placeholder="Enter first name"
               icon="i-lucide-user"
               size="lg"
@@ -231,7 +249,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="Last Name" required>
             <UInput
-              v-model="formData.lastName"
+              v-model="profileForm.lastName"
               placeholder="Enter last name"
               icon="i-lucide-user"
               size="lg"
@@ -239,22 +257,9 @@ const currentCurrencySymbol = computed(() => {
             />
           </UFormGroup>
 
-          <!-- 
-           <UFormGroup label="Email" required>
-            <UInput
-              v-model="formData.email"
-              type="email"
-              placeholder="Enter email address"
-              icon="i-lucide-mail"
-              size="lg"
-              class="w-full"
-            />
-          </UFormGroup>
-          -->
-
           <UFormGroup label="Phone">
             <UInput
-              v-model="formData.phone"
+              v-model="profileForm.phone"
               placeholder="Enter phone number"
               icon="i-lucide-phone"
               size="lg"
@@ -273,7 +278,7 @@ const currentCurrencySymbol = computed(() => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
           <UFormGroup label="Job Title" required>
             <UInput
-              v-model="formData.jobTitle"
+              v-model="profileForm.jobTitle"
               placeholder="Enter job title"
               icon="i-lucide-briefcase"
               size="lg"
@@ -283,7 +288,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="Department" required>
             <USelectMenu
-              v-model="formData.department"
+              v-model="profileForm.department"
               :items="departmentOptions"
               placeholder="Select department"
               icon="i-lucide-building"
@@ -294,7 +299,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="Start Date" required>
             <UInput
-              v-model="formData.startDate"
+              v-model="profileForm.startDate"
               type="date"
               icon="i-lucide-calendar"
               size="lg"
@@ -304,7 +309,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="Status">
             <USelectMenu
-              v-model="formData.status"
+              v-model="profileForm.status"
               :items="statusOptions"
               placeholder="Select status"
               :value-key="'value'"
@@ -317,7 +322,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="Currency" class="md:col-span-1">
             <USelect
-              v-model="formData.currency"
+              v-model="profileForm.currency"
               :items="currencies"
               placeholder="Select currency"
               size="lg"
@@ -327,7 +332,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="Salary" required>
             <UInput
-              v-model.number="formData.salary"
+              v-model.number="profileForm.salary"
               type="number"
               :placeholder="`0.00 ${currentCurrencySymbol}`"
               size="lg"
@@ -355,7 +360,7 @@ const currentCurrencySymbol = computed(() => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
           <UFormGroup label="Street Address" class="md:col-span-1">
             <UInput
-              v-model="formData.address.street"
+              v-model="profileForm.address.street"
               placeholder="Enter street address"
               icon="i-lucide-map-pin"
               size="lg"
@@ -365,7 +370,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="City">
             <UInput
-              v-model="formData.address.city"
+              v-model="profileForm.address.city"
               placeholder="Enter city"
               icon="i-lucide-map"
               size="lg"
@@ -375,7 +380,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="State">
             <UInput
-              v-model="formData.address.state"
+              v-model="profileForm.address.state"
               placeholder="Enter state"
               icon="i-lucide-map"
               size="lg"
@@ -385,7 +390,7 @@ const currentCurrencySymbol = computed(() => {
 
           <UFormGroup label="ZIP Code">
             <UInput
-              v-model="formData.address.zipCode"
+              v-model="profileForm.address.zipCode"
               placeholder="Enter ZIP code"
               icon="i-lucide-hash"
               size="lg"
@@ -404,7 +409,7 @@ const currentCurrencySymbol = computed(() => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
           <UFormGroup label="Username">
             <UInput
-              v-model="formData.credentials.username"
+              v-model="profileForm.credentials.username"
               placeholder="Enter username/email"
               icon="i-lucide-user"
               size="lg"
@@ -413,7 +418,7 @@ const currentCurrencySymbol = computed(() => {
           </UFormGroup>
           <UFormGroup label="Password">
             <UInput
-              v-model="formData.credentials.password"
+              v-model="profileForm.credentials.password"
               placeholder="Enter password"
               icon="i-lucide-lock"
               size="lg"

@@ -26,10 +26,25 @@ export async function getMyProfile(
     throw new Error("Profile not found");
   }
 
+  const buildProfileImage = (firstName: string, lastName: string, existing?: string | null) => {
+    if (existing && existing.trim() !== "") return existing;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName)}&background=random&color=fff`;
+  };
+
   if (profile.admin && profile.admin.length > 0) {
-    return { ...profile.admin[0], user: profile };
+    const admin = profile.admin[0];
+    return {
+      ...admin,
+      profileImage: buildProfileImage(admin.firstName, admin.lastName, admin.profileImage),
+      user: profile,
+    };
   } else if (profile.employees && profile.employees.length > 0) {
-    return { ...profile.employees[0], user: profile };
+    const employee = profile.employees[0];
+    return {
+      ...employee,
+      profileImage: buildProfileImage(employee.firstName, employee.lastName, employee.profileImage),
+      user: profile,
+    };
   }
 
   return profile;
