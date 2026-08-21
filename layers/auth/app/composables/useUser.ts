@@ -1,3 +1,6 @@
+import { computed } from "vue";
+import useProfile from "../../../profile/app/composables/useProfile";
+
 interface User {
   name: string;
   avatar: {
@@ -30,11 +33,14 @@ interface Login {
 }
 
 export default function useUser() {
-  const user = useState<User>("user", () => ({
-    name: "John Doe",
+  const { currentUser, refresh } = useProfile();
+
+  const user = computed<User>(() => ({
+    name:
+      currentUser.value?.firstName + " " + currentUser.value?.lastName || "",
     avatar: {
-      src: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-      alt: "John Doe",
+      src: currentUser.value?.profileImage || "",
+      alt: currentUser.value?.firstName || "",
     },
   }));
 
@@ -65,5 +71,6 @@ export default function useUser() {
     user,
     signup,
     login,
+    refresh,
   };
 }

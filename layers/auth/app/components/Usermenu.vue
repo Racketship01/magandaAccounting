@@ -1,15 +1,16 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import useUser from "../composables/useUser";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import useApp from "../composables/useApp";
 import useAuth from "../composables/useAuth";
+
 defineProps<{
   collapsed?: boolean;
 }>();
 
 const { appConfig } = useApp();
-const { user } = useUser();
+const { user, refresh } = useUser();
 
 const { logout } = useAuth();
 
@@ -113,6 +114,10 @@ const items = computed(() => [
     },
   ],
 ]);
+
+watch(refresh, () => {
+  refresh();
+});
 </script>
 
 <template>

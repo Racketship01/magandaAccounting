@@ -16,6 +16,8 @@ export async function createEmployee(
   employee: Employee & { profileImage: string };
 }> {
   return await prisma.$transaction(async (emp) => {
+    const profileImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(employeeInfo.firstName)}+${encodeURIComponent(employeeInfo.lastName)}&background=random&color=fff`;
+
     // 1. Create the User
     const user = await emp.user.create({
       data: {
@@ -39,6 +41,7 @@ export async function createEmployee(
         currency: employeeInfo.currency,
         role: "employee",
         status: mapStatus(employeeInfo.status),
+        profileImage,
         street: employeeInfo.address.street,
         city: employeeInfo.address.city,
         state: employeeInfo.address.state,
@@ -46,13 +49,11 @@ export async function createEmployee(
       },
     });
 
-    const profileImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(employee.firstName)}+${encodeURIComponent(employee.lastName)}&background=random&color=fff`;
-
     return {
       user,
       employee: {
         ...employee,
-        profileImage,
+        profileImage: employee.profileImage ?? profileImage,
       },
     };
   });
@@ -101,14 +102,28 @@ export async function updateEmployee(
       throw new Error("Employee not found");
     }
 
+    const userUpdateData: {
+      username: string;
+      email: string;
+      password?: string;
+    } = {
+      username: employeeInfo.credentials.username,
+      email: employeeInfo.credentials.email,
+    };
+    if (
+      employeeInfo.credentials.password &&
+      employeeInfo.credentials.password.trim() !== ""
+    ) {
+      userUpdateData.password = await hashPassword(
+        employeeInfo.credentials.password,
+      );
+    }
+
     const user = await emp.user.update({
       where: {
         id: employee.userId,
       },
-      data: {
-        username: employeeInfo.credentials.username,
-        email: employeeInfo.credentials.email,
-      },
+      data: userUpdateData,
     });
 
     return { employee, user };

@@ -73,3 +73,36 @@ const reverseStatusMap = {
 export function mapPrismaStatus(status: keyof typeof reverseStatusMap) {
   return reverseStatusMap[status];
 }
+
+// PROFILE
+export const updateProfileSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  phone: z.string().default(""),
+  jobTitle: z.string().min(1, "Job title is required"),
+  department: z.string().min(1, "Department is required"),
+  startDate: z.string().min(1, "Start date is required"),
+  salary: z.number().positive("Salary must be greater than 0"),
+  currency: z.string().min(1, "Currency is required"),
+  status: z.enum(["Active", "Inactive", "On Leave"]),
+  address: z.object({
+    street: z.string().default(""),
+    city: z.string().default(""),
+    state: z.string().default(""),
+    zipCode: z.string().default(""),
+  }),
+  credentials: z.object({
+    username: z.string().min(1, "Username is required"),
+    email: z
+      .string()
+      .optional()
+      .refine(
+        (val) => val === undefined || val === "" || z.string().email().safeParse(val).success,
+        "Invalid email address",
+      ),
+    password: z.string().optional(),
+  }),
+  profileImage: z.string().default(""),
+});
+
+export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;

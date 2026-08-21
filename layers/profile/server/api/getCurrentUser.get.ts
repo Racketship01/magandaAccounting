@@ -1,5 +1,6 @@
 import { defineEventHandler, createError } from "h3";
 import { getMyProfile } from "../repository/profileRepository";
+import { mapPrismaStatus } from "../schemas";
 
 export default defineEventHandler(async (event) => {
   const currentUser = await getMyProfile(event);
@@ -22,7 +23,7 @@ export default defineEventHandler(async (event) => {
     startDate: currentUser.startDate,
     salary: currentUser.salary,
     currency: currentUser.currency,
-    status: currentUser.status,
+    status: mapPrismaStatus(currentUser.status as any),
     address: {
       street: currentUser.street,
       city: currentUser.city,
