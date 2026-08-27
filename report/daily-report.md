@@ -1,20 +1,23 @@
 📋 Daily Progress Report - **Accounting Project**
 Date: August 21, 2026 (Friday)
 
-✅ Summary - **Implemented Dynamic Profile Display Picture**
-Successfully delivered a complete end-to-end profile management system including profile editing with full-stack support. The avatar displays dynamically in the user menu dropdown, the profile page, and persists through form edits. In parallel, the Employee repository now includes full CRUD operations and an auto-generated profile picture on employee creation.
+✅ Summary - **Implemented Dynamic Profile Display Picture System**
+Today's work wrapped up a complete profile management system for the app. The biggest new feature:
+
+- New secure profile-update API with proper input validation & error messages
+- Backend profile-save logic that works for both Admin and Employee accounts
+- Cleaned up the frontend "profile state" helpers so every page sees the same data
+- Dynamic profile picture system — backend generates avatars, user menu shows them live, edit form has a beautiful initials-based fallback with gradient colors
 
 📐 Task Completed
-1️⃣ Integrated the PATCH API into `ProfileEdit.vue` — the dialog now calls `/api/updateProfile` on save, closes the modal on success with success/error toast notifications.
-🔗 [ProfileEdit.vue](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/profile/app/components/ProfileEdit.vue)
-
-2️⃣ Implemented **Dynamic Profile Display Picture** system: `FormEdit.vue` refactored to `useProfile` composable: `resolvedProfileImage` computed combines the form's uploaded image with the live user's current image; adds initials-based gradient avatar fallback div.
+1️⃣ Implemented **Dynamic Profile Display Picture** system: `FormEdit.vue` refactored to `useProfile` composable — `resolvedProfileImage` computed combines the form's uploaded image with the live user's current image; adds initials-based gradient avatar fallback div.
 🔗 [useProfile.ts](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/profile/app/composables/useProfile.ts)
 
-3️⃣ Refined `useProfile.ts` composable — managed profile form state (`profileForm`) with typed fields for personal info, address, credentials, and profile image; added `resetForm()` helper; retained `currentUser` reactive state and the `refresh()` mechanism for re-fetching via `useAsyncData`.
+2️⃣ Updated **Usermenu.vue** component to display the user's profile picture live from the current session state, with graceful fallback if no image is set.
+🔗 [Usermenu.vue](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/auth/app/components/Usermenu.vue)
 
-4️⃣ Enhanced `getCurrentUser.get.ts` to use `mapPrismaStatus()` so the returned profile data presents status strings consistently for the frontend display layer.
-🔗 [getCurrentUser.get.ts](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/profile/server/api/getCurrentUser.get.ts)
+3️⃣ Enhanced **useUser** composable in the auth layer to properly sync profile data across the application, ensuring the user menu and all pages reflect the latest profile changes.
+🔗 [useUser.ts](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/auth/app/composables/useUser.ts)
 
 🚀 Next Steps / Remaining Work
-• Consider adding optimistic UI refresh after profile save so changes reflect immediately without a full page reload (currently relies on `refresh()` refetch`)
+• Consider adding optimistic UI refresh after profile save so changes reflect immediately without a full page reload (currently relies on `refresh()` refetch)

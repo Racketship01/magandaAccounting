@@ -102,6 +102,13 @@ export async function updateEmployee(
       throw new Error("Employee not found");
     }
 
+    const userRecord = await emp.user.findUnique({
+      where: { id: employee.userId },
+    });
+    if (!userRecord) {
+      throw new Error("User not found");
+    }
+
     const userUpdateData: {
       username: string;
       email: string;
@@ -110,12 +117,30 @@ export async function updateEmployee(
       username: employeeInfo.credentials.username,
       email: employeeInfo.credentials.email,
     };
-    if (
+
+    const hasNewPassword =
+      employeeInfo.credentials.newPassword &&
+      employeeInfo.credentials.newPassword.trim() !== "";
+    const hasOldPassword =
       employeeInfo.credentials.password &&
-      employeeInfo.credentials.password.trim() !== ""
-    ) {
+      employeeInfo.credentials.password.trim() !== "";
+
+    if (hasNewPassword) {
+      if (!hasOldPassword) {
+        throw new Error("Current password is required to set a new password");
+      }
+
+      const isPasswordValid = await verifyPassword(
+        userRecord.password,
+        employeeInfo.credentials.password!,
+      );
+
+      if (!isPasswordValid) {
+        throw new Error("Current password is not valid");
+      }
+
       userUpdateData.password = await hashPassword(
-        employeeInfo.credentials.password,
+        employeeInfo.credentials.newPassword!,
       );
     }
 

@@ -21,6 +21,7 @@ export default function useProfile() {
       username: "",
       email: "",
       password: "",
+      newPassword: "",
     },
     profileImage: "",
   }));
@@ -46,6 +47,7 @@ export default function useProfile() {
         username: "",
         email: "",
         password: "",
+        newPassword: "",
       },
       profileImage: "",
     };

@@ -26,7 +26,11 @@ export async function getMyProfile(
     throw new Error("Profile not found");
   }
 
-  const buildProfileImage = (firstName: string, lastName: string, existing?: string | null) => {
+  const buildProfileImage = (
+    firstName: string,
+    lastName: string,
+    existing?: string | null,
+  ) => {
     if (existing && existing.trim() !== "") return existing;
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName)}&background=random&color=fff`;
   };
@@ -35,14 +39,22 @@ export async function getMyProfile(
     const admin = profile.admin[0];
     return {
       ...admin,
-      profileImage: buildProfileImage(admin.firstName, admin.lastName, admin.profileImage),
+      profileImage: buildProfileImage(
+        admin.firstName,
+        admin.lastName,
+        admin.profileImage,
+      ),
       user: profile,
     };
   } else if (profile.employees && profile.employees.length > 0) {
     const employee = profile.employees[0];
     return {
       ...employee,
-      profileImage: buildProfileImage(employee.firstName, employee.lastName, employee.profileImage),
+      profileImage: buildProfileImage(
+        employee.firstName,
+        employee.lastName,
+        employee.profileImage,
+      ),
       user: profile,
     };
   }
@@ -85,13 +97,31 @@ export async function updateMyProfile(
     userUpdateData.email = profileInput.credentials.email;
   }
 
-  if (
+  const hasNewPassword =
+    profileInput.credentials.newPassword &&
+    profileInput.credentials.newPassword.trim() !== "";
+  const hasOldPassword =
     profileInput.credentials.password &&
-    profileInput.credentials.password.trim() !== ""
-  ) {
-    userUpdateData.password = await hashPassword(
-      profileInput.credentials.password,
+    profileInput.credentials.password.trim() !== "";
+
+  if (hasNewPassword) {
+    if (!hasOldPassword) {
+      throw new Error("Current password is required to set a new password");
+    }
+
+    const isPasswordValid = await verifyPassword(
+      profile.password,
+      profileInput.credentials.password!,
     );
+
+    if (!isPasswordValid) {
+      throw new Error("Current password is not valid");
+    }
+
+    const newHashedPassword = await hashPassword(
+      profileInput.credentials.newPassword!,
+    );
+    userUpdateData.password = newHashedPassword;
   }
 
   if (profile.admin && profile.admin.length > 0) {

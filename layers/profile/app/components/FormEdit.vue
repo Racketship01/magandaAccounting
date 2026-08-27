@@ -11,6 +11,9 @@ interface Props {
 }
 
 const { profileForm, resetForm, currentUser } = useProfile();
+const isLoading = ref(false);
+const showCurrentPassword = ref(false);
+const showNewPassword = ref(false);
 
 const userDisplayImage = computed(() => currentUser.value?.profileImage || "");
 
@@ -84,6 +87,9 @@ const handleSave = () => {
   const credentials = { ...profileForm.value.credentials };
   if (!credentials.password || credentials.password.trim() === "") {
     delete (credentials as { password?: string }).password;
+  }
+  if (!credentials.newPassword || credentials.newPassword.trim() === "") {
+    delete (credentials as { newPassword?: string }).newPassword;
   }
 
   const employeeData: EmployeeData = {
@@ -416,14 +422,58 @@ const currentCurrencySymbol = computed(() => {
               class="w-full"
             />
           </UFormGroup>
-          <UFormGroup label="Password">
+          <UFormGroup label="Email">
             <UInput
-              v-model="profileForm.credentials.password"
-              placeholder="Enter password"
-              icon="i-lucide-lock"
+              v-model="profileForm.credentials.email"
+              placeholder="Enter email address"
+              icon="i-lucide-mail"
               size="lg"
               class="w-full"
             />
+          </UFormGroup>
+          <UFormGroup label="Current Password">
+            <UInput
+              v-model="profileForm.credentials.password"
+              placeholder="Enter current password"
+              :type="showCurrentPassword ? 'text' : 'password'"
+              icon="i-lucide-lock"
+              size="lg"
+              class="w-full"
+            >
+              <template #trailing>
+                <UButton
+                  :icon="
+                    showCurrentPassword ? 'i-lucide-eye' : 'i-lucide-eye-off'
+                  "
+                  variant="link"
+                  color="neutral"
+                  size="sm"
+                  :disabled="isLoading"
+                  @click="showCurrentPassword = !showCurrentPassword"
+                />
+              </template>
+            </UInput>
+          </UFormGroup>
+          <UFormGroup label="New Password">
+            <UInput
+              v-model="profileForm.credentials.newPassword"
+              placeholder="Enter new password"
+              :type="showNewPassword ? 'text' : 'password'"
+              icon="i-lucide-lock"
+              size="lg"
+              :disabled="isLoading"
+              class="w-full"
+            >
+              <template #trailing>
+                <UButton
+                  :icon="showNewPassword ? 'i-lucide-eye' : 'i-lucide-eye-off'"
+                  variant="link"
+                  color="neutral"
+                  size="sm"
+                  @click="showNewPassword = !showNewPassword"
+                />
+              </template>
+            </UInput>
           </UFormGroup>
         </div>
       </div>
