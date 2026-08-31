@@ -52,6 +52,7 @@ export const updateEmployeeSchema = createEmployeeSchema.extend({
     username: z.string().min(1, "Username is required"),
     email: z.email("Invalid email address"),
     password: z.string().optional(),
+    newPassword: z.string().optional(),
   }),
   profileImage: z.string().default(""),
 });
@@ -97,10 +98,14 @@ export const updateProfileSchema = z.object({
       .string()
       .optional()
       .refine(
-        (val) => val === undefined || val === "" || z.string().email().safeParse(val).success,
+        (val) =>
+          val === undefined ||
+          val === "" ||
+          z.string().email().safeParse(val).success,
         "Invalid email address",
       ),
     password: z.string().optional(),
+    newPassword: z.string().optional(),
   }),
   profileImage: z.string().default(""),
 });

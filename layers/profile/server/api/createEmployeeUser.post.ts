@@ -61,6 +61,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Hash password before passing to repository
+
   const hashedPassword = await hashPassword(password);
 
   // Single call: createEmployee handles both User + Employee in one transaction
