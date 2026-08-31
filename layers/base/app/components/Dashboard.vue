@@ -11,9 +11,10 @@ import {
   BarElement,
   Title,
 } from "chart.js";
-import useExpense from "~~/layers/expense/app/composables/useExpense";
-import useBill from "~~/layers/bill/app/composables/useBill";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
+import useExpense from "../../../expense/app/composables/useExpense";
+import useBill from "../../../bill/app/composables/useBill";
+import useProfile from "../../../profile/app/composables/useProfile";
 
 // Register Chart.js components
 ChartJS.register(
@@ -26,17 +27,14 @@ ChartJS.register(
   Title,
 );
 
-// Admin user data
-const admin = ref({
-  name: "John Doe",
-  role: "Admin",
-  email: "john.doe@company.com",
-});
+const { currentUser, refresh } = useProfile();
 
-const _handleLogout = () => {
-  // Clear admin session and redirect to login
-  navigateTo("/login");
-};
+// Admin user data
+const admin = computed(() => ({
+  name: currentUser.value?.firstName + "",
+  email: currentUser.value?.credentials.email || "",
+  role: currentUser.value?.role || "",
+}));
 
 const { availableExpenses } = useExpense();
 const { bills } = useBill();
@@ -232,7 +230,7 @@ const monthlyChartOptions = {
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "PHP",
   }).format(amount);
 };
 
@@ -281,6 +279,10 @@ const _getDaysUntilDue = (dueDate: string) => {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
 };
+
+watch(refresh, () => {
+  refresh();
+});
 </script>
 
 <template>
@@ -365,29 +367,6 @@ const _getDaysUntilDue = (dueDate: string) => {
           </div>
         </div>
       </UCard>
-
-      <!-- Rejected Expenses Card (For future users)-->
-      <!-- <UCard class="hover:shadow-lg transition-shadow duration-200">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Rejected Expenses
-            </p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {{ rejectedExpenses }}
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Bills not yet paid
-            </p>
-          </div>
-          <div class="p-3">
-            <UIcon
-              name="i-lucide-x-circle"
-              class="h-7 w-7 text-red-600 dark:text-red-400"
-            />
-          </div>
-        </div>
-      </UCard> -->
     </div>
 
     <!-- Charts Grid -->
