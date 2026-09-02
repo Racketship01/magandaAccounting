@@ -11,12 +11,10 @@ import {
   BarElement,
   Title,
 } from "chart.js";
-import { computed, ref, watch } from "vue";
-import useExpense from "../../../expense/app/composables/useExpense";
-import useBill from "../../../bill/app/composables/useBill";
+import { computed, ref, watch, onMounted } from "vue";
 import useProfile from "../../../profile/app/composables/useProfile";
+import useDashboardStats from "../composables/useDashboardStats";
 
-// Register Chart.js components
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -28,75 +26,48 @@ ChartJS.register(
 );
 
 const { currentUser, refresh } = useProfile();
+const { dashboardStats, refreshStats } = useDashboardStats();
 
-// Admin user data
 const admin = computed(() => ({
   name: currentUser.value?.firstName + "",
   email: currentUser.value?.credentials.email || "",
   role: currentUser.value?.role || "",
 }));
 
-const { availableExpenses } = useExpense();
-const { bills } = useBill();
-
-// Year selector for monthly chart
 const currentYear = new Date().getFullYear();
-const selectedYear = ref(currentYear);
+const selectedYear = ref<number>(currentYear);
 
-// Get available years from expense data
 const availableYears = computed(() => {
-  const years = new Set<number>();
-  availableExpenses.value.forEach((expense) => {
-    const year = new Date(expense.date).getFullYear();
-    years.add(year);
-  });
-  return Array.from(years).sort((a, b) => b - a); // Sort descending
+  const years = dashboardStats.value?.availableYears ?? [];
+  if (years.length === 0) {
+    return [currentYear];
+  }
+  return years;
 });
 
-// Computed stats
-const totalSpend = computed(() => {
-  return availableExpenses.value.reduce((total, expense) => {
-    return total + expense.amount;
-  }, 0);
-});
+const totalSpend = computed(() => dashboardStats.value?.totalSpend ?? 0);
+const pendingApproval = computed(
+  () => dashboardStats.value?.pendingApprovalCount ?? 0,
+);
+const unpaidBills = computed(() => dashboardStats.value?.unpaidBillsCount ?? 0);
+const _rejectedExpenses = computed(
+  () => dashboardStats.value?.rejectedExpensesCount ?? 0,
+);
 
-const pendingApproval = computed(() => {
-  return availableExpenses.value.filter(
-    (expense) => expense.status === "Pending",
-  ).length;
-});
-
-const unpaidBills = computed(() => {
-  return bills.value.filter((bill) => !bill.isPaid).length;
-});
-
-const _rejectedExpenses = computed(() => {
-  return availableExpenses.value.filter(
-    (expense) => expense.status === "Rejected",
-  ).length;
-});
-
-// Chart data for category pie chart
 const categoryChartData = computed(() => {
-  const categoryTotals: Record<string, number> = {};
+  const totals = dashboardStats.value?.categoryTotals ?? [];
 
-  availableExpenses.value.forEach((expense) => {
-    const currentTotal = categoryTotals[expense.category] || 0;
-    categoryTotals[expense.category] = currentTotal + expense.amount;
-  });
+  const labels = totals.map((t) => t.category);
+  const data = totals.map((t) => t.amount);
 
-  const labels = Object.keys(categoryTotals);
-  const data = Object.values(categoryTotals);
-
-  // Calming colors palette
   const calmingColors = [
-    "rgba(147, 197, 253, 0.8)", // Light blue
-    "rgba(196, 181, 253, 0.8)", // Light purple
-    "rgba(167, 243, 208, 0.8)", // Light green
-    "rgba(251, 207, 232, 0.8)", // Light pink
-    "rgba(254, 240, 138, 0.8)", // Light yellow
-    "rgba(165, 243, 252, 0.8)", // Light cyan
-    "rgba(199, 210, 254, 0.8)", // Light indigo
+    "rgba(147, 197, 253, 0.8)",
+    "rgba(196, 181, 253, 0.8)",
+    "rgba(167, 243, 208, 0.8)",
+    "rgba(251, 207, 232, 0.8)",
+    "rgba(254, 240, 138, 0.8)",
+    "rgba(165, 243, 252, 0.8)",
+    "rgba(199, 210, 254, 0.8)",
   ];
 
   const backgroundColors = labels.map(
@@ -142,35 +113,24 @@ const categoryChartOptions = {
           const value = context.parsed || 0;
           const dataset = context.dataset;
           if (!dataset || !dataset.data)
-            return `${label}: $${value.toFixed(2)}`;
+            return `${label}: ${formatCurrency(value)}`;
           const total = dataset.data.reduce((a: number, b: number) => a + b, 0);
-          const percentage = ((value / total) * 100).toFixed(1);
-          return `${label}: $${value.toFixed(2)} (${percentage}%)`;
+          const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+          return `${label}: ${formatCurrency(value)} (${percentage}%)`;
         },
       },
     },
   },
 };
 
-// Monthly expenses data for bar chart
 const monthlyChartData = computed(() => {
+  const year = selectedYear.value;
+  const monthly = dashboardStats.value?.monthlyExpensesByYear?.[year] ?? [];
   const monthlyTotals: Record<number, number> = {};
+  for (const entry of monthly) {
+    monthlyTotals[entry.month] = entry.amount;
+  }
 
-  // Filter expenses by selected year
-  availableExpenses.value.forEach((expense) => {
-    const date = new Date(expense.date);
-    const expenseYear = date.getFullYear();
-
-    if (expenseYear === selectedYear.value) {
-      const monthIndex = date.getMonth(); // 0-11
-      if (!monthlyTotals[monthIndex]) {
-        monthlyTotals[monthIndex] = 0;
-      }
-      monthlyTotals[monthIndex] += expense.amount;
-    }
-  });
-
-  // Get all 12 months for the selected year
   const monthLabels = [
     "Jan",
     "Feb",
@@ -186,7 +146,7 @@ const monthlyChartData = computed(() => {
     "Dec",
   ];
 
-  const data = monthLabels.map((_, index) => monthlyTotals[index] || 0);
+  const data = monthLabels.map((_, index) => monthlyTotals[index] ?? 0);
 
   return {
     labels: monthLabels,
@@ -214,7 +174,7 @@ const monthlyChartOptions = {
       callbacks: {
         label: function (context: any) {
           const value = context.parsed?.y ?? 0;
-          return `Total: $${value.toFixed(2)}`;
+          return `Total: ${formatCurrency(value)}`;
         },
       },
     },
@@ -222,7 +182,7 @@ const monthlyChartOptions = {
   scales: {
     y: {
       beginAtZero: true,
-      display: false, // Hide y-axis completely
+      display: false,
     },
   },
 };
@@ -234,54 +194,64 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-// Recent expenses (last 5)
-const _recentExpenses = computed(() => {
-  return [...availableExpenses.value]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
-});
-
-// Upcoming bills (next 5 unpaid)
-const _upcomingBills = computed(() => {
-  return bills.value
-    .filter((bill) => !bill.isPaid)
-    .sort(
-      (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-    )
-    .slice(0, 5);
-});
-
-// Top spending categories (top 3)
 const _topCategories = computed(() => {
-  const categoryTotals: Record<string, number> = {};
-  availableExpenses.value.forEach((expense) => {
-    const currentTotal = categoryTotals[expense.category] || 0;
-    categoryTotals[expense.category] = currentTotal + expense.amount;
-  });
-
-  return Object.entries(categoryTotals)
-    .map(([category, amount]) => ({ category, amount }))
-    .sort((a, b) => b.amount - a.amount)
-    .slice(0, 3);
+  const totals = dashboardStats.value?.categoryTotals ?? [];
+  return totals.slice(0, 3);
 });
 
-const _formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
+const formatRelativeDate = (isoString: string) => {
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
     month: "short",
     day: "numeric",
   });
 };
 
-const _getDaysUntilDue = (dueDate: string) => {
-  const today = new Date();
-  const due = new Date(dueDate);
-  const diffTime = due.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
+const formatFullDate = (isoString: string) => {
+  const date = new Date(isoString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 };
 
-watch(refresh, () => {
-  refresh();
+const systemInfo = computed(() => {
+  const ts = dashboardStats.value?.userTimestamps;
+  const startDate = currentUser.value?.startDate;
+
+  return {
+    lastLogin: ts?.lastLogin
+      ? `Today at ${new Date(ts.lastLogin).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })}`
+      : "N/A (not tracked)",
+    profileUpdated: ts?.profileUpdated
+      ? formatRelativeDate(ts.profileUpdated)
+      : "N/A",
+    accountCreated: ts?.accountCreated
+      ? formatFullDate(ts.accountCreated)
+      : startDate
+        ? formatFullDate(startDate)
+        : "N/A",
+  };
+});
+
+onMounted(async () => {
+  await Promise.all([refresh(), refreshStats()]);
+});
+
+watch(currentUser, async () => {
+  await refreshStats();
 });
 </script>
 
@@ -439,21 +409,23 @@ watch(refresh, () => {
 
         <div class="grid grid-cols-3 items-center justify-center">
           <div>
-            <p class="text-sm text-gray-500">
-              <span class="font-medium">Last Login</span> - Today at 9:15 PM
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              <span class="font-medium">Last Login</span> -
+              {{ systemInfo.lastLogin }}
             </p>
           </div>
 
           <div>
-            <p class="text-sm text-gray-500">
-              <span class="font-medium">Profile Updated</span> - 2 days ago
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              <span class="font-medium">Profile Updated</span> -
+              {{ systemInfo.profileUpdated }}
             </p>
           </div>
 
           <div>
-            <p class="text-sm text-gray-500">
-              <span class="font-medium">Account Created</span> - November 13,
-              2025
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              <span class="font-medium">Account Created</span> -
+              {{ systemInfo.accountCreated }}
             </p>
           </div>
         </div>
