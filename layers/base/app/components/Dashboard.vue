@@ -34,6 +34,13 @@ const admin = computed(() => ({
   role: currentUser.value?.role || "",
 }));
 
+const greeting = computed(() => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+});
+
 const currentYear = new Date().getFullYear();
 const selectedYear = ref<number>(currentYear);
 
@@ -260,7 +267,7 @@ watch(currentUser, async () => {
     <!-- Header -->
     <div>
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-        Welcome, {{ admin.name }}!
+        {{ greeting }}, {{ admin.name }}!
       </h1>
       <p class="text-gray-600 dark:text-gray-300 mt-1">
         Here's what's happening with your finances today.
@@ -322,14 +329,36 @@ watch(currentUser, async () => {
             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
               Unpaid Bills
             </p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {{ unpaidBills }}
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Bills not yet paid
-            </p>
+            <template v-if="admin.role === 'employee' && unpaidBills === 0">
+              <p
+                class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
+              >
+                No assigned bills
+              </p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                Bills assigned to you will appear here
+              </p>
+            </template>
+            <template v-else-if="unpaidBills === 0">
+              <p
+                class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
+              >
+                No bills yet
+              </p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                Start adding bills to track payments
+              </p>
+            </template>
+            <template v-else>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                {{ unpaidBills }}
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Bills not yet paid
+              </p>
+            </template>
           </div>
-          <div class="p-3">
+          <div class="p-3" :class="unpaidBills === 0 ? 'opacity-40' : ''">
             <UIcon
               name="i-lucide-calendar"
               class="h-7 w-7 text-red-600 dark:text-red-400"
