@@ -1,23 +1,19 @@
 📋 Daily Progress Report - **Accounting Project**
-Date: August 27, 2026 (Thursday)
+Date: September 2, 2026 (Wednesday)
 
-✅ Summary - **Implemented Secure User Password Change Feature**
-Today's work delivered a complete and secure password change functionality across the entire profile system. Users can now update their passwords safely, with proper current-password verification to prevent unauthorized changes. Additionally, the profile edit form now includes a dedicated Email field and improved password visibility controls.
+✅ Summary - **Dashboard Real Aggregated Data Integration**
+Today's work focused on replacing all static placeholder data on the Dashboard with real, live aggregated data pulled from the database. A complete full-stack data pipeline was built: a new `dashboardRepository` layer that fetches the current user's expenses and bills, then computes aggregates. The Dashboard component was refactored to consume these reactive stats and pass them into its charts and cards, so numbers now reflect actual database records instead of hardcoded demo values.
 
 📐 Task Completed
-1️⃣ **Secure Password Change Feature with Current-Password Verification** — Both `profileRepository.ts` (for Admin) and `employeeRepository.ts` (for Employees) now require the current password before accepting a new one. The old password is validated using `verifyPassword()` against the stored hash, and only after it passes is the new password hashed with `hashPassword()` and saved. Invalid or missing current passwords throw clear error messages.
-🔗 [profileRepository.ts](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/profile/server/repository/profileRepository.ts)
+1️⃣ **Dashboard Stats Composable** — Added `useDashboardStats.ts` with a strictly typed `DashboardStats` structure (totalSpend, pendingApprovalCount, rejectedExpensesCount, unpaidBillsCount, paidBillsCount, totalBillsCount, categoryTotals, monthlyExpensesByYear, availableYears, userTimestamps). Exposes a reactive `dashboardStats` ref and `refreshStats()` via `useAsyncData` so data fetches on mount and can be reloaded.
+🔗 [useDashboardStats.ts](https://git.next1.ph/imelda/accounting/-/blob/dashboard/layers/base/app/composables/useDashboardStats.ts?ref_type=heads)
 
-2️⃣ **UI Overhaul for Profile Edit Form** — `FormEdit.vue` now displays a new dedicated **Email** input field, plus separate **Current Password** and **New Password** fields. Each password field has an eye-icon toggle (show/hide) on the trailing edge, controlled by `showCurrentPassword` / `showNewPassword` refs. Empty `newPassword` values are automatically stripped before submission so users can save profile data without touching their password.
-🔗 [FormEdit.vue](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/profile/app/components/FormEdit.vue)
+2️⃣ **Dashboard Stats API Endpoint** — Created `/api/dashboard/getStats.get.ts` which uses `getDashboardStats` from the repository to pull the current user's expenses and bills, then computes all aggregates in pure TypeScript: totals via `reduce`, status counts via `filter`, a category breakdown sorted by highest amount first, and monthly expenses grouped by year with the available years list sorted descending. Includes user timestamps (accountCreated, profileUpdated) for the profile sidebar widget.
+🔗 [getStats.get.ts](https://git.next1.ph/imelda/accounting/-/blob/dashboard/layers/base/server/api/dashboard/getStats.get.ts?ref_type=heads)
 
-3️⃣ **Schema & Validation Updates** — `schemas.ts` was updated to include the optional `newPassword` field in both `updateProfileSchema` and `updateEmployeeSchema`, giving end-to-end type safety from frontend form through to the database layer. Email validation in the profile schema was also refactored for cleaner formatting.
-🔗 [schemas.ts](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/profile/server/schemas.ts)
-
-4️⃣ **Composable & Employee API Alignment** — `useEmployee.ts`, `useProfile.ts`, and `createEmployeeUser.post.ts` received small supporting updates to ensure the new credential fields flow correctly through the entire stack, keeping the Admin and Employee code paths in sync.
-🔗 [useProfile.ts](https://git.next1.ph/imelda/accounting/-/blob/profile/layers/profile/app/composables/useProfile.ts)
+3️⃣ **Dashboard Repository Layer** — Added `dashboardRepository.ts` which encapsulates Prisma queries: resolves the authenticated user via `requireAuth(event)`, fetches all their Expense records (with categories), fetches all their Bill records (with paid status), and returns the raw profile + expenses + bundles to the API endpoint for aggregation. Keeps DB access separate from business logic following the existing repository pattern.
+🔗 [dashboardRepository.ts](https://git.next1.ph/imelda/accounting/-/blob/dashboard/layers/base/server/repository/dashboardRepository.ts?ref_type=heads)
 
 🚀 Next Steps / Remaining Work
-💡 Add a password strength meter or minimum-length rules on the New Password field
-💡 Consider optimistic UI refresh after profile save so changes appear instantly (currently uses refresh() refetch)
-💡 Add a "Confirm New Password" field to reduce typos
+💡 Add empty-state UI for cards/charts when the user has no expenses or bills yet.
+💡 Add refresh button or auto-refresh so dashboard stats stay current after the user adds/edits an expense or bill from other pages.

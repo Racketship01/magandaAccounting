@@ -40,9 +40,9 @@ export async function getMyProfile(
     return {
       ...admin,
       profileImage: buildProfileImage(
-        admin.firstName,
-        admin.lastName,
-        admin.profileImage,
+        admin?.firstName || "",
+        admin?.lastName || "",
+        admin?.profileImage || "",
       ),
       user: profile,
     };
@@ -51,9 +51,9 @@ export async function getMyProfile(
     return {
       ...employee,
       profileImage: buildProfileImage(
-        employee.firstName,
-        employee.lastName,
-        employee.profileImage,
+        employee?.firstName || "",
+        employee?.lastName || "",
+        employee?.profileImage || "",
       ),
       user: profile,
     };
@@ -128,7 +128,7 @@ export async function updateMyProfile(
     const adminRecord = profile.admin[0];
     const admin = await prisma.admin.update({
       where: {
-        id: adminRecord.id,
+        id: adminRecord?.id,
       },
       data: {
         firstName: profileInput.firstName,
@@ -163,7 +163,7 @@ export async function updateMyProfile(
     const employeeRecord = profile.employees[0];
     const employee = await prisma.employee.update({
       where: {
-        id: employeeRecord.id,
+        id: employeeRecord?.id,
       },
       data: {
         firstName: profileInput.firstName,

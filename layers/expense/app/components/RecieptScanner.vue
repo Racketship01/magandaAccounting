@@ -47,11 +47,16 @@ const handleDragOver = (e: DragEvent) => {
   e.preventDefault();
 };
 
+// TODO: Add form validation for all fields
 const submitExpense = async () => {
   if (
     !formData.value?.amount ||
     !formData.value.date ||
-    !formData.value.merchantName
+    !formData.value.merchantName ||
+    !formData.value.category ||
+    !formData.value.description ||
+    !formData.value.currency ||
+    !uploadedImage.value
   ) {
     toast.add({ title: "Please fill in all required fields", color: "error" });
     return;
