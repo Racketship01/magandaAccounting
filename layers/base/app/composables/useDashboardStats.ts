@@ -17,23 +17,23 @@ export type DashboardStats = {
   };
 };
 
-export default function useDashboardStats() {
-  const dashboardStats = ref<DashboardStats>({
-    totalSpend: 0,
-    pendingApprovalCount: 0,
-    rejectedExpensesCount: 0,
-    unpaidBillsCount: 0,
-    paidBillsCount: 0,
-    totalBillsCount: 0,
-    categoryTotals: [],
-    monthlyExpensesByYear: {},
-    availableYears: [],
-    userTimestamps: {
-      accountCreated: "",
-      profileUpdated: "",
-    },
-  });
+const defaultStats: DashboardStats = {
+  totalSpend: 0,
+  pendingApprovalCount: 0,
+  rejectedExpensesCount: 0,
+  unpaidBillsCount: 0,
+  paidBillsCount: 0,
+  totalBillsCount: 0,
+  categoryTotals: [],
+  monthlyExpensesByYear: {},
+  availableYears: [],
+  userTimestamps: {
+    accountCreated: "",
+    profileUpdated: "",
+  },
+};
 
+export default function useDashboardStats() {
   const { data, refresh: refreshStats } = useAsyncData<DashboardStats | null>(
     "dashboardStats",
     async () => {
@@ -52,15 +52,18 @@ export default function useDashboardStats() {
     },
   );
 
-  watch(
-    data,
-    (newData) => {
-      if (newData) {
-        dashboardStats.value = newData;
-      }
-    },
-    { immediate: true, deep: true },
-  );
+  const dashboardStats = computed<DashboardStats>(() => {
+    const resolved = data.value;
+    if (!resolved) return defaultStats;
+    return {
+      ...defaultStats,
+      ...resolved,
+      userTimestamps: {
+        ...defaultStats.userTimestamps,
+        ...resolved.userTimestamps,
+      },
+    };
+  });
 
   return {
     dashboardStats,
