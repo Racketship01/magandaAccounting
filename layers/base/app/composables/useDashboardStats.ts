@@ -17,53 +17,55 @@ export type DashboardStats = {
   };
 };
 
+const defaultStats: DashboardStats = {
+  totalSpend: 0,
+  pendingApprovalCount: 0,
+  rejectedExpensesCount: 0,
+  unpaidBillsCount: 0,
+  paidBillsCount: 0,
+  totalBillsCount: 0,
+  categoryTotals: [],
+  monthlyExpensesByYear: {},
+  availableYears: [],
+  userTimestamps: {
+    accountCreated: "",
+    profileUpdated: "",
+  },
+};
+
 export default function useDashboardStats() {
-  const dashboardStats = ref<DashboardStats>({
-    totalSpend: 0,
-    pendingApprovalCount: 0,
-    rejectedExpensesCount: 0,
-    unpaidBillsCount: 0,
-    paidBillsCount: 0,
-    totalBillsCount: 0,
-    categoryTotals: [],
-    monthlyExpensesByYear: {},
-    availableYears: [],
-    userTimestamps: {
-      accountCreated: "",
-      profileUpdated: "",
-    },
+  const {
+    data,
+    refresh: refreshStats,
+    error: dashboardStatsError,
+  } = useAsyncData<DashboardStats | null>("dashboardStats", async () => {
+    try {
+      const response = await $fetch<DashboardStats>("/api/dashboard/getStats", {
+        headers: useRequestHeaders(["cookie"]),
+      });
+      return response;
+    } catch (error) {
+      console.error("Failed to load dashboard stats:", error);
+      throw error;
+    }
   });
 
-  const { data, refresh: refreshStats } = useAsyncData<DashboardStats | null>(
-    "dashboardStats",
-    async () => {
-      try {
-        const response = await $fetch<DashboardStats>(
-          "/api/dashboard/getStats",
-          {
-            headers: useRequestHeaders(["cookie"]),
-          },
-        );
-        return response;
-      } catch (error) {
-        console.error("Failed to load dashboard stats:", error);
-        return null;
-      }
-    },
-  );
-
-  watch(
-    data,
-    (newData) => {
-      if (newData) {
-        dashboardStats.value = newData;
-      }
-    },
-    { immediate: true, deep: true },
-  );
+  const dashboardStats = computed<DashboardStats>(() => {
+    const resolved = data.value;
+    if (!resolved) return defaultStats;
+    return {
+      ...defaultStats,
+      ...resolved,
+      userTimestamps: {
+        ...defaultStats.userTimestamps,
+        ...resolved.userTimestamps,
+      },
+    };
+  });
 
   return {
     dashboardStats,
     refreshStats,
+    dashboardStatsError,
   };
 }

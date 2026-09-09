@@ -14,6 +14,7 @@ import {
 import { computed, ref, watch, onMounted } from "vue";
 import useProfile from "../../../profile/app/composables/useProfile";
 import useDashboardStats from "../composables/useDashboardStats";
+import useToastGlobal from "../composables/useToast";
 
 ChartJS.register(
   ArcElement,
@@ -25,8 +26,10 @@ ChartJS.register(
   Title,
 );
 
+const { toast } = useToastGlobal();
 const { currentUser, refresh } = useProfile();
-const { dashboardStats, refreshStats } = useDashboardStats();
+const { dashboardStats, refreshStats, dashboardStatsError } =
+  useDashboardStats();
 
 const admin = computed(() => ({
   name: currentUser.value?.firstName + "",
@@ -60,6 +63,21 @@ const unpaidBills = computed(() => dashboardStats.value?.unpaidBillsCount ?? 0);
 const _rejectedExpenses = computed(
   () => dashboardStats.value?.rejectedExpensesCount ?? 0,
 );
+
+const isTotalSpendEmpty = computed(() => totalSpend.value === 0);
+const isPendingApprovalEmpty = computed(() => pendingApproval.value === 0);
+const isUnpaidBillsEmpty = computed(() => unpaidBills.value === 0);
+
+const isCategoryChartEmpty = computed(() => {
+  const totals = dashboardStats.value?.categoryTotals ?? [];
+  return totals.length === 0 || totals.every((t) => t.amount === 0);
+});
+
+const _isMonthlyChartEmpty = computed(() => {
+  const year = selectedYear.value;
+  const monthly = dashboardStats.value?.monthlyExpensesByYear?.[year] ?? [];
+  return monthly.length === 0 || monthly.every((m) => m.amount === 0);
+});
 
 const categoryChartData = computed(() => {
   const totals = dashboardStats.value?.categoryTotals ?? [];
@@ -253,12 +271,47 @@ const systemInfo = computed(() => {
   };
 });
 
+watch(dashboardStatsError, (error) => {
+  if (error) {
+    toast.add({
+      title: "Failed to load dashboard data",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Please check your connection and try again.",
+      color: "error",
+    });
+  }
+});
+
 onMounted(async () => {
-  await Promise.all([refresh(), refreshStats()]);
+  try {
+    await Promise.all([refresh(), refreshStats()]);
+  } catch (error) {
+    toast.add({
+      title: "Failed to load dashboard data",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Please check your connection and try again.",
+      color: "error",
+    });
+  }
 });
 
 watch(currentUser, async () => {
-  await refreshStats();
+  try {
+    await refreshStats();
+  } catch (error) {
+    toast.add({
+      title: "Failed to refresh dashboard data",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Please check your connection and try again.",
+      color: "error",
+    });
+  }
 });
 </script>
 
@@ -283,19 +336,41 @@ watch(currentUser, async () => {
             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
               Total Spend
             </p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {{ formatCurrency(totalSpend) }}
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              All expenses combined
-            </p>
+            <template v-if="isTotalSpendEmpty">
+              <p
+                class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
+              >
+                No expenses yet
+              </p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                Start logging expenses to track spending
+              </p>
+            </template>
+            <template v-else>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                {{ formatCurrency(totalSpend) }}
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                All expenses combined
+              </p>
+            </template>
           </div>
-          <div class="p-3">
-            <UIcon
-              name="i-lucide-credit-card"
-              class="h-7 w-7 text-blue-600 dark:text-blue-400"
-            />
-          </div>
+          <template v-if="isTotalSpendEmpty">
+            <div class="p-3 opacity-40">
+              <UIcon
+                name="i-lucide-credit-card"
+                class="h-7 w-7 text-blue-600 dark:text-blue-400"
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div class="p-3">
+              <UIcon
+                name="i-lucide-credit-card"
+                class="h-7 w-7 text-blue-600 dark:text-blue-400"
+              />
+            </div>
+          </template>
         </div>
       </UCard>
 
@@ -306,19 +381,53 @@ watch(currentUser, async () => {
             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
               Pending Approval
             </p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {{ pendingApproval }}
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Expenses awaiting review
-            </p>
+            <template
+              v-if="admin.role === 'employee' && isPendingApprovalEmpty"
+            >
+              <p
+                class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
+              >
+                No pending submissions
+              </p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                Expenses you submit will appear here
+              </p>
+            </template>
+            <template v-else-if="isPendingApprovalEmpty">
+              <p
+                class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
+              >
+                Nothing to review
+              </p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                Expenses awaiting approval will appear here
+              </p>
+            </template>
+            <template v-else>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                {{ pendingApproval }}
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Expenses awaiting review
+              </p>
+            </template>
           </div>
-          <div class="p-3">
-            <UIcon
-              name="i-lucide-clock"
-              class="h-7 w-7 text-yellow-600 dark:text-yellow-400"
-            />
-          </div>
+          <template v-if="isPendingApprovalEmpty">
+            <div class="p-3 opacity-40">
+              <UIcon
+                name="i-lucide-clock"
+                class="h-7 w-7 text-yellow-600 dark:text-yellow-400"
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div class="p-3">
+              <UIcon
+                name="i-lucide-clock"
+                class="h-7 w-7 text-yellow-600 dark:text-yellow-400"
+              />
+            </div>
+          </template>
         </div>
       </UCard>
 
@@ -329,7 +438,7 @@ watch(currentUser, async () => {
             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
               Unpaid Bills
             </p>
-            <template v-if="admin.role === 'employee' && unpaidBills === 0">
+            <template v-if="admin.role === 'employee' && isUnpaidBillsEmpty">
               <p
                 class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
               >
@@ -339,7 +448,7 @@ watch(currentUser, async () => {
                 Bills assigned to you will appear here
               </p>
             </template>
-            <template v-else-if="unpaidBills === 0">
+            <template v-else-if="isUnpaidBillsEmpty">
               <p
                 class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
               >
@@ -358,12 +467,22 @@ watch(currentUser, async () => {
               </p>
             </template>
           </div>
-          <div class="p-3" :class="unpaidBills === 0 ? 'opacity-40' : ''">
-            <UIcon
-              name="i-lucide-calendar"
-              class="h-7 w-7 text-red-600 dark:text-red-400"
-            />
-          </div>
+          <template v-if="isUnpaidBillsEmpty">
+            <div class="p-3 opacity-40">
+              <UIcon
+                name="i-lucide-calendar"
+                class="h-7 w-7 text-red-600 dark:text-red-400"
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div class="p-3">
+              <UIcon
+                name="i-lucide-calendar"
+                class="h-7 w-7 text-red-600 dark:text-red-400"
+              />
+            </div>
+          </template>
         </div>
       </UCard>
     </div>
@@ -380,12 +499,30 @@ watch(currentUser, async () => {
             </h3>
           </div>
         </template>
-        <div class="flex items-center justify-center">
-          <Chart
-            type="doughnut"
-            :data="categoryChartData"
-            :options="categoryChartOptions"
-          />
+        <div class="flex items-center justify-center h-full">
+          <template v-if="isCategoryChartEmpty">
+            <div class="text-center py-10">
+              <UIcon
+                name="i-lucide-pie-chart"
+                class="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4"
+              />
+              <p
+                class="text-xl font-semibold text-gray-400 dark:text-gray-500 mb-2"
+              >
+                No category data
+              </p>
+              <p class="text-sm text-gray-400 dark:text-gray-500">
+                Expense categories will appear once you log expenses
+              </p>
+            </div>
+          </template>
+          <template v-else>
+            <Chart
+              type="doughnut"
+              :data="categoryChartData"
+              :options="categoryChartOptions"
+            />
+          </template>
         </div>
       </UCard>
 
