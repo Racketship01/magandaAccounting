@@ -1,12 +1,12 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import type { Employee } from "../../../../private/types/employee";
+import type { EmployeeData } from "../../../profile/app/composables/useEmployee";
 
 interface Props {
   icon?: string;
   title?: string;
   description?: string;
-  employee?: Employee;
+  employee?: EmployeeData;
 }
 
 const props = withDefaults(defineProps<Props>(), {
