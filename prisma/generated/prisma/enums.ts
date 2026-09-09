@@ -42,3 +42,15 @@ export const BillType = {
 } as const
 
 export type BillType = (typeof BillType)[keyof typeof BillType]
+
+
+export const NotificationType = {
+  expense_submitted: 'expense_submitted',
+  expense_approved: 'expense_approved',
+  expense_rejected: 'expense_rejected',
+  bill_due: 'bill_due',
+  bill_paid: 'bill_paid',
+  employee_joined: 'employee_joined'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

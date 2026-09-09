@@ -3,6 +3,7 @@ import { createBillSchema } from "../schemas";
 import { defineEventHandler, readBody, createError, H3Error } from "h3";
 import adminSession from "../../../../layers/profile/server/utils/roleSession";
 import { prisma } from "../../../../prisma/utils/prisma";
+import { pushNotification } from "../../../../layers/base/server/repository/notificationRepository";
 
 export default defineEventHandler(async (event: any) => {
   const user = await adminSession(event);
@@ -16,7 +17,6 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
-  // Validate request body using createBillSchema
   const result = createBillSchema.safeParse(body);
   if (!result.success) {
     throw createError({
@@ -38,15 +38,27 @@ export default defineEventHandler(async (event: any) => {
   }
 
   try {
-    const bill = await createBill(result.data, admin.id);
+    const createResult = await createBill(result.data, admin.id);
 
-    if (!bill) {
+    if (!createResult) {
       throw createError({
         statusCode: 404,
         statusMessage: "Bill not found",
       });
     }
-    return { bill };
+
+    if (createResult.adminUserId && result.data.reminderEnabled) {
+      await pushNotification({
+        userId: createResult.adminUserId,
+        type: "bill_due",
+        title: `New bill: ${result.data.title}`,
+        description: `Due ${result.data.dueDate} — ${result.data.amount} ${result.data.currency || ""}`,
+        icon: "i-lucide-bell-ring",
+        billId: createResult.bill.id,
+      });
+    }
+
+    return { bill: createResult.bill };
   } catch (error: any) {
     if (error instanceof H3Error) throw error;
     throw createError({

@@ -8,10 +8,22 @@ import {
 } from "~~/layers/expense/server/schemas";
 import { createError } from "h3";
 
+export interface CreateExpenseResult {
+  expense: Expense;
+  adminUserId: string | null;
+  employeeName: string;
+}
+
+export interface UpdateExpenseResult {
+  expense: Expense;
+  employeeUserId: string | null;
+  status: string;
+}
+
 export const createExpense = async (
   expense: CreateExpenseSchema,
   event: any,
-): Promise<Expense> => {
+): Promise<CreateExpenseResult> => {
   const {
     amount,
     date,
@@ -27,6 +39,7 @@ export const createExpense = async (
   let firstName = "";
   let adminId = "";
   let employeeId = "";
+  let adminUserId: string | null = null;
 
   if (user.role === "admin") {
     const admin = await prisma.admin.findFirst({ where: { userId: user.id } });
@@ -37,6 +50,7 @@ export const createExpense = async (
       });
 
     adminId = admin.id;
+    adminUserId = admin.userId;
     firstName = admin.firstName;
 
     const ownEmployee = await prisma.employee.findFirst({
@@ -59,19 +73,21 @@ export const createExpense = async (
       });
     employeeId = employee.id;
     firstName = employee.firstName;
-    // Find the admin to assign the expense review to
-    const defaultAdmin = await prisma.admin.findFirst();
+    const defaultAdmin = await prisma.admin.findFirst({
+      select: { id: true, userId: true },
+    });
     adminId = defaultAdmin?.id || "";
+    adminUserId = defaultAdmin?.userId || null;
   }
 
-  return await prisma.expense.create({
+  const created = await prisma.expense.create({
     data: {
       amount,
       date,
       category,
       merchantName,
       description,
-      receiptUrl, // Saved path (or base64 string)
+      receiptUrl,
       status: "pending",
       currency,
       employeeName: firstName,
@@ -79,6 +95,8 @@ export const createExpense = async (
       employeeId,
     },
   });
+
+  return { expense: created, adminUserId, employeeName: firstName };
 };
 
 export async function getExpenses(event: any): Promise<Expense[]> {
@@ -115,7 +133,7 @@ export async function updateExpenseStatus(
   id: string,
   status: UpdateExpenseStatus,
   event: any,
-): Promise<Expense> {
+): Promise<UpdateExpenseResult> {
   const user = await userSession(event);
 
   if (user.role === "employee") {
@@ -136,10 +154,20 @@ export async function updateExpenseStatus(
     });
   }
 
-  return await prisma.expense.update({
+  const mapped = mapStatus(status);
+  const updated = await prisma.expense.update({
     where: { id },
-    data: { status: mapStatus(status) },
+    data: { status: mapped },
+    include: {
+      employee: { select: { userId: true } },
+    },
   });
+
+  return {
+    expense: updated,
+    employeeUserId: updated.employee?.userId || null,
+    status: mapped,
+  };
 }
 
 export async function deleteExpense(id: string): Promise<Expense> {

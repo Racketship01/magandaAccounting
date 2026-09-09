@@ -1,9 +1,11 @@
 <!-- eslint-disable @typescript-eslint/no-unused-expressions -->
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, onUnmounted, watch } from "vue";
 import useColor from "../composables/useColorMode";
 import useAuth from "../../../auth/app/composables/useAuth";
+import useNotifications from "../composables/useNotifications";
 
+const { startPolling, stopPolling } = useNotifications();
 const { user } = useAuth();
 
 // Reactive state
@@ -27,7 +29,27 @@ onMounted(() => {
   }
   // Set mounted flag to allow logo switching
   isMounted.value = true;
+
+  if (user.value) {
+    startPolling(15000);
+  }
 });
+
+onUnmounted(() => {
+  stopPolling();
+});
+
+watch(
+  () => user.value,
+  (newUser, oldUser) => {
+    if (newUser && !oldUser) {
+      startPolling(15000);
+    } else if (!newUser && oldUser) {
+      stopPolling();
+    }
+  },
+  { immediate: false },
+);
 
 // Navigation links
 const links = computed(() => {

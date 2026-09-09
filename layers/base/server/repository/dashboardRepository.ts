@@ -1,6 +1,6 @@
 import { prisma } from "~~/prisma/utils/prisma";
 import userSession from "~~/layers/auth/server/utils/userSession";
-import type { DashboardStats } from "~~/composables/useDashboardStats";
+import type { DashboardStats } from "../../app/composables/useDashboardStats";
 
 export async function getDashboardStats(
   event: H3Event,

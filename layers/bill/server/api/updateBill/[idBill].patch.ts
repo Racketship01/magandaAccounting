@@ -1,10 +1,10 @@
 import { updateBill } from "../../repository/billRepository";
 import { updateBillSchema } from "../../schemas";
 import adminSession from "../../../../profile/server/utils/roleSession";
+import { pushNotification } from "../../../../base/server/repository/notificationRepository";
 
 export default defineEventHandler(async (event: any) => {
   await adminSession(event);
-  // 1. Validate input schema
   const body = await readBody(event);
   const validationResult = updateBillSchema.safeParse(body);
   if (!validationResult.success) {
@@ -14,7 +14,6 @@ export default defineEventHandler(async (event: any) => {
       data: validationResult.error.flatten().fieldErrors,
     });
   }
-  // Extract bill ID from dynamic route parameters
   const id = event.context.params?.idBill as string;
 
   if (!id) {
@@ -24,9 +23,22 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
-  // 2. Create the updated bill
-  const bill = await updateBill(id, validationResult.data);
+  const result = await updateBill(id, validationResult.data);
 
-  // Return the created bill
-  return { bill };
+  if (
+    result.adminUserId &&
+    !result.wasPaid &&
+    result.isNowPaid
+  ) {
+    await pushNotification({
+      userId: result.adminUserId,
+      type: "bill_paid",
+      title: `Bill paid: ${result.bill.title}`,
+      description: `${result.bill.amount} ${result.bill.currency || ""}`,
+      icon: "i-lucide-check-circle-2",
+      billId: result.bill.id,
+    });
+  }
+
+  return { bill: result.bill };
 });

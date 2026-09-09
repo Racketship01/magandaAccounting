@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody } from "h3";
 import { createExpense } from "../../repository/expenseRepository";
 import { useUploadImage } from "~~/layers/base/app/composables/useUploadImage";
+import { pushNotification } from "../../../../base/server/repository/notificationRepository";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -14,14 +15,13 @@ export default defineEventHandler(async (event) => {
       receiptUrl = await useUploadImage(image);
     } catch (e) {
       console.error("Failed to save image file", e);
-      // Fallback: save as base64 string directly
       receiptUrl = image;
     }
   }
 
   const parsedAmount = typeof amount === "string" ? parseFloat(amount) : amount;
 
-  return await createExpense(
+  const result = await createExpense(
     {
       amount: parsedAmount,
       date,
@@ -33,4 +33,17 @@ export default defineEventHandler(async (event) => {
     },
     event,
   );
+
+  if (result.adminUserId) {
+    await pushNotification({
+      userId: result.adminUserId,
+      type: "expense_submitted",
+      title: `${result.employeeName} submitted expense`,
+      description: `${parsedAmount} ${currency || ""} — ${merchantName}`,
+      icon: "i-lucide-receipt",
+      expenseId: result.expense.id,
+    });
+  }
+
+  return { expense: result.expense };
 });

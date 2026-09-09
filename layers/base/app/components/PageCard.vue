@@ -7,6 +7,7 @@ interface Props {
   title?: string;
   description?: string;
   employee?: EmployeeData;
+  itemId?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -14,20 +15,21 @@ const props = withDefaults(defineProps<Props>(), {
   title: "Card Title",
   description: "Card description goes here...",
   employee: undefined,
+  itemId: undefined,
 });
 
 const emit = defineEmits<{
-  (e: "removeCard", title: string): void;
+  (e: "removeCard", title: string, id?: string): void;
 }>();
 
-const removeCard = (title: string) => {
-  emit("removeCard", title);
+const removeCard = () => {
+  emit("removeCard", props.title, props.itemId);
 };
 </script>
 
 <template>
   <div
-    class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm hover:shadow-md transition-shadow duration-200 mt-2"
+    class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm hover:shadow-md transition-shadow duration-200 mt-2 cursor-pointer select-none"
   >
     <div class="flex items-start gap-4">
       <!-- Left Icon -->
@@ -46,7 +48,7 @@ const removeCard = (title: string) => {
           size="sm"
           square
           class="absolute top-2 right-2 z-10"
-          @click="removeCard(props.title)"
+          @click.stop="removeCard()"
         >
           <UIcon name="i-lucide-x" class="size-4" />
         </UButton>

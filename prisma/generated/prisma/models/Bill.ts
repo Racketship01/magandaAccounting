@@ -657,10 +657,6 @@ export type BillUncheckedUpdateManyWithoutAdminNestedInput = {
   deleteMany?: Prisma.BillScalarWhereInput | Prisma.BillScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type EnumBillTypeFieldUpdateOperationsInput = {
   set?: $Enums.BillType
 }
