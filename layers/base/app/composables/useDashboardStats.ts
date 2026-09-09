@@ -34,23 +34,21 @@ const defaultStats: DashboardStats = {
 };
 
 export default function useDashboardStats() {
-  const { data, refresh: refreshStats } = useAsyncData<DashboardStats | null>(
-    "dashboardStats",
-    async () => {
-      try {
-        const response = await $fetch<DashboardStats>(
-          "/api/dashboard/getStats",
-          {
-            headers: useRequestHeaders(["cookie"]),
-          },
-        );
-        return response;
-      } catch (error) {
-        console.error("Failed to load dashboard stats:", error);
-        return null;
-      }
-    },
-  );
+  const {
+    data,
+    refresh: refreshStats,
+    error: dashboardStatsError,
+  } = useAsyncData<DashboardStats | null>("dashboardStats", async () => {
+    try {
+      const response = await $fetch<DashboardStats>("/api/dashboard/getStats", {
+        headers: useRequestHeaders(["cookie"]),
+      });
+      return response;
+    } catch (error) {
+      console.error("Failed to load dashboard stats:", error);
+      throw error;
+    }
+  });
 
   const dashboardStats = computed<DashboardStats>(() => {
     const resolved = data.value;
@@ -68,5 +66,6 @@ export default function useDashboardStats() {
   return {
     dashboardStats,
     refreshStats,
+    dashboardStatsError,
   };
 }

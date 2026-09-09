@@ -14,6 +14,7 @@ import {
 import { computed, ref, watch, onMounted } from "vue";
 import useProfile from "../../../profile/app/composables/useProfile";
 import useDashboardStats from "../composables/useDashboardStats";
+import useToastGlobal from "../composables/useToast";
 
 ChartJS.register(
   ArcElement,
@@ -25,8 +26,10 @@ ChartJS.register(
   Title,
 );
 
+const { toast } = useToastGlobal();
 const { currentUser, refresh } = useProfile();
-const { dashboardStats, refreshStats } = useDashboardStats();
+const { dashboardStats, refreshStats, dashboardStatsError } =
+  useDashboardStats();
 
 const admin = computed(() => ({
   name: currentUser.value?.firstName + "",
@@ -70,7 +73,7 @@ const isCategoryChartEmpty = computed(() => {
   return totals.length === 0 || totals.every((t) => t.amount === 0);
 });
 
-const isMonthlyChartEmpty = computed(() => {
+const _isMonthlyChartEmpty = computed(() => {
   const year = selectedYear.value;
   const monthly = dashboardStats.value?.monthlyExpensesByYear?.[year] ?? [];
   return monthly.length === 0 || monthly.every((m) => m.amount === 0);
@@ -268,12 +271,47 @@ const systemInfo = computed(() => {
   };
 });
 
+watch(dashboardStatsError, (error) => {
+  if (error) {
+    toast.add({
+      title: "Failed to load dashboard data",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Please check your connection and try again.",
+      color: "error",
+    });
+  }
+});
+
 onMounted(async () => {
-  await Promise.all([refresh(), refreshStats()]);
+  try {
+    await Promise.all([refresh(), refreshStats()]);
+  } catch (error) {
+    toast.add({
+      title: "Failed to load dashboard data",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Please check your connection and try again.",
+      color: "error",
+    });
+  }
 });
 
 watch(currentUser, async () => {
-  await refreshStats();
+  try {
+    await refreshStats();
+  } catch (error) {
+    toast.add({
+      title: "Failed to refresh dashboard data",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Please check your connection and try again.",
+      color: "error",
+    });
+  }
 });
 </script>
 
