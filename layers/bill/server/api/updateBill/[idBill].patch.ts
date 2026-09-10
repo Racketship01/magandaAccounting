@@ -25,17 +25,13 @@ export default defineEventHandler(async (event: any) => {
 
   const result = await updateBill(id, validationResult.data);
 
-  if (
-    result.adminUserId &&
-    !result.wasPaid &&
-    result.isNowPaid
-  ) {
+  if (result.adminUserId && !result.wasPaid && result.isNowPaid) {
     await pushNotification({
       userId: result.adminUserId,
       type: "bill_paid",
       title: `Bill paid: ${result.bill.title}`,
       description: `${result.bill.amount} ${result.bill.currency || ""}`,
-      icon: "i-lucide-check-circle-2",
+      icon: "i-lucide-bell",
       billId: result.bill.id,
     });
   }

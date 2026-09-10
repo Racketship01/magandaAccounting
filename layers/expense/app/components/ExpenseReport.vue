@@ -5,6 +5,9 @@ import useExpense from "../composables/useExpense";
 import useToastGlobal from "../../../base/app/composables/useToast";
 import userSession from "../../../auth/server/utils/userSession";
 import useEmployee from "../../../profile/app/composables/useEmployee";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const { expenseState, availableExpenses, selectedExpense, refresh } =
   useExpense();
@@ -223,6 +226,19 @@ watch(
   () => expenseState.value.searchQuery,
   async () => {
     await refresh();
+  },
+  { immediate: true },
+);
+
+watch(
+  [() => route.query.expenseId, () => availableExpenses.value.length],
+  ([expenseId]) => {
+    if (expenseId && typeof expenseId === "string") {
+      const found = availableExpenses.value.find((e) => e.id === expenseId);
+      if (found) {
+        viewExpenseView(found);
+      }
+    }
   },
   { immediate: true },
 );

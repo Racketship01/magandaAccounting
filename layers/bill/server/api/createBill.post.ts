@@ -53,7 +53,7 @@ export default defineEventHandler(async (event: any) => {
         type: "bill_due",
         title: `New bill: ${result.data.title}`,
         description: `Due ${result.data.dueDate} — ${result.data.amount} ${result.data.currency || ""}`,
-        icon: "i-lucide-bell-ring",
+        icon: "i-lucide-bell",
         billId: createResult.bill.id,
       });
     }

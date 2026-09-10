@@ -38,9 +38,9 @@ export default defineEventHandler(async (event) => {
     await pushNotification({
       userId: result.adminUserId,
       type: "expense_submitted",
-      title: `${result.employeeName} submitted expense`,
-      description: `${parsedAmount} ${currency || ""} — ${merchantName}`,
-      icon: "i-lucide-receipt",
+      title: `${result.employeeName}`,
+      description: `Submitted a new expense report of ${parsedAmount} ${currency || ""} — ${merchantName}`,
+      icon: "i-lucide-bell",
       expenseId: result.expense.id,
     });
   }

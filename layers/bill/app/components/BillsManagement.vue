@@ -1,10 +1,11 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import useBill from "../composables/useBill";
-
 import type { Bill } from "../composables/useBill";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const { bills, billState, refresh } = useBill();
 
 // Bill categories
@@ -218,6 +219,19 @@ const formatDate = (dateString: string) => {
 const isOverdue = (dueDate: string) => {
   return new Date(dueDate) < new Date();
 };
+
+watch(
+  [() => route.query.billId, () => bills.value.length],
+  ([billId]) => {
+    if (billId && typeof billId === "string") {
+      const found = bills.value.find((b) => b.id === billId);
+      if (found) {
+        handleViewBill(found);
+      }
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>

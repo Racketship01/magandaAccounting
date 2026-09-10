@@ -55,7 +55,7 @@ export default function useNotifications() {
           toast.add({
             title: newestNew.title,
             description: newestNew.description,
-            icon: newestNew.icon || "i-lucide-bell",
+            icon: "i-lucide-bell",
             color: "primary",
             timeout: 5000,
           });

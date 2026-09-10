@@ -1,7 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import useNotifications from "../composables/useNotifications";
-import type { AppNotification } from "../composables/useNotifications";
+import { computed } from "vue";
+import useNotifications, {
+  type AppNotification,
+} from "../composables/useNotifications";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -20,11 +22,28 @@ const {
   removeNotification,
 } = useNotifications();
 
-const handleCardClick = (stat: { id: string }) => {
+const handleCardClick = async (stat: { id: string }) => {
   const n = notifications.value.find((x) => x.id === stat.id);
   if (n && !n.isRead) {
-    markAsRead(n.id);
+    await markAsRead(n.id);
   }
+  if (n?.expenseId) {
+    emit("update:modelValue", false);
+    await navigateTo({
+      path: "/expense",
+      query: { expenseId: n.expenseId },
+    });
+  } else if (n?.billId) {
+    emit("update:modelValue", false);
+    await navigateTo({
+      path: "/bills",
+      query: { billId: n.billId },
+    });
+  }
+};
+
+const isNavigable = (n: AppNotification): boolean => {
+  return Boolean(n.expenseId || n.billId);
 };
 
 const handleRemoveCard = (_title: string, id?: string) => {
@@ -46,8 +65,9 @@ const displayedNotifications = computed(() =>
   notifications.value.map((n) => ({
     ...n,
     _title: n.title,
-    displayIcon: n.icon || "i-lucide-bell",
+    displayIcon: "i-lucide-bell",
     isUnread: !n.isRead,
+    isNavigable: isNavigable(n),
   })),
 );
 </script>
@@ -109,6 +129,11 @@ const displayedNotifications = computed(() =>
           v-for="stat in displayedNotifications"
           :key="stat.id"
           class="relative"
+          :class="
+            stat.isNavigable
+              ? 'cursor-pointer hover:bg-muted/50 rounded-lg transition-colors'
+              : ''
+          "
           @click="handleCardClick({ id: stat.id })"
         >
           <div

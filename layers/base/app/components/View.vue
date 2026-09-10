@@ -709,24 +709,6 @@ const clearReceipt = () => {
           </template>
         </div>
       </div>
-
-      <!-- Notes Section -->
-      <div
-        v-if="(isExpense && expense?.notes) || (isBill && bill?.notes)"
-        class="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700"
-      >
-        <label
-          class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-        >
-          <UIcon name="i-lucide-sticky-note" class="h-4 w-4" />
-          Notes
-        </label>
-        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <p class="text-gray-900 dark:text-white">
-            {{ isExpense ? expense?.notes : bill?.notes }}
-          </p>
-        </div>
-      </div>
     </div>
   </UCard>
 </template>
