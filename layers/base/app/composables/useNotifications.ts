@@ -26,7 +26,7 @@ export default function useNotifications() {
   );
   const unreadCount = useState<number>("app-notifications-unread", () => 0);
   const loading = ref(false);
-  let pollInterval: ReturnType<typeof setInterval> | null = null;
+  let eventSource: EventSource | null = null;
 
   const { toast } = useToastGlobal();
   const prevUnreadIds = useState<Set<string>>(
@@ -109,16 +109,34 @@ export default function useNotifications() {
     }
   }
 
-  function startPolling(intervalMs = 15000) {
+  function startPolling(_intervalMs = 15000) {
     stopPolling();
     fetchNotifications();
-    pollInterval = setInterval(fetchNotifications, intervalMs);
+
+    if (typeof EventSource === "undefined") {
+      return;
+    }
+
+    eventSource = new EventSource("/api/notifications/stream");
+    eventSource.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.type === "refresh") {
+          fetchNotifications();
+        }
+      } catch {
+        // Silent fail for malformed SSE messages
+      }
+    };
+    eventSource.onerror = () => {
+      // EventSource auto-reconnects; silent fail to match polling behavior
+    };
   }
 
   function stopPolling() {
-    if (pollInterval) {
-      clearInterval(pollInterval);
-      pollInterval = null;
+    if (eventSource) {
+      eventSource.close();
+      eventSource = null;
     }
   }
 

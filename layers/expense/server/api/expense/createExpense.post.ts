@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
       userId: result.adminUserId,
       type: "expense_submitted",
       title: `${result.employeeName}`,
-      description: `Submitted a new expense report of ${parsedAmount} ${currency || ""} — ${merchantName}`,
+      description: "Submitted a new expense report",
       icon: "i-lucide-bell",
       expenseId: result.expense.id,
     });

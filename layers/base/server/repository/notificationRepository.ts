@@ -1,6 +1,7 @@
 import { getRouterParam, createError, type H3Event } from "h3";
 import { prisma } from "~~/prisma/utils/prisma";
 import userSession from "~~/layers/auth/server/utils/userSession";
+import { emitNotificationForUser } from "../utils/notificationBus";
 
 export type NotificationTypeKey =
   | "expense_submitted"
@@ -74,5 +75,7 @@ export async function pushNotification(input: {
   expenseId?: string;
   billId?: string;
 }) {
-  return prisma.notification.create({ data: input });
+  const result = await prisma.notification.create({ data: input });
+  emitNotificationForUser(input.userId);
+  return result;
 }
