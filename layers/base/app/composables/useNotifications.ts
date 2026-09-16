@@ -66,6 +66,10 @@ export default function useNotifications() {
       notifications.value = list;
       unreadCount.value = list.filter((n) => !n.isRead).length;
     } catch {
+      toast.add({
+        title: "Failed to fetch notifications",
+        color: "error",
+      });
       // Silent fail for polling
     } finally {
       loading.value = false;
@@ -101,11 +105,26 @@ export default function useNotifications() {
     }
   }
 
-  function removeNotification(id: string) {
+  async function removeNotification(id: string) {
     const wasUnread = notifications.value.find((n) => n.id === id && !n.isRead);
     notifications.value = notifications.value.filter((n) => n.id !== id);
     if (wasUnread) {
       unreadCount.value = Math.max(0, unreadCount.value - 1);
+    }
+    try {
+      await $fetch(`/api/notifications/${id}/deleteNotification`, {
+        method: "DELETE",
+      });
+      toast.add({
+        title: "Notification deleted",
+        description: "The notification has been deleted successfully",
+        color: "success",
+      });
+    } catch {
+      toast.add({
+        title: "Failed to delete notification",
+        color: "error",
+      });
     }
   }
 
@@ -125,10 +144,18 @@ export default function useNotifications() {
           fetchNotifications();
         }
       } catch {
+        toast.add({
+          title: "Failed to parse notification stream message",
+          color: "error",
+        });
         // Silent fail for malformed SSE messages
       }
     };
     eventSource.onerror = () => {
+      toast.add({
+        title: "Notification stream error",
+        color: "error",
+      });
       // EventSource auto-reconnects; silent fail to match polling behavior
     };
   }

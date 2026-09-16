@@ -79,3 +79,7 @@ export async function pushNotification(input: {
   emitNotificationForUser(input.userId);
   return result;
 }
+
+export async function deleteNotification(id: string) {
+  return await prisma.notification.delete({ where: { id } });
+}

@@ -6,11 +6,12 @@ import {
   findUserByUsername,
 } from "../../../auth/server/repository/userRepository";
 import adminSession from "../utils/roleSession";
+import { pushNotification } from "../../../../layers/base/server/repository/notificationRepository";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  await adminSession(event);
+  const admin = await adminSession(event);
 
   // Validate the full employee form body
   const result = createEmployeeSchema.safeParse(body);
@@ -87,6 +88,14 @@ export default defineEventHandler(async (event) => {
       email,
       password: hashedPassword,
     },
+  });
+
+  await pushNotification({
+    userId: admin.id,
+    type: "employee_joined",
+    title: `${firstName} ${lastName}`,
+    description: `Joined · ${jobTitle}${department ? ` · ${department}` : ""}`,
+    icon: "i-lucide-user-plus",
   });
 
   return {
