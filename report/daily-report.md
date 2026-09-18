@@ -1,25 +1,26 @@
 📋 Daily Progress Report - **Accounting Project**
-Date: September 11, 2026 (Friday)
+Date: September 16, 2026 (Wednesday)
 
-✅ Summary - **Real-Time Notifications via Server-Sent Events (SSE)**
-Today's work focused on: Replaced the old notification polling system (which checked for new updates every 15 seconds) with a live Server-Sent Events connection. Now when someone submits an expense, the admin sees the notification pop up instantly in their dashboard — no waiting and no wasted background checks. The new system uses a lightweight in-memory event bus to broadcast notifications to the right user, paired with a browser-native EventSource connection that automatically reconnects if the network drops.
+✅ Summary - **Delete Notification Endpoint, Employee Onboarding Notifications & Error Toast Polish**
+Today's work focused on: Added the ability for users to permanently delete individual notifications from their list, alongside a new real-time alert that fires whenever a new employee is onboarded. Also filled in the remaining silent error paths across the notification system so fetch failures, stream disconnects, and malformed messages now surface as visible error toasts instead of failing quietly. The server-side event bus was also annotated with inline comments for future maintainability.
 
 📐 Task Completed
-1️⃣ **Live Notification Event Bus** — Built a singleton server-side event bus (using Node EventEmitter) that broadcasts events per user. When a new notification is saved to the database, the bus emits the event only to the intended recipient's subscriber list, so users only see their own alerts.
-🔗 [notificationBus.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/server/utils/notificationBus.ts?ref_type=heads)
+1️⃣ **DELETE Notification API Endpoint** — Created a new `DELETE /api/notifications/:id/deleteNotification` route (with its dedicated file in the [id] param folder) that validates the notification ID and removes the row from the database via Prisma. Wired the composable's existing `removeNotification()` stub to actually call this endpoint.
+🔗[deleteNotification.delete](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/server/api/notifications/[id]/deleteNotification.delete.ts?ref_type=heads)
 
-2️⃣ **SSE Stream Endpoint** — Created a new `/api/notifications/stream` endpoint that establishes a persistent Server-Sent Events connection. Each connection authenticates the user, subscribes to their personal event channel, sends a 15-second heartbeat ping to keep proxies happy, and cleans up (unsubscribe + clear timer) when the client disconnects.
-🔗 [stream.get.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/server/api/notifications/stream.get.ts?ref_type=heads)
+2️⃣ **Client Delete Flow + Success/Error Feedback** — In `useNotifications.ts`, `removeNotification()` now optimistically removes the notification from the in-app list and adjusts the unread counter first, then calls the DELETE API. On success it shows a green "Notification deleted" confirmation toast; on failure it shows a red error toast so the user knows something went wrong.
+🔗[useNotifications.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/app/composables/useNotifications.ts?ref_type=heads)
 
-3️⃣ **Client-Side EventSource Integration** — Updated `useNotifications` composable to open a browser `EventSource` connection to the new stream. When a `refresh` message arrives, the client immediately fetches the latest notifications list, triggering the toast pop-up for any newly unread items. Falls back gracefully if EventSource is unavailable.
-🔗 [useNotifications.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/app/composables/useNotifications.ts?ref_type=heads)
+3️⃣ **New-Employee Real-Time Notification Trigger** — After `createEmployeeUser` successfully creates a User + Employee record, it now calls `pushNotification` for the admin with the `employee_joined` type, showing the new hire's name, job title, and department in the admin's notification feed. Because `pushNotification` already emits the SSE event, the admin sees the toast instantly without refreshing.
+🔗[createEmployeeUser.post](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/profile/server/api/createEmployeeUser.post.ts?ref_type=heads)
 
-4️⃣ **Notification Hook After DB Save** — Updated `pushNotification()` in the repository layer so that every time a notification row is created in the database, it also fires the event bus emission for that user. The existing expense-submit flow (when an employee submits a new report) now triggers this real-time push to the admin.
-🔗 [notificationRepository.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/server/repository/notificationRepository.ts?ref_type=heads)
+4️⃣ **Silent-Fail Error Toasts Throughout Notifications** — Previously three paths swallowed errors without user feedback: initial `fetchNotifications` failure, malformed JSON in an SSE `onmessage`, and an `onerror` on the EventSource stream. All three now fire a red error toast (matching the existing pattern for mark-as-read failures) so users see when notifications aren't loading or the live stream dropped.
+🔗[notificationBus.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/server/utils/notificationBus.ts?ref_type=heads)
+
+5️⃣ **NotificationBus Code Comments** — Added inline explanations to `notificationBus.ts` describing the EventEmitter inheritance, the singleton pattern, max-listener setting, per-user event filtering in `subscribe()`, and the unsubscribe closure returned to callers.
+🔗[notificationBus.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/server/utils/notificationBus.ts?ref_type=heads)
 
 🚀 Next Steps / Remaining Work
-💡 **Wire remaining notification triggers** — Hook up `emitNotificationForUser` to other actions that create notifications: expense approve/reject, bill payment, employee onboarding. These write to the DB already but may not be emitting the SSE event yet.
+💡 **Bill due-date reminder scheduler** — Add a cron job or Nitro scheduled task to automatically create and push `bill_due` notifications 3–7 days before each bill's due date, reusing the same notification + SSE pipeline that's already live.
 
-💡 **Bill due-date reminder scheduler** — Add a cron job or Nitro task to automatically create and push `bill_due` notifications 3–7 days before each bill's due date, reusing the same notification pipeline.
-
-💡 **Scale notification bus for multi-instance deploy** — Currently the bus is in-process memory, which works for a single server. If deploying behind a load balancer with multiple instances, swap in Redis Pub/Sub or a similar cross-process channel so an event emitted on one instance reaches subscribers on all instances.
+💡 **Scale notification bus for multi-instance deploy** — The EventEmitter bus is single-process memory. If deploying behind a load balancer with multiple app instances, swap in Redis Pub/Sub (or equivalent) so an event fired on one instance reaches SSE subscribers connected to other instances.

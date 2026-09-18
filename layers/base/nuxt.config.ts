@@ -6,4 +6,9 @@ export default defineNuxtConfig({
   },
   css: ["./layers/base/app/assets/main.css"],
   modules: ["@nuxt/ui", "@nuxt/ui-pro", "@nuxt/eslint"],
+  nitro: {
+    scheduledTasks: {
+      "0 8 * * *": ["billDueReminder"],
+    },
+  },
 });
