@@ -1,10 +1,13 @@
 import { z } from "zod";
 
-// const billTypeMap = {
-//   Monthly: "monthly",
-//   Quarterly: "quarterly",
-//   Yearly: "yearly",
-// } as const;
+const MIN_REMINDER_DAYS = 3;
+const MAX_REMINDER_DAYS = 7;
+
+const reminderDaysSchema = z
+  .number()
+  .int()
+  .min(MIN_REMINDER_DAYS)
+  .max(MAX_REMINDER_DAYS);
 
 export const createBillSchema = z.object({
   title: z.string(),
@@ -13,7 +16,7 @@ export const createBillSchema = z.object({
   dueDate: z.string(),
   isRecurring: z.boolean(),
   recurringType: z.string().optional(),
-  reminderDays: z.number(),
+  reminderDays: reminderDaysSchema,
   isPaid: z.boolean(),
   paidDate: z.string().optional(),
   receiptImage: z.string().optional(),
@@ -31,7 +34,7 @@ export const updateBillSchema = z.object({
   dueDate: z.string().optional(),
   isRecurring: z.boolean().optional(),
   recurringType: z.string().optional(),
-  reminderDays: z.number().optional(),
+  reminderDays: reminderDaysSchema.optional(),
   isPaid: z.boolean().optional(),
   paidDate: z.string().optional(),
   receiptImage: z.string().optional(),

@@ -2,13 +2,14 @@ import { updateBill } from "../../repository/billRepository";
 import { updateBillSchema } from "../../schemas";
 import adminSession from "../../../../profile/server/utils/roleSession";
 import { pushNotification } from "../../../../base/server/repository/notificationRepository";
+import { createError, readBody, defineEventHandler } from "h3";
 
 export default defineEventHandler(async (event: any) => {
   await adminSession(event);
   const body = await readBody(event);
   const validationResult = updateBillSchema.safeParse(body);
   if (!validationResult.success) {
-    return createError({
+    throw createError({
       statusCode: 400,
       statusMessage: "Validation failed",
       data: validationResult.error.flatten().fieldErrors,

@@ -8,8 +8,6 @@ interface Props {
   bill?: Bill | null;
 }
 
-const { bill: BillProps } = useBill();
-
 const _props = defineProps<Props>();
 
 const emit = defineEmits(["close", "save"]);
@@ -19,7 +17,7 @@ const handleClose = () => {
   emit("close");
 };
 
-const handleSaveBill = async (updatedBill: typeof BillProps.value) => {
+const handleSaveBill = async (updatedBill: Bill) => {
   const { toast } = useToastGlobal();
 
   try {

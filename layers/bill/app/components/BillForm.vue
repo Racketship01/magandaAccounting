@@ -37,14 +37,19 @@ const recurringTypes = [
   { label: "Yearly", value: "yearly" },
 ];
 
-// Reminder options
-const reminderOptions = [
-  { label: "1 day before", value: 1 },
-  { label: "3 days before", value: 3 },
-  { label: "7 days before", value: 7 },
-  { label: "14 days before", value: 14 },
-  { label: "30 days before", value: 30 },
-];
+const MIN_REMINDER_DAYS = 3;
+const MAX_REMINDER_DAYS = 7;
+
+const reminderOptions = Array.from(
+  { length: MAX_REMINDER_DAYS - MIN_REMINDER_DAYS + 1 },
+  (_, i) => {
+    const days = MIN_REMINDER_DAYS + i;
+    return {
+      label: `${days} day${days === 1 ? "" : "s"} before`,
+      value: days,
+    };
+  },
+);
 
 // Form data
 const { billFormData, resetForm: resetBillForm } = useBill();
@@ -277,7 +282,7 @@ const getCurrencySymbol = (currency: string) => {
                   class="h-8 w-8 text-gray-400 mx-auto mb-2"
                 />
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  Upload receipt photo
+                  Upload bill photo
                 </p>
                 <UButton
                   :loading="isUploading"
@@ -321,25 +326,28 @@ const getCurrencySymbol = (currency: string) => {
             />
           </UFormGroup>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UFormGroup label="Reminder">
-              <USelect
-                v-model="billFormData.reminderDays"
-                :items="reminderOptions"
-                placeholder="When to remind"
-                size="lg"
-                class="w-full mb-4"
-              />
-            </UFormGroup>
-
-            <UFormGroup label="Enable Reminder">
+          <UFormGroup label="Reminder Notifications">
+            <div class="flex flex-col gap-4">
               <UCheckbox
                 v-model="billFormData.reminderEnabled"
-                label="Send reminder notifications"
-                class="mt-2 ml-7 justify-self-end"
+                label="Send due-date notifications"
+                size="md"
               />
-            </UFormGroup>
-          </div>
+              <div>
+                <USelect
+                  v-model="billFormData.reminderDays"
+                  :items="reminderOptions"
+                  :disabled="!billFormData.reminderEnabled"
+                  placeholder="Select reminder window"
+                  size="lg"
+                  class="w-full"
+                />
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  Reminder is sent 3–7 days before the due date.
+                </p>
+              </div>
+            </div>
+          </UFormGroup>
         </div>
       </div>
     </div>
