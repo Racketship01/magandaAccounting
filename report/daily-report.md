@@ -1,27 +1,25 @@
 📋 Daily Progress Report - **Accounting Project**
-Date: September 18, 2026 (Friday)
+Date: September 23, 2026 (Wednesday)
 
-✅ Summary - **Bill Due-Date Reminder Scheduler (Auto Notifications)**
-Today's work focused on: Built an automated daily job that scans all unpaid bills every morning at 8:00 AM and pushes a real-time `bill_due` notification to the assigned admin when a bill's due date falls inside its configurable reminder window (3–7 days out). The system reuses the existing push notification + SSE pipeline so reminders appear instantly in the admin's dashboard as a toast and slider entry, and it includes a deduplication guard so the same reminder never fires twice in the same day. A manual trigger endpoint is also available for admins to run the job on-demand.
+✅ Summary - **Bill Reminder UI Controls + Bill-Paid Notification Trigger**
+Today's work focused on: Exposed the bill reminder settings directly in the bill create/edit forms so admins can now toggle due-date notifications on/off per bill and pick exactly how many days in advance (3–7) they want to be alerted. Also added a real-time `bill_paid` notification hook: whenever an unpaid bill is marked as paid through the edit form, the assigned admin instantly gets a toast + slider notification confirming the payment. Server-side Zod schemas were tightened to enforce the 3–7 day reminder window on both create and update, and the reminder-day select is cleanly disabled when notifications are toggled off.
 
 📐 Task Completed
-1️⃣ **Bill Reminder Repository + Scanning Logic** — New `billReminderRepository.ts` in the bill layer exports `runBillDueReminderJob()`. It fetches all unpaid bills where `reminderEnabled = true`, walks through them one-by-one, normalizes `reminderDays` to stay inside the 3–7 day allowed window, and compares today to each bill's `dueDate` (using midnight-anchored dates to avoid drift across timezones / DST). Only bills whose "days until due" exactly equals the configured reminder window qualify.
-🔗[billReminderRepository.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/bill/server/repository/billReminderRepository.ts?ref_type=heads)
+1️⃣ **Reminder Toggle + Day Selector in BillForm** — Added a new "Reminder Notifications" card at the bottom of the shared create/edit bill form. A checkbox controls `reminderEnabled`, and a dropdown (populated from `reminderOptions` array spanning 3–7 days) sets `reminderDays`. The dropdown is disabled when the toggle is off, with a helper text explaining the 3–7 day window. Both fields are now correctly populated when the form opens in edit mode via the bill prop watcher.
+🔗[BillForm.vue](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/bill/app/components/BillForm.vue?ref_type=heads)
 
-2️⃣ **Same-Day Deduplication Guard** — Before pushing a notification, the job checks `prisma.notification.findFirst` for any existing `bill_due` row for the same bill + admin created today. If found, it skips (counted in `skippedAlreadyNotified`) so repeated runs never spam the user. This is especially important because the manual API endpoint lets admins run the job any number of times in a day.
+2️⃣ **Bill-Paid Real-Time Notification Trigger** — Updated the PATCH `updateBill` endpoint so that when a bill transitions from unpaid → paid (detected by comparing the repository response's `wasPaid` vs `isNowPaid` flags), it calls `pushNotification` with type `bill_paid`. The notification shows the bill title, amount + currency, and carries the `billId` so clicking the notification slider card deep-links straight to the Bills page with that bill's modal auto-opened (reusing the existing click-to-navigate plumbing from earlier work).
+🔗[updateBill/[idBill].patch.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/bill/server/api/updateBill/[idBill].patch.ts?ref_type=heads)
 
-3️⃣ **Structured Result Object** — `runBillDueReminderJob` returns a typed `BillDueReminderResult` with counters for `scanned`, `pushed`, `skippedAlreadyNotified`, `skippedPaid`, `skippedDisabled`, `skippedOutOfWindow`, and `errors`. These are passed through both the scheduled task response and the manual API response for easy debugging / observability.
-🔗[billReminderRepository.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/bill/server/repository/billReminderRepository.ts?ref_type=heads)
+3️⃣ **Zod Schema Enforcement for Reminder Days** — In `schemas.ts` extracted a reusable `reminderDaysSchema` (integer, clamped 3–7 via `.min()`/`.max()`) and applied it to both `createBillSchema.reminderDays` (required) and `updateBillSchema.reminderDays` (optional). This guarantees the back-end never stores a value outside the 3–7 day window even if a client crafts a request manually, matching the clamp logic inside the reminder cron job.
+🔗[schemas.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/bill/server/schemas.ts?ref_type=heads)
 
-4️⃣ **Nitro Scheduled Task (Daily 8AM Cron)** — Added a Nitro `defineTask` file at `server/tasks/billDueReminder.ts` that wraps the repository call, and registered it in the base `nuxt.config.ts` under `nitro.scheduledTasks` with the cron expression `"0 8 * * *"` (every day at 08:00). Nitro automatically invokes this task on server start in production.
-🔗[billDueReminder.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/bill/server/tasks/billDueReminder.ts?ref_type=heads)
-
-5️⃣ **Manual Admin-Only Trigger Endpoint** — Added `POST /api/jobs/billDueReminders` that runs the same `runBillDueReminderJob()` after verifying the caller has admin privileges via `adminSession()`. Returns `{ ok: true, result }` so the admin can see how many reminders were pushed on a manual run without waiting for the next 8AM window.
-🔗[billDueReminders.post.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/server/api/jobs/billDueReminders.post.ts?ref_type=heads)
-
-6️⃣ **Real-Time Push Works Out of the Box** — Because the reminder calls the existing `pushNotification()` helper (which saves to the DB and emits the SSE event bus), admins get the toast + slider update via the same live WebSocket-style connection used for expense submissions and employee onboarding — no extra plumbing needed.
+4️⃣ **BillEdit Payload Cleanup + Toast Polish** — Simplified `BillEdit.vue` so it spreads the full updated bill object (including the new `reminderEnabled`/`reminderDays` fields) into the PATCH body instead of only a subset of fields. The success/error toasts remain consistent with earlier patterns: green "Bill updated" confirmation on success, red error with the server's `statusMessage` on failure.
+🔗[BillEdit.vue](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/bill/app/components/BillEdit.vue?ref_type=heads)
 
 🚀 Next Steps / Remaining Work
-💡 **Allow per-bill custom reminder days via UI** — The repository already reads `bill.reminderDays` and clamps it to 3–7, but there's likely no UI in the bill form for an admin to toggle `reminderEnabled` or pick the number of days. Expose those fields in the bill create/edit form.
+💡 **Wire remaining notification triggers** — Hook `pushNotification` to expense approve/reject flows (admin actions on expense reports) so employees get a live toast when their submission is approved or rejected. Expense submit, employee join, bill paid, and bill due reminders are all covered now; approvals are the last major gap.
+
+💡 **Add per-bill reminder fields to create-bill repository** — Double-check that the create-bill flow's repository actually persists `reminderEnabled` and `reminderDays` into the Prisma `bill.create()` call; the form submits them and the schema validates them, but if the repo layer omits them they'll silently drop.
 
 💡 **Scale notification bus for multi-instance deploy** — If ever deploying behind a load balancer with multiple app instances, swap the in-memory EventEmitter bus for Redis Pub/Sub so an SSE event fired on one instance reaches subscribers connected to other instances.

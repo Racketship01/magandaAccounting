@@ -22,35 +22,12 @@ export async function createBill(
   bill: CreateBillSchema,
   adminId: string,
 ): Promise<CreateBillResult> {
-  const {
-    title,
-    amount,
-    category,
-    dueDate,
-    isRecurring,
-    recurringType,
-    reminderDays,
-    paidDate,
-    reminderEnabled,
-    receiptImage,
-    currency,
-  } = bill;
-
   const created = await prisma.bill.create({
     data: {
-      title,
-      amount,
-      category,
-      dueDate,
-      isRecurring,
-      recurringType: mapStatus(recurringType),
+      ...bill,
+      recurringType: mapStatus(bill.recurringType),
       adminId,
-      reminderDays,
       isPaid: false,
-      paidDate,
-      reminderEnabled,
-      receiptImage,
-      currency,
     },
     include: {
       admin: { select: { userId: true } },
@@ -78,21 +55,6 @@ export async function updateBill(
   id: string,
   bill: UpdateBillSchema,
 ): Promise<UpdateBillResult> {
-  const {
-    title,
-    amount,
-    category,
-    dueDate,
-    isRecurring,
-    recurringType,
-    isPaid,
-    reminderDays,
-    paidDate,
-    reminderEnabled,
-    receiptImage,
-    currency,
-  } = bill;
-
   const existing = await prisma.bill.findUnique({
     where: { id },
     select: { isPaid: true },
@@ -103,18 +65,11 @@ export async function updateBill(
       id,
     },
     data: {
-      title,
-      amount,
-      category,
-      dueDate,
-      isRecurring,
-      recurringType: mapStatus(recurringType),
-      reminderDays,
-      isPaid,
-      paidDate,
-      reminderEnabled,
-      receiptImage,
-      currency,
+      ...bill,
+      recurringType: bill.recurringType
+        ? mapStatus(bill.recurringType)
+        : undefined,
+      id: undefined,
     },
     include: {
       admin: { select: { userId: true } },

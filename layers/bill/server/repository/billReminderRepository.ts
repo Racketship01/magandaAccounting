@@ -4,6 +4,24 @@ import { pushNotification } from "../../../base/server/repository/notificationRe
 const MIN_REMINDER_DAYS = 3;
 const MAX_REMINDER_DAYS = 7;
 
+export interface BillDueReminderDiagnostic {
+  billId: string;
+  title: string;
+  dueDate: string;
+  reminderDaysRaw: number;
+  reminderDaysClamped: number;
+  daysUntilDue: number;
+  reminderEnabled: boolean;
+  isPaid: boolean;
+  outcome:
+    | "pushed"
+    | "skippedPaid"
+    | "skippedDisabled"
+    | "skippedOutOfWindow"
+    | "skippedAlreadyNotified"
+    | "error";
+}
+
 export interface BillDueReminderResult {
   scanned: number;
   pushed: number;
@@ -12,6 +30,7 @@ export interface BillDueReminderResult {
   skippedDisabled: number;
   skippedOutOfWindow: number;
   errors: number;
+  diagnostics: BillDueReminderDiagnostic[];
 }
 
 function parseDateToMidnight(input: string | Date): Date {
@@ -25,8 +44,10 @@ function diffInDays(from: Date, to: Date): number {
   return Math.round((to.getTime() - from.getTime()) / MS_PER_DAY);
 }
 
-export async function runBillDueReminderJob(): Promise<BillDueReminderResult> {
-  const today = parseDateToMidnight(new Date());
+export async function runBillDueReminderJob(
+  overrideToday?: string | Date,
+): Promise<BillDueReminderResult> {
+  const today = parseDateToMidnight(overrideToday ?? new Date());
 
   const result: BillDueReminderResult = {
     scanned: 0,
@@ -36,6 +57,7 @@ export async function runBillDueReminderJob(): Promise<BillDueReminderResult> {
     skippedDisabled: 0,
     skippedOutOfWindow: 0,
     errors: 0,
+    diagnostics: [],
   };
 
   const bills = await prisma.bill.findMany({
@@ -46,38 +68,47 @@ export async function runBillDueReminderJob(): Promise<BillDueReminderResult> {
   const startOfToday = new Date(today.getTime());
   startOfToday.setHours(0, 0, 0, 0);
 
-  // FOR loop
   for (const bill of bills) {
     result.scanned += 1;
 
+    const base = {
+      billId: bill.id,
+      title: bill.title,
+      dueDate: bill.dueDate,
+      reminderDaysRaw: Number(bill.reminderDays),
+      reminderDaysClamped: Math.min(
+        Math.max(Number(bill.reminderDays) || MIN_REMINDER_DAYS, MIN_REMINDER_DAYS),
+        MAX_REMINDER_DAYS,
+      ),
+      daysUntilDue: diffInDays(today, parseDateToMidnight(bill.dueDate)),
+      reminderEnabled: bill.reminderEnabled,
+      isPaid: bill.isPaid,
+    };
+
     if (bill.isPaid) {
-      result.skippedPaid += 1; // shorthand for: result.scanned = result.scanned + 1;
+      result.skippedPaid += 1;
+      result.diagnostics.push({ ...base, outcome: "skippedPaid" });
       continue;
     }
     if (!bill.reminderEnabled) {
       result.skippedDisabled += 1;
+      result.diagnostics.push({ ...base, outcome: "skippedDisabled" });
       continue;
     }
 
-    const targetDays = Math.min(
-      Math.max(
-        Number(bill.reminderDays) || MIN_REMINDER_DAYS,
-        MIN_REMINDER_DAYS,
-      ),
-      MAX_REMINDER_DAYS,
-    );
-
-    const dueDate = parseDateToMidnight(bill.dueDate);
-    const daysUntilDue = diffInDays(today, dueDate);
+    const targetDays = base.reminderDaysClamped;
+    const daysUntilDue = base.daysUntilDue;
 
     if (daysUntilDue !== targetDays) {
       result.skippedOutOfWindow += 1;
+      result.diagnostics.push({ ...base, outcome: "skippedOutOfWindow" });
       continue;
     }
 
     const adminUserId = bill.admin?.userId;
     if (!adminUserId) {
       result.errors += 1;
+      result.diagnostics.push({ ...base, outcome: "error" });
       continue;
     }
 
@@ -93,6 +124,7 @@ export async function runBillDueReminderJob(): Promise<BillDueReminderResult> {
 
     if (alreadySent) {
       result.skippedAlreadyNotified += 1;
+      result.diagnostics.push({ ...base, outcome: "skippedAlreadyNotified" });
       continue;
     }
 
@@ -106,8 +138,10 @@ export async function runBillDueReminderJob(): Promise<BillDueReminderResult> {
         billId: bill.id,
       });
       result.pushed += 1;
+      result.diagnostics.push({ ...base, outcome: "pushed" });
     } catch {
       result.errors += 1;
+      result.diagnostics.push({ ...base, outcome: "error" });
     }
   }
 

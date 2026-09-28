@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
-  css: ["./layers/base/app/assets/main.css"],
+  css: ["./app/assets/main.css"],
   modules: ["@nuxt/ui", "@nuxt/ui-pro", "@nuxt/eslint"],
   nitro: {
     scheduledTasks: {
