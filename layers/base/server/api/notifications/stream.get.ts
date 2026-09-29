@@ -1,5 +1,5 @@
 import { defineEventHandler, setHeader, type H3Event } from "h3";
-import userSession from "~~/layers/auth/server/utils/userSession";
+import userSession from "../../../../auth/server/utils/userSession";
 import { subscribeToNotifications } from "../../utils/notificationBus";
 
 export default defineEventHandler(async (event: H3Event) => {

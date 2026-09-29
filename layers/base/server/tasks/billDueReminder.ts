@@ -1,5 +1,5 @@
 import { defineTask } from "#nitro";
-import { runBillDueReminderJob } from "~~/layers/bill/server/repository/billReminderRepository";
+import { runBillDueReminderJob } from "../../../bill/server/repository/billReminderRepository";
 
 export default defineTask({
   meta: {

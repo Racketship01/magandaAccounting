@@ -1,6 +1,6 @@
 import { getRouterParam, createError, type H3Event } from "h3";
-import { prisma } from "~~/prisma/utils/prisma";
-import userSession from "~~/layers/auth/server/utils/userSession";
+import { prisma } from "../../../../prisma/utils/prisma";
+import userSession from "../../../auth/server/utils/userSession";
 import { emitNotificationForUser } from "../utils/notificationBus";
 
 export type NotificationTypeKey =

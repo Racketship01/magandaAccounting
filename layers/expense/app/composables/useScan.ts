@@ -1,4 +1,4 @@
-import useToastGlobal from "~~/layers/base/app/composables/useToast";
+import useToastGlobal from "../../../base/app/composables/useToast";
 import { useReceipt } from "../composables/useReceipt";
 
 export function useScan() {

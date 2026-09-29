@@ -1,5 +1,5 @@
-import { prisma } from "~~/prisma/utils/prisma";
-import userSession from "~~/layers/auth/server/utils/userSession";
+import { prisma } from "../../../../prisma/utils/prisma";
+import userSession from "../../../auth/server/utils/userSession";
 import type { DashboardStats } from "../../app/composables/useDashboardStats";
 
 export async function getDashboardStats(

@@ -14,7 +14,7 @@ const ReceiptResponseSchema = z.object({
 
 export default ReceiptResponseSchema;
 
-export const createExpenseSchmea = z.object({
+export const createExpenseSchema = z.object({
   amount: z.number(),
   date: z.string(),
   category: z.string(),
@@ -24,13 +24,17 @@ export const createExpenseSchmea = z.object({
   currency: z.string(),
 });
 
-export type CreateExpenseSchema = z.infer<typeof createExpenseSchmea>;
+export type CreateExpenseSchema = z.infer<typeof createExpenseSchema>;
+
+export const ExpenseStatusEnum = z.enum(["pending", "approved", "rejected"]);
+export type ExpenseStatus = z.infer<typeof ExpenseStatusEnum>;
 
 export const updateExpenseStatusSchema = z.object({
-  status: z.enum(["pending", "approved", "rejected"]),
+  status: ExpenseStatusEnum,
 });
 
-export type UpdateExpenseStatus = z.infer<typeof updateExpenseStatusSchema>;
+export type UpdateExpenseStatusBody = z.infer<typeof updateExpenseStatusSchema>;
+export type UpdateExpenseStatus = ExpenseStatus;
 
 export const mapStatus = (status: string) => {
   switch (status.toUpperCase()) {

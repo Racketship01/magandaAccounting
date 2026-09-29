@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from "h3";
 import { createExpense } from "../../repository/expenseRepository";
-import { useUploadImage } from "~~/layers/base/app/composables/useUploadImage";
+import { useUploadImage } from "../../../../base/app/composables/useUploadImage";
 import { pushNotification } from "../../../../base/server/repository/notificationRepository";
 
 export default defineEventHandler(async (event) => {

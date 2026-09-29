@@ -1,11 +1,11 @@
-import { prisma } from "~~/prisma/utils/prisma";
-import type { Expense } from "~~/prisma/generated/prisma/client";
-import userSession from "~~/layers/auth/server/utils/userSession";
+import { prisma } from "../../../../prisma/utils/prisma";
+import type { Expense } from "../../../../prisma/generated/prisma/client";
+import userSession from "../../../auth/server/utils/userSession";
 import {
   mapStatus,
   type UpdateExpenseStatus,
   type CreateExpenseSchema,
-} from "~~/layers/expense/server/schemas";
+} from "../schemas";
 import { createError } from "h3";
 
 export interface CreateExpenseResult {

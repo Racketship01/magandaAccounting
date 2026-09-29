@@ -3,8 +3,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import useExpense from "../composables/useExpense";
-import useAuth from "~~/layers/auth/app/composables/useAuth";
-import useToastGlobal from "~~/layers/base/app/composables/useToast";
+import useAuth from "../../../auth/app/composables/useAuth";
+import useToastGlobal from "../../../base/app/composables/useToast";
 
 const { toast } = useToastGlobal();
 

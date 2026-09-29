@@ -1,6 +1,6 @@
 import { defineEventHandler, getQuery } from "h3";
 import adminSession from "../../../../profile/server/utils/roleSession";
-import { runBillDueReminderJob } from "~~/layers/bill/server/repository/billReminderRepository";
+import { runBillDueReminderJob } from "../../../../bill/server/repository/billReminderRepository";
 
 export default defineEventHandler(async (event) => {
   await adminSession(event);
