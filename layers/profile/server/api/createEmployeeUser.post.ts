@@ -1,5 +1,3 @@
-/** @format */
-
 import { defineEventHandler, readBody, createError } from "h3";
 import { createEmployeeSchema } from "../schemas";
 import { createEmployee } from "../repository/employeeRepository";
@@ -30,6 +28,7 @@ export default defineEventHandler(async (event) => {
     firstName,
     lastName,
     phone,
+    nationality,
     jobTitle,
     department,
     startDate,
@@ -72,7 +71,7 @@ export default defineEventHandler(async (event) => {
     firstName,
     lastName,
     phone,
-    nationality: result.data.nationality,
+    nationality,
     jobTitle,
     department,
     startDate,

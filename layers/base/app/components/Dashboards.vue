@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { Chart } from "vue-chartjs";

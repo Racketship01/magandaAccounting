@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
 import { ref, computed } from "vue";

@@ -1,5 +1,3 @@
-/** @format */
-
 import { defineEventHandler, createError } from "h3";
 import { getAllEmployee } from "../repository/employeeRepository";
 import { mapPrismaStatus } from "../schemas";

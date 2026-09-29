@@ -1,6 +1,4 @@
-﻿/** @format */
-
-import { Hash } from "@adonisjs/hash";
+﻿import { Hash } from "@adonisjs/hash";
 import { Scrypt } from "@adonisjs/hash/drivers/scrypt";
 import { prisma } from "./utils/prisma";
 
@@ -37,28 +35,6 @@ async function main() {
         phone: "09123456789",
         nationality: "Filipino",
         jobTitle: "Admin",
-        department: "Admin",
-        status: "active",
-        startDate: new Date().toISOString(),
-        salary: 50000,
-        currency: "PHP",
-        role: "admin",
-        street: "123 Main St",
-        city: "Manila",
-        state: "Metro Manila",
-        zipCode: "1000",
-      },
-    });
-
-    await tx.employee.create({
-      data: {
-        userId: user.id,
-        firstName: "Juan",
-        lastName: "Dela Cruz",
-        nationality: "Filipino",
-
-        phone: "09123456789",
-        jobTitle: "Admin/Employee",
         department: "Admin",
         status: "active",
         startDate: new Date().toISOString(),
