@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
@@ -78,31 +80,25 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4 py-12">
+  <div class="login-body">
     <div class="w-full max-w-md">
       <!-- Logo/Brand Section -->
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center">
-          <img
-            :src="currentLogo"
-            alt="Logo"
-            class="h-16 w-auto object-contain"
-          />
+        <div class="login-body__brand">
+          <img :src="currentLogo" alt="Logo" class="login-body__brand-image" />
         </div>
 
-        <p class="text-gray-600 dark:text-gray-400">
+        <p class="login-body__brand-text">
           Sign in to your account to continue
         </p>
       </div>
 
       <!-- Login Card -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
-      >
+      <div class="login-body__card">
         <!-- Login Form -->
         <UForm
           ref="formRef"
-          class="space-y-6"
+          class="space-y-4"
           :schema="loginSchema"
           :state="login"
           @submit.prevent="handleLogin"
@@ -151,7 +147,7 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
           </div>
 
           <!-- Remember Me & Forgot Password -->
-          <div class="flex items-center justify-between">
+          <div class="login-body__card-action">
             <UCheckbox
               v-model="login.rememberMe"
               label="Remember me"
@@ -225,12 +221,12 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
 
         <!-- Sign Up Link -->
         <div class="mt-6 text-center">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <p class="login-body__card-text">
             Don't have an account?
             <UButton
               variant="link"
               color="primary"
-              size="sm"
+              size="md"
               :disabled="login.isLoading"
               class="p-0 ml-1"
               @click="navigateTo('/signup')"
@@ -243,7 +239,7 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
 
       <!-- Additional Info -->
       <div class="mt-6 text-center">
-        <p class="text-xs text-gray-500 dark:text-gray-400">
+        <p class="login-body__card-text-link">
           By signing in, you agree to our
           <UButton variant="link" color="neutral" size="xs" class="p-0">
             Terms of Service

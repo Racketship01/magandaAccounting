@@ -1,0 +1,16 @@
+/** @format */
+
+.dark .login-body__brand-text,
+.dark .login-body__card-text,
+.dark .login-body__card-text-link {
+  color: var(--text-gray-400);
+}
+
+.dark .login-body__card {
+  background-color: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+}
+
+.dark .usermenu-chip__color-item {
+  background-color: var(--chip-dark);
+}

@@ -1,0 +1,47 @@
+/**
+ * Dark mode overrides
+ *
+ * @format
+ */
+
+.dark .employee-table {
+  border-color: var(--color-gray-700);
+  background: #131d3e;
+  background: linear-gradient(
+    180deg,
+    rgba(19, 29, 62, 0.87) 0%,
+    rgba(18, 27, 53, 1) 37%
+  );
+}
+.dark .employee-table:hover {
+  background-color: var(--color-gray-500);
+}
+
+.dark .employee-table__image,
+.dark .profile-container__image-display,
+.dark .profile-container__image-upload,
+.dark .profile-card__form-profile--picture {
+  border-color: var(--color-gray-600);
+}
+
+.employee-table__label,
+.dark .profile-container__information-subtitle {
+  color: var(--color-gray-400);
+}
+
+.dark .employee-table__value,
+.dark .profile-container__information-title {
+  color: var(--text-white);
+}
+
+.dark .profile-card__form {
+  border-bottom-color: var(--color-gray-700);
+}
+
+.dark .profile-card__form-grid--title {
+  color: var(--color-gray-300);
+}
+
+.dark .profile-card {
+  border-color: var(--color-gray-700);
+}

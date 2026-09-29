@@ -1,3 +1,5 @@
+/** @format */
+
 import { defineEventHandler, createError } from "h3";
 import { getAllEmployee } from "../repository/employeeRepository";
 import { mapPrismaStatus } from "../schemas";
@@ -22,6 +24,7 @@ export default defineEventHandler(async (event) => {
       lastName: employee.lastName,
       role: employee.role,
       phone: employee.phone,
+      nationality: employee.nationality,
       jobTitle: employee.jobTitle,
       department: employee.department,
       startDate: employee.startDate,

@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 definePageMeta({
@@ -6,5 +8,5 @@ definePageMeta({
 </script>
 
 <template>
-  <Dashboard />
+  <Dashboards />
 </template>

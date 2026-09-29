@@ -1,0 +1,69 @@
+/** @format */
+
+@import "./logindark.css";
+
+.login-body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.login-body__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-body__brand-image {
+  height: 4rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.login-body__brand-text {
+  color: var(--text-gray-600);
+}
+
+.login-body__card {
+  background-color: var(--text-white);
+  border-color: var(--color-gray-200);
+  border-radius: 1rem;
+  border-width: 1px;
+  padding: 2rem;
+  border-style: solid;
+  box-shadow: var(--shadow-lg);
+}
+
+.login-body__card-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.login-body__card-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-gray-600);
+}
+
+.login-body__card-text-link {
+  color: var(--color-gray-500);
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/** Usermenu */
+
+.usermenu-chip__color-item {
+  margin-inline-start: 0.125rem;
+  margin-top: 0.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: calc(infinity * 1px);
+  background-color: var(--chip-light);
+}

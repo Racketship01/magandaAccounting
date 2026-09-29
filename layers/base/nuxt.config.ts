@@ -9,7 +9,11 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
-  css: [join(currentDir, "./app/assets/main.css")],
+  css: [
+    join(currentDir, "./app/assets/main.css"),
+    join(currentDir, "./app/assets/style.css"),
+    join(currentDir, "./app/assets/dark.css"),
+  ],
   modules: ["@nuxt/ui", "@nuxt/ui-pro", "@nuxt/eslint"],
   nitro: {
     scheduledTasks: {

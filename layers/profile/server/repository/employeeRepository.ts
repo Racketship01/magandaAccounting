@@ -1,3 +1,5 @@
+/** @format */
+
 import { prisma } from "../../../../prisma/utils/prisma";
 import {
   mapStatus,
@@ -34,6 +36,7 @@ export async function createEmployee(
         firstName: employeeInfo.firstName,
         lastName: employeeInfo.lastName,
         phone: employeeInfo.phone,
+        nationality: employeeInfo.nationality,
         jobTitle: employeeInfo.jobTitle,
         department: employeeInfo.department,
         startDate: employeeInfo.startDate,
@@ -86,6 +89,7 @@ export async function updateEmployee(
         firstName: employeeInfo.firstName,
         lastName: employeeInfo.lastName,
         phone: employeeInfo.phone,
+        nationality: employeeInfo.nationality,
         jobTitle: employeeInfo.jobTitle,
         department: employeeInfo.department,
         startDate: employeeInfo.startDate,

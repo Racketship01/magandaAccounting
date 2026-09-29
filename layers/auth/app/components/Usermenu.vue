@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import useUser from "../composables/useUser";
@@ -46,7 +48,7 @@ const items = computed(() => [
   [
     {
       label: "Profile",
-      icon: "i-lucide-user",
+      icon: "i-lucide-user-round",
       to: "/profile",
     },
   ],
@@ -151,7 +153,7 @@ watch(refresh, () => {
           '--chip-light': `var(--color-${item.chip}-500)`,
           '--chip-dark': `var(--color-${item.chip}-400)`,
         }"
-        class="ms-0.5 size-2 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
+        class="usermenu-chip__color-item"
       />
     </template>
   </UDropdownMenu>

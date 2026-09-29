@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
@@ -174,19 +176,14 @@ const _getCategoryIcon = (category: string) => {
 
 const getCategoryColor = (category: string) => {
   const colors = {
-    water: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-    electric:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-    internet:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
-    rent: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
-    phone: "bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400",
-    insurance:
-      "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400",
-    subscription:
-      "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
-    other:
-      "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+    water: "bill-category--water-color",
+    electric: "bill-category--electric-color",
+    internet: "bill-category--internet-color",
+    rent: "bill-category--rent-color",
+    phone: "bill-category--phone-color",
+    insurance: "bill-category--insurance-color",
+    subscription: "bill-category--subscription-color",
+    other: "bill-category--other-color",
   };
   return colors[category as keyof typeof colors] || colors.other;
 };
@@ -239,6 +236,8 @@ watch(
     title="Bills Management"
     subtitle="All Bills Record"
     description="Track and manage all your bills with receipts and reminders"
+    :showStats="false"
+    :showScanner="false"
   >
     <!-- Filters Slot -->
     <template #filters>
@@ -299,26 +298,22 @@ watch(
 
     <!-- Content Slot -->
     <template #content>
-      <div
-        v-for="bill in filteredBills"
-        :key="bill.id"
-        class="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-      >
+      <div v-for="bill in filteredBills" :key="bill.id" class="bills-table">
         <!-- Bill Details -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-6 gap-3">
+        <div class="bills-table__grid">
           <!-- Date -->
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Due Date</p>
-            <p class="font-medium">
+            <p class="bills-table__label">Due Date</p>
+            <p class="bills-table__value">
               {{ formatDate(bill.dueDate) }}
             </p>
           </div>
 
           <!-- Title -->
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Bill Name</p>
+            <p class="bills-table__label">Bill Name</p>
             <div>
-              <p class="font-medium text-gray-900 dark:text-white truncate">
+              <p class="bills-table__value">
                 {{ bill.title }}
               </p>
             </div>
@@ -326,7 +321,7 @@ watch(
 
           <!-- Status -->
           <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Status</p>
+            <p class="bills-table__label">Status</p>
             <UBadge
               :label="
                 bill.isPaid
@@ -343,31 +338,31 @@ watch(
                     ? 'error'
                     : 'warning'
               "
-              size="sm"
+              size="md"
             />
           </div>
 
           <!-- Category -->
           <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Category</p>
+            <p class="bills-table__label">Category</p>
             <UBadge
               :label="getCategoryLabel(bill.category)"
               :class="getCategoryColor(bill.category)"
               variant="soft"
-              size="sm"
+              size="md"
             />
           </div>
 
           <!-- Amount -->
           <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Amount</p>
-            <p class="font-semibold text-gray-900 dark:text-white">
+            <p class="bills-table__label">Amount</p>
+            <p class="bills-table__value">
               {{ formatCurrency(bill.amount, bill.currency) }}
             </p>
           </div>
 
           <!-- Actions -->
-          <div class="flex justify-end items-center">
+          <div class="bills-table__actions">
             <UButton
               icon="i-lucide-eye"
               size="sm"
@@ -400,7 +395,7 @@ watch(
       <UModal
         v-model:open="isBillAddModalOpen"
         title="Bill Information Details"
-        class="w-full max-w-sm md:max-w-2xl lg:max-w-3xl"
+        class="bills-modal"
       >
         <template #body>
           <BillAdd
@@ -415,7 +410,7 @@ watch(
       <UModal
         v-model:open="isEditBillModalOpen"
         title="Bill Information Details"
-        class="w-full max-w-sm md:max-w-2xl lg:max-w-3xl"
+        class="bills-modal"
       >
         <template #body>
           <BillEdit
@@ -430,7 +425,7 @@ watch(
       <UModal
         v-model:open="isBillViewEditModalOpen"
         title="Bill View Details"
-        class="w-full max-w-sm md:max-w-2xl lg:max-w-3xl"
+        class="bills-modal"
       >
         <template #body>
           <BillView
@@ -446,7 +441,7 @@ watch(
       <UModal
         v-model:open="isDeleteBillModalOpen"
         title="Delete Bill"
-        class="w-full max-w-sm md:max-w-2xl lg:max-w-3xl"
+        class="bills-modal"
       >
         <template #body>
           <BillDelete

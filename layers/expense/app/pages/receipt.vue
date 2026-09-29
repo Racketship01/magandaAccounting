@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <script setup lang="ts">
 definePageMeta({
   middleware: "auth",
@@ -5,5 +7,5 @@ definePageMeta({
 </script>
 
 <template>
-  <RecieptScanner />
+  <Scanner />
 </template>

@@ -39,6 +39,7 @@ export type AdminMinAggregateOutputType = {
   firstName: string | null
   lastName: string | null
   phone: string | null
+  nationality: string | null
   jobTitle: string | null
   department: string | null
   startDate: string | null
@@ -61,6 +62,7 @@ export type AdminMaxAggregateOutputType = {
   firstName: string | null
   lastName: string | null
   phone: string | null
+  nationality: string | null
   jobTitle: string | null
   department: string | null
   startDate: string | null
@@ -83,6 +85,7 @@ export type AdminCountAggregateOutputType = {
   firstName: number
   lastName: number
   phone: number
+  nationality: number
   jobTitle: number
   department: number
   startDate: number
@@ -115,6 +118,7 @@ export type AdminMinAggregateInputType = {
   firstName?: true
   lastName?: true
   phone?: true
+  nationality?: true
   jobTitle?: true
   department?: true
   startDate?: true
@@ -137,6 +141,7 @@ export type AdminMaxAggregateInputType = {
   firstName?: true
   lastName?: true
   phone?: true
+  nationality?: true
   jobTitle?: true
   department?: true
   startDate?: true
@@ -159,6 +164,7 @@ export type AdminCountAggregateInputType = {
   firstName?: true
   lastName?: true
   phone?: true
+  nationality?: true
   jobTitle?: true
   department?: true
   startDate?: true
@@ -268,6 +274,7 @@ export type AdminGroupByOutputType = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -313,6 +320,7 @@ export type AdminWhereInput = {
   firstName?: Prisma.StringFilter<"Admin"> | string
   lastName?: Prisma.StringFilter<"Admin"> | string
   phone?: Prisma.StringFilter<"Admin"> | string
+  nationality?: Prisma.StringFilter<"Admin"> | string
   jobTitle?: Prisma.StringFilter<"Admin"> | string
   department?: Prisma.StringFilter<"Admin"> | string
   startDate?: Prisma.StringFilter<"Admin"> | string
@@ -338,6 +346,7 @@ export type AdminOrderByWithRelationInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  nationality?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
   department?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
@@ -367,6 +376,7 @@ export type AdminWhereUniqueInput = Prisma.AtLeast<{
   firstName?: Prisma.StringFilter<"Admin"> | string
   lastName?: Prisma.StringFilter<"Admin"> | string
   phone?: Prisma.StringFilter<"Admin"> | string
+  nationality?: Prisma.StringFilter<"Admin"> | string
   jobTitle?: Prisma.StringFilter<"Admin"> | string
   department?: Prisma.StringFilter<"Admin"> | string
   startDate?: Prisma.StringFilter<"Admin"> | string
@@ -392,6 +402,7 @@ export type AdminOrderByWithAggregationInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  nationality?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
   department?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
@@ -422,6 +433,7 @@ export type AdminScalarWhereWithAggregatesInput = {
   firstName?: Prisma.StringWithAggregatesFilter<"Admin"> | string
   lastName?: Prisma.StringWithAggregatesFilter<"Admin"> | string
   phone?: Prisma.StringWithAggregatesFilter<"Admin"> | string
+  nationality?: Prisma.StringWithAggregatesFilter<"Admin"> | string
   jobTitle?: Prisma.StringWithAggregatesFilter<"Admin"> | string
   department?: Prisma.StringWithAggregatesFilter<"Admin"> | string
   startDate?: Prisma.StringWithAggregatesFilter<"Admin"> | string
@@ -444,6 +456,7 @@ export type AdminCreateInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -468,6 +481,7 @@ export type AdminUncheckedCreateInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -492,6 +506,7 @@ export type AdminUpdateInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -516,6 +531,7 @@ export type AdminUncheckedUpdateInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -540,6 +556,7 @@ export type AdminCreateManyInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -562,6 +579,7 @@ export type AdminUpdateManyMutationInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -583,6 +601,7 @@ export type AdminUncheckedUpdateManyInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -620,6 +639,7 @@ export type AdminCountOrderByAggregateInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  nationality?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
   department?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
@@ -646,6 +666,7 @@ export type AdminMaxOrderByAggregateInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  nationality?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
   department?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
@@ -668,6 +689,7 @@ export type AdminMinOrderByAggregateInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  nationality?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
   department?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
@@ -769,6 +791,7 @@ export type AdminCreateWithoutUserInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -792,6 +815,7 @@ export type AdminUncheckedCreateWithoutUserInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -843,6 +867,7 @@ export type AdminScalarWhereInput = {
   firstName?: Prisma.StringFilter<"Admin"> | string
   lastName?: Prisma.StringFilter<"Admin"> | string
   phone?: Prisma.StringFilter<"Admin"> | string
+  nationality?: Prisma.StringFilter<"Admin"> | string
   jobTitle?: Prisma.StringFilter<"Admin"> | string
   department?: Prisma.StringFilter<"Admin"> | string
   startDate?: Prisma.StringFilter<"Admin"> | string
@@ -865,6 +890,7 @@ export type AdminCreateWithoutExpensesInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -888,6 +914,7 @@ export type AdminUncheckedCreateWithoutExpensesInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -927,6 +954,7 @@ export type AdminUpdateWithoutExpensesInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -950,6 +978,7 @@ export type AdminUncheckedUpdateWithoutExpensesInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -973,6 +1002,7 @@ export type AdminCreateWithoutBillsInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -996,6 +1026,7 @@ export type AdminUncheckedCreateWithoutBillsInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -1035,6 +1066,7 @@ export type AdminUpdateWithoutBillsInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1058,6 +1090,7 @@ export type AdminUncheckedUpdateWithoutBillsInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1081,6 +1114,7 @@ export type AdminCreateManyUserInput = {
   firstName: string
   lastName: string
   phone: string
+  nationality: string
   jobTitle: string
   department: string
   startDate: string
@@ -1102,6 +1136,7 @@ export type AdminUpdateWithoutUserInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1125,6 +1160,7 @@ export type AdminUncheckedUpdateWithoutUserInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1148,6 +1184,7 @@ export type AdminUncheckedUpdateManyWithoutUserInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  nationality?: Prisma.StringFieldUpdateOperationsInput | string
   jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1209,6 +1246,7 @@ export type AdminSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   firstName?: boolean
   lastName?: boolean
   phone?: boolean
+  nationality?: boolean
   jobTitle?: boolean
   department?: boolean
   startDate?: boolean
@@ -1235,6 +1273,7 @@ export type AdminSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   firstName?: boolean
   lastName?: boolean
   phone?: boolean
+  nationality?: boolean
   jobTitle?: boolean
   department?: boolean
   startDate?: boolean
@@ -1258,6 +1297,7 @@ export type AdminSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   firstName?: boolean
   lastName?: boolean
   phone?: boolean
+  nationality?: boolean
   jobTitle?: boolean
   department?: boolean
   startDate?: boolean
@@ -1281,6 +1321,7 @@ export type AdminSelectScalar = {
   firstName?: boolean
   lastName?: boolean
   phone?: boolean
+  nationality?: boolean
   jobTitle?: boolean
   department?: boolean
   startDate?: boolean
@@ -1298,7 +1339,7 @@ export type AdminSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AdminOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "phone" | "jobTitle" | "department" | "startDate" | "currency" | "role" | "salary" | "status" | "street" | "city" | "state" | "zipCode" | "profileImage" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["admin"]>
+export type AdminOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "phone" | "nationality" | "jobTitle" | "department" | "startDate" | "currency" | "role" | "salary" | "status" | "street" | "city" | "state" | "zipCode" | "profileImage" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["admin"]>
 export type AdminInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expenses?: boolean | Prisma.Admin$expensesArgs<ExtArgs>
   bills?: boolean | Prisma.Admin$billsArgs<ExtArgs>
@@ -1324,6 +1365,7 @@ export type $AdminPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     firstName: string
     lastName: string
     phone: string
+    nationality: string
     jobTitle: string
     department: string
     startDate: string
@@ -1769,6 +1811,7 @@ export interface AdminFieldRefs {
   readonly firstName: Prisma.FieldRef<"Admin", 'String'>
   readonly lastName: Prisma.FieldRef<"Admin", 'String'>
   readonly phone: Prisma.FieldRef<"Admin", 'String'>
+  readonly nationality: Prisma.FieldRef<"Admin", 'String'>
   readonly jobTitle: Prisma.FieldRef<"Admin", 'String'>
   readonly department: Prisma.FieldRef<"Admin", 'String'>
   readonly startDate: Prisma.FieldRef<"Admin", 'String'>
