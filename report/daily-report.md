@@ -1,18 +1,33 @@
 ﻿📋 Daily Progress Report - **Accounting Project**
-Date: September 25, 2026 (Friday) 
-Branch: upgradeUI 
-Author: dhan
+Date: September 29, 2026 (Tuesday)
 
-✅ Summary - **[Summary Title]**
-Today's work focused on: commit: accountin in mac
-. 
-[Brief explanation of today accomplished, what was done and the progress].
-
-
-📁 Files Modified / Added
+✅ Summary - **Design System Overhaul (Light + Dark Themes) + Dashboard Charts, Receipt Scanner UI, Profile Avatar Upload, Merge Cleanup**
+Today's work focused on: Merged the `mergeStyle` design branch into `mergeTest`, bringing a full app-wide visual refresh: per-layer CSS files for light and dark themes, a rebuilt Dashboard with interactive pie + bar charts (category spend + monthly totals, year selector), a two-pane Receipt Scanner with live preview + OCR form, an expanded User Profile page with editable avatar upload, tenure counter, and inline edit drawer, plus a shared `<Card>` / `<PageCard>` component library with consistent sizing and scrollable content areas. Also included in the merge: an updated Prisma schema with `profileImage` on both Admin and Employee, `currency` fields on four models, and an enum of all six notification types. A targeted IPC close-path fix addresses stuck profile-edit saves and re-locks several server endpoints after a brief schema-tolerance relaxation earlier in the merge. Scheduled cron registration was moved back to the base-layer `nuxt.config.ts` and the root config was consolidated to list all five layers explicitly.
 
 📐 Task Completed
-• [Explanation of what was accomplished]
+1️⃣ **Full Design System: Per-Layer Light + Dark CSS** — Every feature layer now ships its own scoped CSS (e.g., `style.css` / `dark.css` for base, `bills.css` / `billsdark.css` for bills, `expense.css` / `expensedark.css` for expenses, `profile.css` / `profiledark.css` for profile, `login.css` / `logindark.css` for auth). Uses BEM-style class naming (`.card__panel`, `.card__stats`, `.card__content--scanner`, …), consistent spacing tokens, calming-color palette definitions, and responsive breakpoints (sm/md/lg). The auth pages also got a background image asset (`bg_.jpeg`) for the hero side.
+🔗[layers](https://git.next1.ph/imelda/accounting/-/tree/mergeTest/layers?ref_type=heads.git)
+
+2️⃣ **Dashboard: Interactive Pie + Bar Charts with Year Picker** — `Dashboards.vue` was completely rewritten around the shared Card layout. Four computed KPI tiles (total spend, pending approval, unpaid bills, rejected expenses) sit above two `vue-chartjs` canvas charts: (a) a donut/pie chart of expenses-by-category with calming rainbow colors, and (b) a monthly grouped bar chart (Expenses vs Bills Paid) with a `<select>` dropdown to switch which year the bars render for. ChartJS elements (ArcElement, CategoryScale, BarElement, Tooltip, Legend, Title) are all explicitly registered.
+🔗[Dashboards.vue](https://git.next1.ph/imelda/accounting/-/tree/mergeTest/layers/base/app/components/Dashboards.vue?ref_type=heads.git)
+
+3️⃣ **Receipt Scanner: Two-Pane Upload + OCR Form** — New `Scanner.vue` component wires the existing `useReceipt()` composable into the new design shell. Left pane: dropzone / file picker with instant client-side image preview and processing spinner overlay; right pane: the OCR-populated form fields (merchant, date, category, currency, amount, notes, submit button). Errors from the OCR `/api/expense/scan` call surface as red toasts via `useToastGlobal`, the same pattern used for expense submit failures.
+🔗[Scanner.vue](https://git.next1.ph/imelda/accounting/-/tree/mergeTest/layers/base/app/components/Scanner.vue?ref_type=heads.git)
+
+4️⃣ **User Profile: Avatar Upload, Tenure Counter, Inline Edit Drawer** — `UserProfile.vue` was rebuilt to add: a clickable avatar that opens a hidden `<input type="file">` (validates image MIME type + 5 MB size, uploads via server API), a tenure calculator (`calculateTenure()` converts startDate → "X years, Y months"), status badge with color helpers, formatted salary with multi-currency symbol map (USD `$` / PHP `₱` / KRW `₩`), and an open/close edit drawer whose save handler patches `currentUser` without losing the avatar URL.
+🔗[UserProfile.vue](https://git.next1.ph/imelda/accounting/-/tree/mergeTest/layers/profile/app/components/UserProfile.vue?ref_type=heads.git)
+
+5️⃣ **Schema / Migrations: profileImage + currency Columns, NotificationType Enum** — `prisma/schema.prisma` added: `Employee.profileImage String?`, `Admin.profileImage String?`, `currency String` on Admin/Employee/Bill/Expense, and the full `NotificationType` enum (`expense_submitted/approved/rejected`, `bill_due`, `bill_paid`, `employee_joined`). A matching generated migration SQL is included. `prisma/generated/*` model files were regenerated to reflect the new fields.
+🔗[prisma/schema.prisma](https://git.next1.ph/imelda/accounting/-/tree/mergeTest/prisma/schema.prisma?ref_type=heads.git)
+
+6️⃣ **Merge Cleanup: IPC Close-Path Fix + Re-Locked Server Schemas** — The "IPC close path error" fix addresses three concrete things: (a) moved the 8AM `billDueReminder` scheduled cron registration back from root `nuxt.config.ts` to `layers/base/nuxt.config.ts` (where the Nitro task actually lives, preventing a missing-definition crash on cron fire), (b) re-tightened Zod in `layers/expense/server/schemas.ts` and the `expenseRepository` inputs after a brief tolerance-widening that was accepting invalid shapes, and (c) restored the session/permission guards and `statusMessage` response shape on `createEmployeeUser.post.ts` and `getAllEmployee.get.ts` that had temporarily loosened during the style merge. `package.json` and a big `pnpm-lock.yaml` churn re-syncs all deps after the merge.
+🔗[mergeTest REMOTE REPO](https://git.next1.ph/imelda/accounting/-/tree/mergeTest?ref_type=heads.git)
+
+7️⃣ **Component Library: Card/PageCard/View/Delete Sizing + Scroll** — Shared base components got a consistent set of modifier classes: `Card.vue` exposes header + footer slots, `PageCard.vue` accepts title/description props and uses `.page-header__*` spacing, `View.vue` has a fixed-height scrollable inner body with a sticky footer row, and `Delete.vue` got a modal-width tune so the danger prompt no longer squishes on narrow screens. `layers/base/app/layouts/default.vue` now imports the new shared CSS via `<style lang="css" src="@/assets/style.css">` so the classes are globally available.
 
 🚀 Next Steps / Remaining Work
-• [Explanation about the next steps / remaining work]
+💡 **Wire expense approve/reject notification triggers** — The NotificationType enum already lists `expense_approved` and `expense_rejected`, but the server endpoints that perform those status changes haven't yet been hooked to `pushNotification()` + the SSE bus so employees see a live toast. This is the last remaining unimplemented notification type.
+
+💡 **Dedupe styles in each layer's nuxt.config.ts CSS array** — Each layer (`auth`, `bill`, `expense`, `profile`) now has per-layer CSS files listed in its own `nuxt.config.ts` css section. Verify there's no double-inclusion when the root layers merge, or move the layer-level CSS imports to a single entry file if you see selector duplication in devtools.
+
+💡 **Multi-instance scaling for the notification bus** — If the app ever runs behind a load balancer with multiple app instances, swap the in-memory EventEmitter in `notificationBus.ts` for Redis Pub/Sub (or equivalent cross-process pub/sub) so SSE events reach subscribers on any instance.
