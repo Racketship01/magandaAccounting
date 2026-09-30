@@ -171,6 +171,8 @@ const formatDate = (dateString: string) => {
     title="Employee Records"
     subtitle="All Employee Records"
     description="Manage and track all your employee records"
+    :showStats="false"
+    :showScanner="false"
   >
     <!-- Filters Slot -->
     <template #filters>
@@ -224,7 +226,7 @@ const formatDate = (dateString: string) => {
       <div
         v-for="employee in filteredEmployees"
         :key="employee.id"
-        class="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+        class="employee-table"
       >
         <!-- Employee Profile Picture -->
         <div class="shrink-0">
@@ -234,23 +236,23 @@ const formatDate = (dateString: string) => {
               'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
             "
             :alt="`${employee.firstName} ${employee.lastName}`"
-            class="w-12 h-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+            class="employee-table__image"
           />
         </div>
 
         <!-- Employee Details -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-6 gap-3">
+        <div class="employee-table__grid">
           <!-- Employee Name -->
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Name</p>
-            <p class="font-medium truncate">
+            <p class="employee-table__label">Name</p>
+            <p class="employee-table__value">
               {{ employee.firstName }} {{ employee.lastName }}
             </p>
           </div>
 
           <!-- Employee Department -->
           <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Department</p>
+            <p class="employee-table__label">Department</p>
             <p class="font-medium">
               <UBadge
                 :label="employee.department"
@@ -263,15 +265,15 @@ const formatDate = (dateString: string) => {
 
           <!-- Employee Salary -->
           <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Salary</p>
-            <p class="font-medium">
+            <p class="employee-table__label">Salary</p>
+            <p class="employee-table__value">
               {{ formatCurrency(employee.salary, employee.currency) }}
             </p>
           </div>
 
           <!-- Employee Status -->
           <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Status</p>
+            <p class="employee-table__label">Status</p>
             <p class="font-medium">
               <UBadge
                 :label="employee.status"
@@ -284,14 +286,14 @@ const formatDate = (dateString: string) => {
 
           <!-- Employee Start Date -->
           <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Start Date</p>
-            <p class="font-medium">
+            <p class="employee-table__label">Start Date</p>
+            <p class="employee-table__value">
               {{ formatDate(employee.startDate) }}
             </p>
           </div>
 
           <!-- Employee Actions -->
-          <div class="flex items-center gap-1 justify-end">
+          <div class="employee-table__actions">
             <UButton
               icon="i-lucide-edit"
               size="sm"
@@ -315,7 +317,7 @@ const formatDate = (dateString: string) => {
       <UModal
         v-model:open="isEmployeeFormModalOpen"
         title="Employee Information Form"
-        class="w-full max-w-sm md:max-w-2xl lg:max-w-3xl"
+        class="employee-table__modal"
       >
         <template #body>
           <EmployeeForm
@@ -331,7 +333,7 @@ const formatDate = (dateString: string) => {
       <UModal
         v-model:open="isEmployeeDeleteModalOpen"
         title="Delete Employee"
-        class="w-full max-w-sm md:max-w-2xl lg:max-w-3xl"
+        class="employee-table__modal"
       >
         <template #body>
           <EmployeeDelete

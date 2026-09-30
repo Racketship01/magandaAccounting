@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
@@ -256,37 +258,35 @@ const clearReceipt = () => {
 </script>
 
 <template>
-  <UCard class="w-full">
+  <UCard class="view-panel__card">
     <template #header>
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
+      <div class="view-panel__header">
+        <div class="view-panel__header">
           <UIcon
             :name="isExpense ? 'i-lucide-credit-card' : 'i-lucide-file-text'"
-            class="h-5 w-5 text-primary-500"
+            class="view-panel__header-icon"
           />
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+          <h3 class="view-panel__header-title">
             {{ title }}
           </h3>
         </div>
       </div>
     </template>
 
-    <div class="space-y-6">
+    <div class="page-header">
       <!-- Main Information Card -->
-      <div
-        class="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="view-panel__info">
+        <div class="view-panel__item-grid">
           <!-- Date -->
-          <div class="text-center">
+          <div class="view-panel__item">
             <UIcon
-              name="i-lucide-calendar"
-              class="mx-auto h-8 w-8 text-blue-500 mb-2"
+              name="i-lucide-calendar-days"
+              class="view-panel__item-icon blue"
             />
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <p class="view-panel__item-title">
               {{ isExpense ? "Date" : "Due Date" }}
             </p>
-            <p class="text-lg font-bold text-gray-900 dark:text-white">
+            <p class="view-panel__item-subtitle">
               {{
                 isExpense
                   ? formatDate(expense?.date || "")
@@ -296,16 +296,11 @@ const clearReceipt = () => {
           </div>
 
           <!-- Amount -->
-          <div class="text-center">
-            <UIcon
-              name="i-lucide-credit-card"
-              class="mx-auto h-8 w-8 text-green-500 mb-2"
-            />
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Amount
-            </p>
+          <div class="view-panel__item">
+            <UIcon name="i-lucide-wallet" class="view-panel__item-icon green" />
+            <p class="view-panel__item-title">Amount</p>
             <div class="space-y-2">
-              <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+              <p class="view-panel__item-subtitle">
                 {{
                   isExpense
                     ? formatCurrency(
@@ -319,7 +314,7 @@ const clearReceipt = () => {
           </div>
 
           <!-- Status -->
-          <div class="text-center">
+          <div class="view-panel__item">
             <UIcon
               :name="
                 isExpense
@@ -328,11 +323,9 @@ const clearReceipt = () => {
                     ? 'i-lucide-check-circle'
                     : 'i-lucide-clock'
               "
-              class="mx-auto h-8 w-8 text-amber-500 mb-2"
+              class="view-panel__item-icon amber"
             />
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Status
-            </p>
+            <p class="view-panel__item-title">Status</p>
             <UBadge
               :label="getStatusLabel(data)"
               variant="soft"
@@ -344,12 +337,10 @@ const clearReceipt = () => {
       </div>
 
       <!-- Detailed Information -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="view-panel__detail-grid">
         <!-- Category -->
         <div class="space-y-2">
-          <label
-            class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-          >
+          <label class="view-panel__detail-label">
             <UIcon name="i-lucide-tag" class="h-4 w-4" />
             Category
           </label>
@@ -367,33 +358,29 @@ const clearReceipt = () => {
 
         <!-- Employee (Expense) / Title (Bill) -->
         <div class="space-y-2">
-          <label
-            class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-          >
+          <label class="view-panel__detail-label">
             <UIcon
               :name="isExpense ? 'i-lucide-user' : 'i-lucide-file-text'"
               class="h-4 w-4"
             />
             {{ isExpense ? "Employee" : "Title" }}
           </label>
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">
+          <p class="view-panel__detail-text">
             {{ isExpense ? expense?.employeeName : bill?.title }}
           </p>
         </div>
 
         <!-- Merchant (Expense) / Recurring (Bill) -->
         <div v-if="isExpense" class="space-y-2 md:col-span-2">
-          <label
-            class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-          >
+          <label class="view-panel__detail-label">
             <UIcon name="i-lucide-store" class="h-4 w-4" />
             Merchant
           </label>
-          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <p class="text-lg font-semibold text-gray-900 dark:text-white">
+          <div class="view-panel__merchant-box">
+            <p class="view-panel__detail-text">
               {{ expense?.merchantName }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="view-panel__merchant-text">
               {{ expense?.description }}
             </p>
           </div>
@@ -401,41 +388,33 @@ const clearReceipt = () => {
 
         <!-- Bill Specific Information -->
         <div v-if="isBill" class="space-y-2">
-          <label
-            class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-          >
+          <label class="view-panel__detail-label">
             <UIcon name="i-lucide-repeat" class="h-4 w-4" />
             Recurring
           </label>
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">
+          <p class="view-panel__detail-text">
             {{ bill?.isRecurring ? "Yes" : "No" }}
           </p>
         </div>
 
         <div v-if="isBill && bill?.isRecurring" class="space-y-2">
-          <label
-            class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-          >
+          <label class="view-panel__detail-label">
             <UIcon name="i-lucide-calendar-days" class="h-4 w-4" />
             Frequency
           </label>
-          <p
-            class="text-lg font-semibold text-gray-900 dark:text-white capitalize"
-          >
+          <p class="view-panel__detail-text capitalize">
             {{ bill?.recurringType }}
           </p>
         </div>
 
         <!-- Payment Information (Bill) -->
         <div v-if="isBill && bill?.isPaid" class="space-y-2 md:col-span-2">
-          <label
-            class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-          >
+          <label class="view-panel__detail-label">
             <UIcon name="i-lucide-check-circle" class="h-4 w-4" />
             Payment Information
           </label>
-          <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-            <p class="text-lg font-semibold text-green-900 dark:text-green-100">
+          <div class="view-panel__merchant-box">
+            <p class="view-panel__merchant-title">
               Paid on {{ formatDate(bill?.paidDate || "") }}
             </p>
           </div>
@@ -446,15 +425,13 @@ const clearReceipt = () => {
           v-if="isBill && !bill?.isPaid && isOverdue"
           class="space-y-2 md:col-span-2"
         >
-          <div
-            class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4"
-          >
+          <div class="view-panel__overdue-box">
             <div class="flex items-center gap-2">
               <UIcon
                 name="i-lucide-alert-triangle"
                 class="h-5 w-5 text-red-500"
               />
-              <p class="text-sm font-medium text-red-800 dark:text-red-200">
+              <p class="view-panel__overdue-text">
                 This bill is overdue by
                 {{
                   Math.ceil(
@@ -522,10 +499,8 @@ const clearReceipt = () => {
       </div>
 
       <!-- Receipt Section -->
-      <div class="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-        <label
-          class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-        >
+      <div class="receipt-view__divider">
+        <label class="view-panel__detail-label">
           <UIcon name="i-lucide-file-image" class="h-4 w-4" />
           Receipt
         </label>
@@ -538,20 +513,16 @@ const clearReceipt = () => {
                 :href="expense.receiptUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="block relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 mx-auto max-w-md"
+                class="receipt-view__surface"
               >
                 <img
                   :src="expense.receiptUrl"
                   alt="Receipt preview"
-                  class="w-full h-auto rounded-lg object-contain cursor-zoom-in"
+                  class="receipt-view__image"
                 />
                 <!-- Hover Overlay -->
-                <div
-                  class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200"
-                >
-                  <div
-                    class="flex items-center gap-2 text-white bg-black/60 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm"
-                  >
+                <div class="receipt-view__image-overlay">
+                  <div class="receipt-view__image-tab">
                     <UIcon name="i-lucide-external-link" class="h-4 w-4" />
                     Open in new tab
                   </div>
@@ -573,17 +544,12 @@ const clearReceipt = () => {
           </div>
 
           <!-- No Receipt -->
-          <div
-            v-else
-            class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center"
-          >
+          <div v-else class="receipt-view__empty">
             <UIcon
-              name="i-lucide-receipt"
-              class="h-12 w-12 text-gray-400 mx-auto mb-4"
+              name="i-lucide-receipt-text"
+              class="receipt-view__empty-icon"
             />
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              No receipt uploaded
-            </p>
+            <p class="view-panel__merchant-text">No receipt uploaded</p>
           </div>
         </div>
 
@@ -592,29 +558,38 @@ const clearReceipt = () => {
           <template v-if="!bill?.isPaid">
             <div v-if="receiptImage" class="space-y-3">
               <div class="relative group mx-auto max-w-md">
-                <img
-                  :src="receiptImage"
-                  alt="Uploaded receipt preview"
-                  class="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700 object-contain"
-                />
-                <!-- Remove Overlay / Clear Button -->
-                <div
-                  class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200 rounded-lg"
+                <a
+                  :href="receiptImage"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="receipt-view__surface"
                 >
-                  <UButton
-                    color="error"
-                    variant="solid"
-                    icon="i-lucide-trash-2"
-                    size="sm"
-                    @click="clearReceipt"
-                  >
-                    Remove Photo
-                  </UButton>
-                </div>
+                  <img
+                    :src="receiptImage"
+                    alt="Uploaded receipt preview"
+                    class="receipt-view__image"
+                  />
+                  <!-- Hover Overlay -->
+                  <div class="receipt-view__image-overlay">
+                    <div class="receipt-view__image-tab">
+                      <UIcon name="i-lucide-external-link" class="h-4 w-4" />
+                      Open in new tab
+                    </div>
+                    <!-- Remove Photo Button (hover overlay) -->
+                    <UButton
+                      color="error"
+                      variant="solid"
+                      icon="i-lucide-trash-2"
+                      size="sm"
+                      class="ml-2"
+                      @click.stop="clearReceipt"
+                    >
+                      Remove Photo
+                    </UButton>
+                  </div>
+                </a>
               </div>
             </div>
-
-            <!-- Upload Area if no image -->
 
             <div
               v-else
@@ -659,20 +634,16 @@ const clearReceipt = () => {
                   :href="bill.receiptImage"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="block relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 mx-auto max-w-md"
+                  class="receipt-view__surface"
                 >
                   <img
                     :src="bill.receiptImage"
                     alt="Receipt preview"
-                    class="w-full h-auto rounded-lg object-contain cursor-zoom-in"
+                    class="receipt-view__image"
                   />
                   <!-- Hover Overlay -->
-                  <div
-                    class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200"
-                  >
-                    <div
-                      class="flex items-center gap-2 text-white bg-black/60 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm"
-                    >
+                  <div class="receipt-view__image-overlay">
+                    <div class="receipt-view__image-tab">
                       <UIcon name="i-lucide-external-link" class="h-4 w-4" />
                       Open in new tab
                     </div>
@@ -694,17 +665,12 @@ const clearReceipt = () => {
             </div>
 
             <!-- No Receipt -->
-            <div
-              v-else
-              class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center"
-            >
+            <div v-else class="receipt-view__empty">
               <UIcon
-                name="i-lucide-receipt"
-                class="h-12 w-12 text-gray-400 mx-auto mb-4"
+                name="i-lucide-receipt-text"
+                class="receipt-view__empty-icon"
               />
-              <p class="text-sm text-gray-600 dark:text-gray-400">
-                No receipt uploaded
-              </p>
+              <p class="view-panel__merchant-text">No receipt uploaded</p>
             </div>
           </template>
         </div>

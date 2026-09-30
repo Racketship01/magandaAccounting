@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
       lastName: employee.lastName,
       role: employee.role,
       phone: employee.phone,
+      nationality: employee.nationality,
       jobTitle: employee.jobTitle,
       department: employee.department,
       startDate: employee.startDate,

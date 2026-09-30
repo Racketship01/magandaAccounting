@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
 import { computed, ref, watch } from "vue";
@@ -120,6 +122,7 @@ watch(
       formData.value = {
         firstName: employee.firstName,
         lastName: employee.lastName,
+        nationality: (employee as any).nationality,
         phone: employee.phone,
         jobTitle: employee.jobTitle,
         department: employee.department,
@@ -213,27 +216,25 @@ const currentCurrencySymbol = computed(() => {
 
 <template>
   <UCard>
-    <div
-      class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 mb-5 pb-2"
-    >
+    <div class="profile-card">
       <UIcon
-        :name="employee ? 'i-lucide-user-pen' : 'i-lucide-user-plus'"
-        class="h-5 w-5 text-primary-500"
+        :name="
+          employee ? 'i-lucide-user-round-pen' : 'i-lucide-user-round-plus'
+        "
+        class="profile-card--icon"
       />
       <h3 class="text-lg font-semibold">
         {{ employee ? "Edit Employee Details" : "Add New Employee" }}
       </h3>
     </div>
 
-    <div class="space-y-6 max-h-96 overflow-y-auto">
+    <div class="profile-card__form">
       <!-- Personal Information -->
       <div class="space-y-2">
-        <h4 class="text-md font-medium text-gray-900 dark:text-gray-50 pb-2">
-          Personal Information
-        </h4>
+        <h4 class="profile-card__form-grid--title">Personal Information</h4>
 
         <!-- Profile Picture Section -->
-        <div class="flex items-center gap-4 mb-4">
+        <div class="profile-card__form-section">
           <div class="shrink-0">
             <img
               :src="
@@ -241,7 +242,7 @@ const currentCurrencySymbol = computed(() => {
                 'https://d2u1z1lopyfwlx.cloudfront.net/thumbnails/0d3b6f33-7772-53c6-b146-2c1b09f3e7e1/8f037b8a-487e-5bc4-8aef-95264a468c03.jpg'
               "
               :alt="`${formData.firstName} ${formData.lastName}`"
-              class="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+              class="profile-card__form-profile--picture"
             />
           </div>
           <div class="flex-1">
@@ -273,19 +274,19 @@ const currentCurrencySymbol = computed(() => {
                   Remove
                 </UButton>
               </div>
-              <p class="text-xs text-gray-500 mt-1">
+              <p class="profile-card__form-profile-picture__text">
                 Supported formats: JPG, PNG, GIF (Max 5MB)
               </p>
             </UFormGroup>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
+        <div class="profile-card__form-grid">
           <UFormGroup label="First Name" required>
             <UInput
               v-model="formData.firstName"
               placeholder="Enter first name"
-              icon="i-lucide-user"
+              icon="i-lucide-user-round"
               size="lg"
               class="w-full"
             />
@@ -295,7 +296,7 @@ const currentCurrencySymbol = computed(() => {
             <UInput
               v-model="formData.lastName"
               placeholder="Enter last name"
-              icon="i-lucide-user"
+              icon="i-lucide-user-round"
               size="lg"
               class="w-full"
             />
@@ -310,16 +311,24 @@ const currentCurrencySymbol = computed(() => {
               class="w-full"
             />
           </UFormGroup>
+
+          <UFormGroup label="Nationality">
+            <UInput
+              v-model="formData.nationality"
+              placeholder="Enter nationality"
+              icon="i-lucide-flag"
+              size="lg"
+              class="w-full"
+            />
+          </UFormGroup>
         </div>
       </div>
 
       <!-- Job Information -->
       <div class="space-y-2">
-        <h4 class="text-md font-medium text-gray-900 dark:text-gray-50 pb-2">
-          Job Information
-        </h4>
+        <h4 class="profile-card__form-grid--title">Job Information</h4>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
+        <div class="profile-card__form-grid">
           <UFormGroup label="Job Title" required>
             <UInput
               v-model="formData.jobTitle"
@@ -385,7 +394,7 @@ const currentCurrencySymbol = computed(() => {
               class="w-full"
             >
               <template #leading>
-                <span class="text-gray-500 font-medium">{{
+                <span class="profile-card__form-grid--currency-symbol">{{
                   currentCurrencySymbol
                 }}</span>
               </template>
@@ -396,11 +405,9 @@ const currentCurrencySymbol = computed(() => {
 
       <!-- Address Information -->
       <div class="space-y-2">
-        <h4 class="text-md font-medium text-gray-900 dark:text-gray-50 pb-2">
-          Address Information
-        </h4>
+        <h4 class="profile-card__form-grid--title">Address Information</h4>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
+        <div class="profile-card__form-grid">
           <UFormGroup label="Street Address" class="md:col-span-1">
             <UInput
               v-model="formData.address.street"
@@ -445,16 +452,14 @@ const currentCurrencySymbol = computed(() => {
 
       <!-- Account Information -->
       <div class="space-y-2">
-        <h4 class="text-md font-medium text-gray-900 dark:text-gray-50 pb-2">
-          Account Information
-        </h4>
+        <h4 class="profile-card__form-grid--title">Account Information</h4>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mr-4">
+        <div class="profile-card__form-grid">
           <UFormGroup label="Username">
             <UInput
               v-model="formData.credentials.username"
               placeholder="Enter username"
-              icon="i-lucide-user"
+              icon="i-lucide-user-round"
               size="lg"
               class="w-full"
             />
@@ -481,7 +486,7 @@ const currentCurrencySymbol = computed(() => {
       </div>
     </div>
     <template #footer>
-      <div class="flex justify-end gap-3">
+      <div class="profile-card__form-grid__button">
         <UButton variant="outline" icon="i-lucide-x" @click="handleCancel">
           Cancel
         </UButton>

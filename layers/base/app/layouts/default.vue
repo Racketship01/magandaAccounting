@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable @typescript-eslint/no-unused-expressions -->
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted, watch } from "vue";
@@ -56,7 +58,7 @@ const links = computed(() => {
   const baseLinks = [
     {
       label: "Dashboard",
-      icon: "i-lucide-house",
+      icon: "i-lucide-chart-no-axes-combined",
       to: "/dashboard",
       onSelect: () => {
         open.value = false;
@@ -78,27 +80,25 @@ const links = computed(() => {
         open.value = false;
       },
     },
+    {
+      label: "Bills Management",
+      icon: "i-lucide-receipt-text",
+      to: "/bills",
+      onSelect: () => {
+        open.value = false;
+      },
+    },
   ];
 
   if (user.value?.role === "admin") {
-    baseLinks.push(
-      {
-        label: "Employee Records",
-        icon: "i-lucide-clipboard-list",
-        to: "/employee",
-        onSelect: () => {
-          open.value = false;
-        },
+    baseLinks.push({
+      label: "Employee Records",
+      icon: "i-lucide-file-user",
+      to: "/employee",
+      onSelect: () => {
+        open.value = false;
       },
-      {
-        label: "Bills Management",
-        icon: "i-lucide-bell-ring",
-        to: "/bills",
-        onSelect: () => {
-          open.value = false;
-        },
-      },
-    );
+    });
   }
 
   return [baseLinks];
@@ -106,9 +106,9 @@ const links = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="shell__screen">
     <!-- Header -->
-    <UHeader class="sticky top-0 z-50 shrink-0">
+    <UHeader class="shell__app-header">
       <template #left>
         <img :src="currentLogo" alt="Logo" class="h-10 w-auto" />
       </template>
@@ -125,17 +125,15 @@ const links = computed(() => {
     </UHeader>
 
     <!-- Main Container -->
-    <div class="flex-1 flex flex-col">
-      <UContainer class="py-4 flex-1 flex flex-col">
+    <div class="shell__main-container">
+      <UContainer class="shell__content-wrap">
         <!-- Main Layout Grid -->
-        <div
-          class="grid grid-cols-[240px_1fr] md:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr] gap-x-[10px] flex-1 min-h-0"
-        >
+        <div class="shell__layout-grid">
           <!-- Sidebar -->
-          <div class="bg-muted rounded-lg p-4 flex flex-col">
+          <div class="shell__sidebar">
             <!-- Navigation Section -->
-            <nav class="space-y-2 flex-1">
-              <h2 class="text-md font-medium text-muted mb-4">Navigation</h2>
+            <nav class="shell__navigation">
+              <h2 class="shell__navigation-title">NextOne</h2>
 
               <UNavigationMenu
                 :collapsed="collapsed"
@@ -148,13 +146,13 @@ const links = computed(() => {
             </nav>
 
             <!-- Footer Section -->
-            <div class="mt-auto pt-4 border-t">
+            <div class="shell__footer">
               <Usermenu :collapsed="collapsed" />
             </div>
           </div>
 
           <!-- Content Area -->
-          <div class="bg-elevated rounded-lg p-6 flex flex-col min-h-0">
+          <div class="shell__content-area">
             <UMain class="flex-1 min-h-0">
               <slot />
             </UMain>

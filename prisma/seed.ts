@@ -1,4 +1,4 @@
-import { Hash } from "@adonisjs/hash";
+﻿import { Hash } from "@adonisjs/hash";
 import { Scrypt } from "@adonisjs/hash/drivers/scrypt";
 import { prisma } from "./utils/prisma";
 
@@ -33,6 +33,7 @@ async function main() {
         firstName: "Juan",
         lastName: "Dela Cruz",
         phone: "09123456789",
+        nationality: "Filipino",
         jobTitle: "Admin",
         department: "Admin",
         status: "active",

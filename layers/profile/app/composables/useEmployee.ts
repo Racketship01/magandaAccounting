@@ -1,9 +1,12 @@
+/** @format */
+
 export interface EmployeeData {
   id?: string;
   firstName: string;
   lastName: string;
   role?: "employee" | "admin";
   phone: string;
+  nationality: string;
   jobTitle: string;
   department: string;
   startDate: string;
@@ -31,6 +34,7 @@ export default function useEmployee() {
     lastName: "",
     role: "employee",
     phone: "",
+    nationality: "",
     jobTitle: "",
     department: "",
     startDate: "",
@@ -56,6 +60,7 @@ export default function useEmployee() {
       firstName: "",
       lastName: "",
       phone: "",
+      nationality: "",
       jobTitle: "",
       department: "",
       startDate: "",

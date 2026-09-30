@@ -81,6 +81,7 @@ model Employee {
   firstName    String
   lastName     String
   phone        String
+  nationality  String
   jobTitle     String
   department   String
   startDate    String
@@ -110,6 +111,7 @@ model Admin {
   firstName    String
   lastName     String
   phone        String
+  nationality  String
   jobTitle     String
   department   String
   startDate    String

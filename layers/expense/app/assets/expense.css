@@ -1,0 +1,293 @@
+/**
+ * Receipt Scanner
+ *
+ * @format
+ */
+
+@import "./expensedark.css";
+
+.receipt-scanner__grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media screen and (min-width: 1024px) {
+  .receipt-scanner__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.receipt-scanner__grid--col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1rem;
+}
+.receipt-scanner__title,
+.receipt-scanner__form-title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  flex-shrink: 0;
+  margin-bottom: 1rem;
+}
+
+.receipt-scanner__dropzone {
+  border-width: 2px;
+  border-style: dashed;
+  border-color: var(--color-gray-300);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0%;
+  min-height: 0px;
+  height: 36.25rem;
+}
+
+.receipt-scanner__dropzone:hover {
+  border-color: var(--ui-color-primary-400);
+}
+
+.receipt-scanner__dropzone--active {
+  border-color: var(--ui-color-primary-400);
+  background-color: var(--ui-color-primary-50);
+}
+
+.receipt-scanner__dropzone--icon {
+  margin-left: auto;
+  margin-right: auto;
+  height: 3rem;
+  width: 3rem;
+  color: var(--color-gray-400);
+  margin-bottom: 1rem;
+}
+
+.receipt-scanner__dropzone--heading {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+  color: var(--color-gray-900);
+}
+
+.receipt-scanner__dropzone--text {
+  color: var(--color-gray-500);
+}
+
+.receipt-scanner__dropzone-extract {
+  margin-right: auto;
+  height: 3rem;
+  width: 3rem;
+  color: var(--ui-color-primary-500);
+  animation: receipt-spin 1s linear infinite;
+}
+
+@keyframes receipt-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.receipt-scanner__dropzone--image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.receipt-scanner__dropzone--image > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+.receipt-scanner__image {
+  max-height: calc(100% - 4rem);
+  height: 100%;
+  object-fit: contain;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.receipt-scanner__dropzone--image-button {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/** Right Side */
+
+.receipt-scanner__form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow: hidden;
+}
+
+.receipt-scanner__form-action {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-right: 0.25rem;
+}
+
+.receipt-scanner__form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex-shrink: 0;
+}
+
+.receipt-scanner__form-field--currency {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+  .receipt-scanner__form-field--currency {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.receipt-scanner__form-subtitle {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  flex-shrink: 0;
+}
+
+.receipt-scanner__form-note--box {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0px;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/** Expense Report */
+
+.expense-category--transport-color {
+  background-color: var(--color-blue-100);
+  color: var(--color-blue-800);
+}
+.expense-category--food-color {
+  background-color: var(--color-yellow-100);
+  color: var(--color-yellow-800);
+}
+.expense-category--utilities-color {
+  background-color: var(--color-purple-100);
+  color: var(--color-purple-800);
+}
+.expense-category--office-color {
+  background-color: var(--color-cyan-100);
+  color: var(--color-cyan-800);
+}
+.expense-category--healthcare-color {
+  background-color: var(--color-green-100);
+  color: var(--color-green-800);
+}
+.expense-category--other-color {
+  background-color: var(--color-orange-100);
+  color: var(--color-orange-800);
+}
+
+.expense-table {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--color-gray-200);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-md);
+}
+.expense-table:hover {
+  background-color: var(--color-gray-50);
+}
+
+.expense-table__grid {
+  flex: 1 1 0%;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.75rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .expense-table__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.expense-table__label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-gray-500);
+}
+
+.expense-table__value {
+  font-weight: 500;
+  color: var(--color-gray-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expense-table__text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-gray-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.expense-table__text-currency {
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.expense-table__action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/** Expense Report Modal */
+
+.expense-table__modal {
+  width: 100%;
+  max-width: 24rem;
+}
+
+@media (min-width: 768px) {
+  .expense-table__modal {
+    max-width: 42rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .expense-table__modal {
+    max-width: 48rem;
+  }
+}

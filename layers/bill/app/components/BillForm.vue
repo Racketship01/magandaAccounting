@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable vue/html-self-closing -->
 <script setup lang="ts">
@@ -172,20 +174,18 @@ const getCurrencySymbol = (currency: string) => {
 
 <template>
   <UCard>
-    <div
-      class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 mb-5 pb-2"
-    >
-      <UIcon :name="icon" class="h-5 w-5 text-primary-500" />
+    <div class="bill-form">
+      <UIcon :name="icon" class="bill-form__icon" />
       <h3 class="text-lg font-semibold">{{ title }}</h3>
     </div>
-    <div class="space-y-6 max-h-96 overflow-y-auto">
+    <div class="bill-form__content">
       <div class="space-y-2">
-        <h4 class="text-md font-medium text-gray-900 dark:text-white pb-2">
+        <h4 class="bill-form__subtitle">
           {{ subtitle }}
         </h4>
 
         <div class="mr-4">
-          <div class="grid grid-cols-1 md:grid-cols-1 gap-5 mb-4">
+          <div class="bill-form__grid--title">
             <UFormGroup label="Bill Title" required>
               <UInput
                 v-model="billFormData.title"
@@ -196,7 +196,7 @@ const getCurrencySymbol = (currency: string) => {
             </UFormGroup>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
+          <div class="bill-form__grid--split">
             <UFormGroup label="Currency" class="md:col-span-1">
               <USelect
                 v-model="billFormData.currency"
@@ -225,7 +225,7 @@ const getCurrencySymbol = (currency: string) => {
             </UFormGroup>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
+          <div class="bill-form__grid--split">
             <UFormGroup label="Category" required>
               <USelect
                 v-model="billFormData.category"
@@ -253,11 +253,11 @@ const getCurrencySymbol = (currency: string) => {
                 <img
                   :src="receiptImage"
                   alt="Receipt preview"
-                  class="w-full h-50 rounded-lg object-cover border border-gray-200 dark:border-gray-600"
+                  class="bill-receipt__image"
                 />
 
-                <div class="flex justify-between mt-2 items-center">
-                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                <div class="bill-receipt__toolbar">
+                  <p class="bill-receipt__message">
                     Receipt uploaded successfully
                   </p>
                   <UButton
@@ -273,16 +273,13 @@ const getCurrencySymbol = (currency: string) => {
                 </div>
               </div>
 
-              <div
-                v-else
-                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center"
-              >
+              <div v-else class="bill-receipt__dropzone">
                 <UIcon
                   name="i-lucide-upload"
-                  class="h-8 w-8 text-gray-400 mx-auto mb-2"
+                  class="bill-receipt__dropzone--icon"
                 />
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  Upload bill photo
+                <p class="bill-receipt__dropzone-message">
+                  Upload receipt photo
                 </p>
                 <UButton
                   :loading="isUploading"
@@ -302,7 +299,7 @@ const getCurrencySymbol = (currency: string) => {
                   @change="handleFileSelect"
                 />
               </div>
-              <div v-if="uploadError" class="text-red-500 text-xs">
+              <div v-if="uploadError" class="bill-receipt__upload-error">
                 {{ uploadError }}
               </div>
             </div>

@@ -1,0 +1,226 @@
+/** @format */
+
+@import "./billsdark.css";
+
+:root {
+  --text-primary: #ffffff;
+}
+
+.bill-category--water-color {
+  background-color: var(--color-blue-50);
+  color: var(--color-blue-800);
+}
+.bill-category--electric-color {
+  background-color: var(--color-yellow-100);
+  color: var(--color-yellow-800);
+}
+.bill-category--internet-color {
+  background-color: var(--color-purple-100);
+  color: var(--color-purple-800);
+}
+.bill-category--rent-color {
+  background-color: var(--color-red-100);
+  color: var(--color-red-800);
+}
+.bill-category--phone-color {
+  background-color: var(--color-pink-100);
+  color: var(--color-pink-800);
+}
+.bill-category--insurance-color {
+  background-color: var(--color-indigo-100);
+  color: var(--color-indigo-800);
+}
+.bill-category--subscription-color {
+  background-color: var(--color-green-100);
+  color: var(--color-green-800);
+}
+.bill-category--other-color {
+  background-color: var(--color-orange-100);
+  color: var(--color-orange-800);
+}
+
+/** BillsManagement */
+
+.bills-table {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--color-gray-200);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-md);
+}
+.bills-table:hover {
+  background-color: var(--color-gray-50);
+}
+
+.bills-table__grid {
+  flex: 1 1 0%;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .bills-table__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.bills-table__label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-gray-500);
+}
+.bills-table__value {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bills-table__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.bills-modal {
+  width: 100%;
+  max-width: 24rem;
+}
+
+@media (min-width: 768px) {
+  .bills-modal {
+    max-width: 42rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bills-modal {
+    max-width: 48rem;
+  }
+}
+
+/** Bill Form */
+
+.bill-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: var(--color-gray-200);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.bill-form__icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  color: var(--ui-color-primary-500);
+}
+
+.bill-form__content {
+  margin-top: 1rem;
+  overflow: auto;
+}
+
+.bill-form__subtitle {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  color: var(--color-gray-900);
+  padding-bottom: 0.5rem;
+}
+
+.bill-form__grid--title,
+.bill-form__grid--split {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .bill-form__grid--title {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .bill-form__grid--split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.bill-receipt__image {
+  width: 100%;
+  height: 12.5rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--color-gray-200);
+}
+
+.bill-receipt__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.bill-receipt__message {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-gray-600);
+}
+
+.bill-receipt__dropzone {
+  border-width: 2px;
+  border-style: dashed;
+  border-color: var(--color-gray-300);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.bill-receipt__dropzone--icon {
+  height: 2rem;
+  width: 2rem;
+  color: var(--color-gray-400);
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0.5rem;
+}
+
+.bill-receipt__dropzone-message {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-gray-600);
+  margin-bottom: 0.5rem;
+}
+
+.bill-receipt__upload-error {
+  color: var(--color-red-500);
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.bill-receipt__reminder {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .bill-receipt__reminder {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

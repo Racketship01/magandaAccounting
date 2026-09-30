@@ -1,0 +1,111 @@
+/** @format */
+
+/**
+ * Dark mode overrides
+ *
+ * @format
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: #ffffff;
+  }
+
+  .dark .bill-category--water-color {
+    background-color: color-mix(
+      in oklab,
+      var(--color-cyan-900) 20%,
+      transparent
+    );
+    color: var(--color-blue-400);
+  }
+  .dark .bill-category--electric-color {
+    background-color: color-mix(
+      in oklab,
+      var(--color-yellow-900) 20%,
+      transparent
+    );
+    color: var(--color-yellow-400);
+  }
+  .dark .bill-category--internet-color {
+    background-color: color-mix(
+      in oklab,
+      var(--color-purple-900) 20%,
+      transparent
+    );
+    color: var(--color-purple-400);
+  }
+  .dark .bill-category--rent-color {
+    background-color: color-mix(
+      in oklab,
+      var(--color-red-900) 20%,
+      transparent
+    );
+    color: var(--color-red-400);
+  }
+  .dark .bill-category--phone-color {
+    background-color: color-mix(
+      in oklab,
+      var(--color-pink-900) 20%,
+      transparent
+    );
+    color: var(--color-pink-400);
+  }
+  .dark .bill-category--insurance-color {
+    background-color: color-mix(
+      in oklab,
+      var(--color-indigo-900) 20%,
+      transparent
+    );
+    color: var(--color-indigo-400);
+  }
+  .dark .bill-category--subscription-color {
+    background-color: color-mix(
+      in oklab,
+      var(--color-green-900) 20%,
+      transparent
+    );
+    color: var(--color-green-400);
+  }
+  .dark .bill-category--other-color {
+    background-color: color-mix(
+      in oklab,
+      var(--color-orange-900) 20%,
+      transparent
+    );
+    color: var(--color-orange-400);
+  }
+
+  .dark .bills-table {
+    border-color: var(--color-gray-700);
+    background: #131d3e;
+    background: linear-gradient(
+      180deg,
+      rgba(19, 29, 62, 0.87) 0%,
+      rgba(18, 27, 53, 1) 37%
+    );
+  }
+  .dark .bills-table:hover {
+    background-color: var(--color-gray-500);
+  }
+  .dark .bills-table__label,
+  .dark .bill-receipt__dropzone-message {
+    color: var(--color-gray-400);
+  }
+  .dark .bills-table__value {
+    color: var(--text-primary);
+  }
+  .dark .bill-form {
+    border-bottom-color: var(--color-gray-700);
+  }
+  .dark .bill-form__subtitle {
+    color: var(--text-primary);
+  }
+  .dark .bill-receipt__image,
+  .dark .bill-receipt__dropzone {
+    border-color: var(--color-gray-600);
+  }
+  .dark .bill-receipt__message {
+    color: var(--color-gray-200);
+  }
+}

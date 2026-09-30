@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 interface Props {
@@ -25,25 +27,21 @@ const cancelDelete = () => {
 
 <template>
   <UCard>
-    <div
-      class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 mb-5 pb-2"
-    >
-      <UIcon name="i-lucide-trash-2" class="h-5 w-5 text-red-500" />
-      <h3 class="text-lg font-semibold">{{ title }}</h3>
+    <div class="delete-dialog__row">
+      <UIcon name="i-lucide-trash-2" class="delete-dialog__icon" />
+      <h3 class="delete-dialog__title">{{ title }}</h3>
     </div>
     <div class="space-y-4">
-      <p class="text-sm text-gray-600 dark:text-gray-400">
+      <p class="delete-dialog__subtitle">
         {{ subtitle }}
-        <span class="font-semibold text-red-400">{{ subTitleBold }}</span>
+        <span class="delete-dialog__subtitle--bold">{{ subTitleBold }}</span>
         ?
       </p>
     </div>
 
-    <div
-      class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mt-4"
-    >
-      <p class="text-sm text-red-800 dark:text-red-200">
-        <strong class="text-red-800 dark:text-yellow-200">Warning:</strong>
+    <div class="warning-box">
+      <p class="warning-box__item">
+        <strong class="warning-box__message">Warning:</strong>
         {{ message }}
       </p>
     </div>

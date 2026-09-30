@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # AGENTS.md
 
 ## Project overview
@@ -102,6 +104,10 @@
 - HTTP client (if needed): `fetch` or `$fetch` (built into Nuxt)
 - Auth: `@nuxt/auth` or custom server-side sessions (follow existing pattern)
 - Styling: Tailwind CSS or Nuxt UI (follow existing project choice)
+
+### Reference files
+
+- [Skill Styling System](./Skill.md) — detailed BEM naming rules and examples
 
 ## Notes
 

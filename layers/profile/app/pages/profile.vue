@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <script setup lang="ts">
 definePageMeta({
   middleware: "auth",
@@ -12,5 +14,5 @@ onMounted(() => {
 </script>
 
 <template>
-  <UserProfile />
+  <userProfile />
 </template>

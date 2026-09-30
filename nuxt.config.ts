@@ -1,3 +1,5 @@
+/** @format */
+
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   future: {
@@ -11,14 +13,26 @@ export default defineNuxtConfig({
     "./layers/profile",
   ],
   devtools: { enabled: true },
-  modules: ["@nuxt/eslint", "@nuxt/ui", "nuxt-auth-utils"],
+  modules: [
+    "@nuxt/eslint",
+    "@nuxt/ui",
+    "nuxt-auth-utils",
+    "@nuxt/ui-pro",
+    "vite-tsconfig-paths",
+  ],
   postcss: {
     plugins: {
       "@tailwindcss/postcss": {},
       autoprefixer: {},
     },
   },
-
+  extends: [
+    "./layers/base",
+    "./layers/auth",
+    "./layers/bill",
+    "./layers/expense",
+    "./layers/profile",
+  ],
   routeRules: {
     "/": { prerender: true },
   },

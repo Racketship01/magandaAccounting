@@ -1,0 +1,176 @@
+/**
+ * Dark mode overrides
+ *
+ * @format
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: var(--color-white);
+    --overlay-color: 255 255 255;
+    --overlay-dark: 15 23 42;
+    --color-black: 0 0 0;
+  }
+
+  .dark .shell__screen {
+    background-image:
+      linear-gradient(
+        rgb(var(--overlay-dark) / 0.9),
+        rgb(var(--overlay-dark) / 0.9)
+      ),
+      url("./images/bg_.jpeg");
+    background-size: 350px auto;
+    background-position: top left;
+    background-repeat: repeat;
+    background-attachment: fixed;
+  }
+
+  .dark .shell__app-header {
+    background-image:
+      linear-gradient(
+        rgb(var(--overlay-dark) / 0.9),
+        rgb(var(--overlay-dark) / 0.9)
+      ),
+      url("./images/bg_.jpeg");
+    background-size: 350px auto;
+    background-position: top left;
+    background-repeat: repeat;
+    background-attachment: fixed;
+  }
+
+  .dark .shell__sidebar,
+  .dark .shell--elevated,
+  .dark .shell__sidebar,
+  .dark .shell__content-area {
+    background-color: rgba(var(--overlay-dark) / 0.55);
+    border: 1px solid rgba(var(--overlay-color) / 0.08);
+    box-shadow: 0 8px 32px 0 rgba(var(--color-black) / 0.37);
+  }
+
+  .dark .stat-card--hoverable-box.blue,
+  .dark .stat-card--hoverable-box.yellow,
+  .dark .stat-card--hoverable-box.red {
+    background-image: none;
+    border-color: var(--color-gray-100);
+    border-style: none;
+  }
+
+  .dark .stat-card__title {
+    color: var(--text-tertiary);
+  }
+  .dark .stat-card__value,
+  .dark .content-section__header-subtitle,
+  .dark .weather-card__day,
+  .dark .weather-card__temp,
+  .dark .view-panel__item-subtitle,
+  .dark .view-panel__detail-text,
+  .dark .notice-card__title {
+    color: var(--text-primary);
+  }
+  .dark .stat-card__description,
+  .dark .view-panel__detail-label,
+  .dark .view-panel__merchant-text {
+    color: var(--color-gray-400);
+  }
+  .dark .stat-card__icon.blue {
+    color: var(--color-blue-700);
+  }
+  .dark .stat-card__icon.yellow {
+    color: var(--color-yellow-800);
+  }
+  .dark .stat-card__icon.red {
+    color: var(--color-red-800);
+  }
+
+  .dark .weather-card__left {
+    background-color: var(--bg-sky-950);
+    box-shadow: inset 0 0 0 1px var(--ring-sky-900);
+  }
+
+  .dark .weather-card__date,
+  .dark .delete-dialog__title,
+  .dark .delete-dialog__subtitle {
+    color: var(--color-gray-200);
+  }
+  .dark .weather-card__right {
+    @media (min-width: 768px) {
+      border-color: var(--color-gray-800);
+    }
+  }
+
+  .dark .weather-card__temp-unit {
+    color: var(--color-gray-400);
+  }
+  .dark .weather-card__description {
+    color: var(--color-gray-300);
+  }
+  .dark .delete-dialog__row {
+    border-color: var(--color-gray-700);
+  }
+  .dark .warning-box {
+    background-color: color-mix(
+      in oklab,
+      var(--color-red-900) 20%,
+      transparent
+    );
+    border-color: var(--color-red-800);
+  }
+  .dark .warning-box__item {
+    color: var(--color-red-200);
+  }
+  .dark .warning-box__message {
+    color: var(--color-yellow-200);
+  }
+
+  .dark .view-panel__item,
+  .dark .view-panel__merchant-box {
+    border-color: var(--color-gray-700);
+    background-color: color-mix(
+      in oklab,
+      var(--color-gray-900) 40%,
+      transparent
+    );
+  }
+
+  .dark .view-panel__overdue-box {
+    background-color: color-mix(
+      in oklab,
+      var(--color-red-900) 20%,
+      transparent
+    );
+    border-color: var(--color-red-800);
+  }
+  .dark .view-panel__overdue-text {
+    color: var(--color-red-200);
+  }
+  .dark .receipt-view__divider {
+    border-top-color: var(--color-gray-700);
+  }
+  .dark .receipt-view__surface {
+    border-color: var(--color-gray-700);
+  }
+  .dark .receipt-view__empty {
+    border-color: var(--color-gray-600);
+  }
+  .dark .receipt-view__empty-icon {
+    color: var(--color-gray-100);
+  }
+
+  .dark .notice-card__surface {
+    background-color: var(--color-gray-800);
+    border-color: var(--color-gray-700);
+  }
+  .dark .notice-card__icon-border {
+    background-color: color-mix(
+      in oklab,
+      var(--ui-color-primary-900) 20%,
+      transparent
+    );
+  }
+  .dark .notice-card__icon {
+    color: var(--ui-color-primary-400);
+  }
+  .dark .notice-card__description {
+    color: var(--color-gray-300);
+  }
+}

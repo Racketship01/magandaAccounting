@@ -19,6 +19,7 @@
     "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@adonisjs/hash": "9.1.1",
     "@nuxt/eslint": "1.10.0",
     "@nuxt/ui": "^4.0.1",
     "@nuxt/ui-pro": "^3.3.6",
@@ -47,6 +48,7 @@
     "@types/better-sqlite3": "^7.6.13",
     "autoprefixer": "^10.4.21",
     "husky": "^9.1.7",
+    "oxc-parser": "^0.151.0",
     "prisma": "^7.4.1",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.23.1"

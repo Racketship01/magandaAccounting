@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
@@ -92,33 +94,25 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4 py-12">
+  <div class="login-body">
     <div class="w-full max-w-md">
       <!-- Logo/Brand Section -->
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center">
-          <img
-            :src="currentLogo"
-            alt="Logo"
-            class="h-16 w-auto object-contain"
-          />
+        <div class="login-body__brand">
+          <img :src="currentLogo" alt="Logo" class="login-body__brand-image" />
         </div>
 
-        <p class="text-gray-600 dark:text-gray-400">
-          Create your account to get started
-        </p>
+        <p class="login-body__brand-text">Create your account to get started</p>
       </div>
 
       <!-- Sign Up Card -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
-      >
+      <div class="login-body__card">
         <!-- Sign Up Form -->
         <UForm
           ref="formRef"
           :schema="signupSchema"
           :state="signup"
-          class="space-y-6"
+          class="space-y-4"
           @submit.prevent="handleSignUp"
         >
           <!-- username field -->
@@ -127,7 +121,7 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
               v-model="signup.username"
               type="text"
               placeholder="Enter your username"
-              icon="i-lucide-user"
+              icon="i-lucide-user-round"
               class="w-full"
               size="lg"
               :disabled="signup.isLoading"
@@ -211,7 +205,7 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
               class="items-start"
             >
               <template #label>
-                <span class="text-sm text-gray-600 dark:text-gray-400">
+                <span class="login-body__card-text">
                   I agree to the
                   <UButton
                     variant="link"
@@ -294,12 +288,12 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
 
         <!-- Login Link -->
         <div class="mt-6 text-center">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <p class="login-body__card-text">
             Already have an account?
             <UButton
               variant="link"
               color="primary"
-              size="sm"
+              size="md"
               class="p-0 ml-1"
               @click="navigateTo('/login')"
             >
@@ -311,7 +305,7 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
 
       <!-- Additional Info -->
       <div class="mt-6 text-center">
-        <p class="text-xs text-gray-500 dark:text-gray-400">
+        <p class="login-body__card-text-link">
           By creating an account, you agree to our
           <UButton variant="link" color="neutral" size="xs" class="p-0">
             Terms of Service

@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
@@ -19,6 +21,7 @@ const isModalOpen = ref(false);
 const selectedExpenses = computed(() => expenseState.value.selectedExpenses);
 const isExpenseDeleteModalOpen = ref(false);
 
+// Expense categories
 const categories = [
   { label: "All Categories", value: "all", icon: "i-lucide-clipboard-list" },
   { label: "Food & Dining", value: "food", icon: "i-lucide-utensils" },
@@ -34,7 +37,7 @@ const categories = [
     value: "healthcare",
     icon: "i-lucide-heart-handshake",
   },
-  { label: "Other", value: "Other", icon: "i-lucide-list-check" },
+  { label: "Other", value: "other", icon: "i-lucide-list-check" },
 ];
 
 const statusOptions = [
@@ -242,6 +245,23 @@ watch(
   },
   { immediate: true },
 );
+
+const getCategoryLabel = (category: string) => {
+  return categories.find((cat) => cat.value === category)?.label || category;
+};
+
+const getCategoryColor = (category: string) => {
+  const colors: Record<string, string> = {
+    transportation: "expense-category--transport-color",
+    food: "expense-category--food-color",
+    utilities: "expense-category--utilities-color",
+    "office supplies": "expense-category--office-color",
+    office: "expense-category--office-color",
+    healthcare: "expense-category--healthcare-color",
+    other: "expense-category--other-color",
+  };
+  return colors[category] || colors.other;
+};
 </script>
 
 <template>
@@ -249,6 +269,8 @@ watch(
     title="Expense Reports"
     subtitle="All Expense Reports"
     description="Review, categorize, and consolidate expenses into reports for submission"
+    :showStats="false"
+    :showScanner="false"
   >
     <!-- Filters Slot -->
     <template #filters>
@@ -268,7 +290,7 @@ watch(
         <USelect
           v-model="expenseState.selectedCategory"
           :items="categories"
-          placeholder="Category"
+          placeholder="Expense Category"
           icon="i-lucide-list-check"
           size="lg"
           class="w-full"
@@ -326,7 +348,7 @@ watch(
       <div
         v-for="expense in filteredExpenses"
         :key="expense.id"
-        class="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+        class="expense-table"
       >
         <!-- Selection Checkbox -->
         <UCheckbox
@@ -335,15 +357,15 @@ watch(
         />
 
         <!-- Expense Details -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-6 gap-3 text-center">
+        <div class="expense-table__grid">
           <!-- Merchant -->
           <div class="text-left">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Merchant</p>
+            <p class="expense-table__label">Merchant</p>
             <div>
-              <p class="font-medium text-gray-900 dark:text-white truncate">
+              <p class="expense-table__value">
                 {{ expense.merchantName }}
               </p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+              <p class="expense-table__text">
                 {{ expense.description }}
               </p>
             </div>
@@ -351,13 +373,18 @@ watch(
 
           <!-- Category -->
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Category</p>
-            <UBadge :label="expense.category" variant="soft" color="primary" />
+            <p class="expense-table__label">Category</p>
+            <UBadge
+              :label="getCategoryLabel(expense.category)"
+              :class="getCategoryColor(expense.category)"
+              variant="soft"
+              size="md"
+            />
           </div>
 
           <!-- Date -->
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Date</p>
+            <p class="expense-table__label">Date</p>
             <p class="font-medium">
               {{ formatDate(expense.date) }}
             </p>
@@ -365,15 +392,15 @@ watch(
 
           <!-- Employee -->
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Employee</p>
-            <p class="font-medium text-gray-900 dark:text-white truncate">
+            <p class="expense-table__label">Employee</p>
+            <p class="expense-table__value">
               {{ expense.employeeName }}
             </p>
           </div>
 
           <!-- Status -->
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Status</p>
+            <p class="expense-table__label">Status</p>
             <UBadge
               :label="getStatusLabel(expense.status)"
               variant="soft"
@@ -383,15 +410,15 @@ watch(
 
           <!-- Amount -->
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Amount</p>
-            <p class="font-semibold text-gray-900 dark:text-white">
+            <p class="expense-table__label">Amount</p>
+            <p class="expense-table__text-currency">
               {{ formatCurrency(expense.amount, expense.currency) }}
             </p>
           </div>
         </div>
 
         <!-- Actions -->
-        <div class="flex items-center justify-end">
+        <div class="expense-table__action">
           <UButton
             icon="i-lucide-eye"
             size="sm"
@@ -409,7 +436,7 @@ watch(
       <UModal
         v-model:open="isModalOpen"
         title="Expense View Details"
-        class="w-full max-w-sm md:max-w-2xl lg:max-w-3xl"
+        class="expense-table__modal"
       >
         <template #body>
           <ExpenseView
@@ -425,7 +452,7 @@ watch(
       <UModal
         v-model:open="isExpenseDeleteModalOpen"
         title="Delete Expenses"
-        class="w-full max-w-sm md:max-w-2xl lg:max-w-3xl"
+        class="expense-table__modal"
       >
         <template #body>
           <ExpenseDelete

@@ -33,6 +33,10 @@ export default function useNotifications() {
     "app-notifications-prev-ids",
     () => new Set(),
   );
+  const hasFetchedInitial = useState<boolean>(
+    "app-notifications-has-fetched",
+    () => false,
+  );
 
   async function fetchNotifications() {
     loading.value = true;
@@ -45,24 +49,27 @@ export default function useNotifications() {
       const currentUnreadIds = new Set(
         list.filter((n) => !n.isRead).map((n) => n.id),
       );
-      const newIds = [...currentUnreadIds].filter(
-        (id) => !prevUnreadIds.value.has(id),
-      );
 
-      if (newIds.length > 0 && list.length > 0) {
-        const newestNew = list.find((n) => newIds.includes(n.id));
-        if (newestNew) {
-          toast.add({
-            title: newestNew.title,
-            description: newestNew.description,
-            icon: "i-lucide-bell",
-            color: "primary",
-            timeout: 5000,
-          });
+      if (hasFetchedInitial.value) {
+        const newIds = [...currentUnreadIds].filter(
+          (id) => !prevUnreadIds.value.has(id),
+        );
+        if (newIds.length > 0 && list.length > 0) {
+          const newestNew = list.find((n) => newIds.includes(n.id));
+          if (newestNew) {
+            toast.add({
+              title: newestNew.title,
+              description: newestNew.description,
+              icon: "i-lucide-bell",
+              color: "primary",
+              timeout: 5000,
+            });
+          }
         }
       }
 
       prevUnreadIds.value = currentUnreadIds;
+      hasFetchedInitial.value = true;
       notifications.value = list;
       unreadCount.value = list.filter((n) => !n.isRead).length;
     } catch {
@@ -165,6 +172,8 @@ export default function useNotifications() {
       eventSource.close();
       eventSource = null;
     }
+    hasFetchedInitial.value = false;
+    prevUnreadIds.value = new Set();
   }
 
   return {
