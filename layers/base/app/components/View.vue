@@ -573,7 +573,7 @@ const clearReceipt = () => {
                   <div class="receipt-view__image-overlay">
                     <div class="receipt-view__image-tab">
                       <UIcon name="i-lucide-external-link" class="h-4 w-4" />
-                      Open in new tab
+                      Open in new tabReceipt Section
                     </div>
                     <!-- Remove Photo Button (hover overlay) -->
                     <UButton

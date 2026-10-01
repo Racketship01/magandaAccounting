@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <!-- eslint-disable vue/multi-word-component-names -->
 <!-- PageCard for Notification -->
 <script setup lang="ts">

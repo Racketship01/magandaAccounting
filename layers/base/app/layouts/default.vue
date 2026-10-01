@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <!-- eslint-disable @typescript-eslint/no-unused-expressions -->
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted, watch } from "vue";
@@ -133,7 +131,7 @@ const links = computed(() => {
           <div class="shell__sidebar">
             <!-- Navigation Section -->
             <nav class="shell__navigation">
-              <h2 class="shell__navigation-title">NextOne</h2>
+              <h2 class="shell__navigation-title"></h2>
 
               <UNavigationMenu
                 :collapsed="collapsed"

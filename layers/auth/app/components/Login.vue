@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
@@ -178,46 +176,6 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
             {{ login.isLoading ? "Signing in..." : "Sign In" }}
           </UButton>
         </UForm>
-
-        <!-- Divider -->
-        <!-- <div class="relative my-8">
-          <div class="absolute inset-0 flex items-center">
-            <div
-              class="w-full border-t border-gray-300 dark:border-gray-600"
-            ></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span
-              class="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-            >
-              Or continue with
-            </span>
-          </div>
-        </div> -->
-
-        <!-- Social Login Buttons -->
-        <!-- <div class="grid grid-cols-2 gap-4">
-          <UButton
-            variant="outline"
-            color="neutral"
-            block
-            size="lg"
-            :disabled="login.isLoading"
-            icon="i-lucide-github"
-          >
-            GitHub
-          </UButton>
-          <UButton
-            variant="outline"
-            color="neutral"
-            block
-            size="lg"
-            :disabled="login.isLoading"
-            icon="i-lucide-mail"
-          >
-            Google
-          </UButton>
-        </div> -->
 
         <!-- Sign Up Link -->
         <div class="mt-6 text-center">

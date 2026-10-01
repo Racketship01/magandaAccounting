@@ -212,13 +212,13 @@ const getCurrencySymbol = (currency: string) => {
                 v-model.number="billFormData.amount"
                 type="number"
                 step="0.01"
-                :placeholder="`0.00 ${getCurrencySymbol(billFormData.currency)}`"
+                :placeholder="`0.00 ${getCurrencySymbol(billFormData?.currency)}`"
                 size="lg"
                 class="w-full"
               >
                 <template #leading>
                   <span class="text-gray-500 font-medium">
-                    {{ getCurrencySymbol(billFormData.currency) }}
+                    {{ getCurrencySymbol(billFormData?.currency) }}
                   </span>
                 </template>
               </UInput>

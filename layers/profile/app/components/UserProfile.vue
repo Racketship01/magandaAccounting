@@ -10,10 +10,10 @@ const { currentUser, refresh } = useProfile();
 
 const isEditProfileOpen = ref(false);
 
-// Image upload state
-const isUploading = ref(false);
-const uploadError = ref("");
-const fileInput = ref<HTMLInputElement | null>(null);
+// // Image upload state
+// const isUploading = ref(false);
+// const uploadError = ref("");
+// const fileInput = ref<HTMLInputElement | null>(null);
 
 // Computed properties
 const fullName = computed(
@@ -99,59 +99,6 @@ const handleCloseEditProfile = () => {
   isEditProfileOpen.value = false;
 };
 
-// Image upload functions
-const handleUploadClick = () => {
-  fileInput.value?.click();
-};
-
-const handleFileSelect = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-
-  if (!file) return;
-
-  // Validate file type
-  if (!file.type.startsWith("image/")) {
-    uploadError.value = "Please select a valid image file";
-    return;
-  }
-
-  // Validate file size (max 5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    uploadError.value = "File size must be less than 5MB";
-    return;
-  }
-
-  isUploading.value = true;
-  uploadError.value = "";
-
-  try {
-    // Convert file to base64 for preview
-    const base64 = await convertToBase64(file);
-    //currentUser?.value?.profileImage = base64;
-
-    // In a real app, you would upload to a server here
-    // For now, we'll just use the base64 data
-    console.log("Image uploaded successfully");
-  } catch (error) {
-    uploadError.value = "Failed to process image";
-    console.error("Upload error:", error);
-  } finally {
-    isUploading.value = false;
-    // Clear the file input
-    if (target) target.value = "";
-  }
-};
-
-const convertToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
-
 watch(refresh, () => {
   refresh();
 });
@@ -185,42 +132,10 @@ watch(refresh, () => {
                     class="profile-container__image-display"
                   />
                   <div v-else class="profile-container__image-upload">
-                    {{ currentUser?.firstName?.[0] }}{{ currentUser?.lastName?.[0] }}
+                    {{ currentUser?.firstName?.[0]
+                    }}{{ currentUser?.lastName?.[0] }}
                   </div>
                 </div>
-
-                <!-- Upload Button and Error Message -->
-                <div class="mt-5 space-y-2">
-                  <UButton
-                    :loading="isUploading"
-                    :disabled="isUploading"
-                    icon="i-lucide-upload"
-                    variant="solid"
-                    color="primary"
-                    size="md"
-                    class="shadow-sm"
-                    @click="handleUploadClick"
-                  >
-                    {{ isUploading ? "Uploading..." : "Upload Image" }}
-                  </UButton>
-
-                  <!-- Error Message -->
-                  <div
-                    v-if="uploadError"
-                    class="profile-container__image-upload--error"
-                  >
-                    {{ uploadError }}
-                  </div>
-                </div>
-
-                <!-- Hidden File Input -->
-                <input
-                  ref="fileInput"
-                  type="file"
-                  accept="image/*"
-                  class="hidden"
-                  @change="handleFileSelect"
-                />
               </div>
             </div>
 
@@ -258,7 +173,9 @@ watch(refresh, () => {
                       >Email</span
                     >
                   </div>
-                  <p class="font-medium">{{ currentUser?.credentials?.email }}</p>
+                  <p class="font-medium">
+                    {{ currentUser?.credentials?.email }}
+                  </p>
                 </div>
 
                 <div class="space-y-2">
@@ -303,21 +220,6 @@ watch(refresh, () => {
                   </div>
                   <p class="font-medium">
                     {{ formatDate(currentUser?.startDate || "") }}
-                  </p>
-                </div>
-
-                <div class="space-y-2">
-                  <div class="profile-container__grid-item">
-                    <UIcon
-                      name="i-lucide-wallet"
-                      class="profile-container__grid-item--icon"
-                    />
-                    <span class="profile-container__grid-item--label"
-                      >Monthly Salary</span
-                    >
-                  </div>
-                  <p class="font-medium text-green-600">
-                    {{ formatCurrency(currentUser?.salary || 0) }}
                   </p>
                 </div>
               </div>

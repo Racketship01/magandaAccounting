@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
     role: currentUser.role,
     phone: currentUser.phone,
     jobTitle: currentUser.jobTitle,
+    nationality: currentUser.nationality,
     department: currentUser.department,
     startDate: currentUser.startDate,
     salary: currentUser.salary,
