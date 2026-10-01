@@ -26,9 +26,9 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  if (result.employeeUserId) {
-    const isApproved = result.status === "approved";
-    const isRejected = result.status === "rejected";
+  if (result.employeeUserId && result.previousStatus !== result.newStatus) {
+    const isApproved = result.newStatus === "approved";
+    const isRejected = result.newStatus === "rejected";
     if (isApproved || isRejected) {
       const type = isApproved ? "expense_approved" : "expense_rejected";
       const title = isApproved ? "Expense Approved" : "Expense Rejected";

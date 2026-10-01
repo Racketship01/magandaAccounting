@@ -56,7 +56,7 @@ const links = computed(() => {
   const baseLinks = [
     {
       label: "Dashboard",
-      icon: "i-lucide-chart-no-axes-combined",
+      icon: "i-lucide-house",
       to: "/dashboard",
       onSelect: () => {
         open.value = false;
@@ -78,25 +78,27 @@ const links = computed(() => {
         open.value = false;
       },
     },
-    {
-      label: "Bills Management",
-      icon: "i-lucide-receipt-text",
-      to: "/bills",
-      onSelect: () => {
-        open.value = false;
-      },
-    },
   ];
 
   if (user.value?.role === "admin") {
-    baseLinks.push({
-      label: "Employee Records",
-      icon: "i-lucide-file-user",
-      to: "/employee",
-      onSelect: () => {
-        open.value = false;
+    baseLinks.push(
+      {
+        label: "Employee Records",
+        icon: "i-lucide-clipboard-list",
+        to: "/employee",
+        onSelect: () => {
+          open.value = false;
+        },
       },
-    });
+      {
+        label: "Bills Management",
+        icon: "i-lucide-bell-ring",
+        to: "/bills",
+        onSelect: () => {
+          open.value = false;
+        },
+      },
+    );
   }
 
   return [baseLinks];

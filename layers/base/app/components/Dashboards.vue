@@ -292,7 +292,7 @@ watch(currentUser, async () => {
               <p
                 class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
               >
-                No expenses yet
+                0
               </p>
               <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
                 Start logging expenses to track spending
@@ -305,19 +305,10 @@ watch(currentUser, async () => {
               <p class="stat-card__description">All expenses combined</p>
             </template>
           </div>
-          <template v-if="isTotalSpendEmpty">
-            <div class="p-3 opacity-40">
-              <UIcon
-                name="i-lucide-credit-card"
-                class="h-7 w-7 text-blue-600 dark:text-blue-400"
-              />
-            </div>
-          </template>
-          <template v-else>
-            <div class="p-3">
-              <UIcon name="i-lucide-credit-card" class="stat-card__icon blue" />
-            </div>
-          </template>
+          <!-- icon -->
+          <div class="p-3">
+            <UIcon name="i-lucide-credit-card" class="stat-card__icon blue" />
+          </div>
         </div>
       </UCard>
 
@@ -332,7 +323,7 @@ watch(currentUser, async () => {
               <p
                 class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
               >
-                No pending submissions
+                0
               </p>
               <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
                 Expenses you submit will appear here
@@ -356,6 +347,7 @@ watch(currentUser, async () => {
             </template>
           </div>
 
+          <!-- icon -->
           <div class="p-3">
             <UIcon name="i-lucide-clock" class="stat-card__icon yellow" />
           </div>
@@ -371,7 +363,7 @@ watch(currentUser, async () => {
               <p
                 class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
               >
-                No assigned bills
+                0
               </p>
               <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
                 Bills assigned to you will appear here
@@ -381,7 +373,7 @@ watch(currentUser, async () => {
               <p
                 class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
               >
-                No bills yet
+                0
               </p>
               <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
                 Start adding bills to track payments
@@ -394,19 +386,11 @@ watch(currentUser, async () => {
               <p class="stat-card__description">Bills not yet paid</p>
             </template>
           </div>
-          <template v-if="isUnpaidBillsEmpty">
-            <div class="p-3 opacity-40">
-              <UIcon
-                name="i-lucide-calendar"
-                class="h-7 w-7 text-red-600 dark:text-red-400"
-              />
-            </div>
-          </template>
-          <template v-else>
-            <div class="p-3">
-              <UIcon name="i-lucide-calendar" class="stat-card__icon red" />
-            </div>
-          </template>
+
+          <!-- icon -->
+          <div class="p-3">
+            <UIcon name="i-lucide-calendar" class="stat-card__icon red" />
+          </div>
         </div>
       </UCard>
     </template>
@@ -430,10 +414,10 @@ watch(currentUser, async () => {
           <div class="content-section__chart-body">
             <template v-if="isCategoryChartEmpty">
               <div class="text-center py-10">
-                <UIcon
+                <!-- <UIcon
                   name="i-lucide-pie-chart"
                   class="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4"
-                />
+                /> -->
                 <p
                   class="text-xl font-semibold text-gray-400 dark:text-gray-500 mb-2"
                 >

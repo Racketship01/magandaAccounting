@@ -17,7 +17,8 @@ export interface CreateExpenseResult {
 export interface UpdateExpenseResult {
   expense: Expense;
   employeeUserId: string | null;
-  status: string;
+  previousStatus: string | null;
+  newStatus: string;
 }
 
 export const createExpense = async (
@@ -154,6 +155,11 @@ export async function updateExpenseStatus(
     });
   }
 
+  const existing = await prisma.expense.findUnique({
+    where: { id },
+    select: { status: true },
+  });
+
   const mapped = mapStatus(status);
   const updated = await prisma.expense.update({
     where: { id },
@@ -166,7 +172,8 @@ export async function updateExpenseStatus(
   return {
     expense: updated,
     employeeUserId: updated.employee?.userId || null,
-    status: mapped,
+    previousStatus: existing?.status || null,
+    newStatus: mapped,
   };
 }
 
