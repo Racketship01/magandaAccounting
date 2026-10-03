@@ -28,7 +28,7 @@ const currencies = [
   { label: "KRW (₩)", value: "KRW", symbol: "₩" },
 ];
 
-const getCurrencySymbol = (currency: string) => {
+const getCurrencySymbol = (currency?: string | null) => {
   const currencyObj = currencies.find((c) => c.value === currency);
   return currencyObj?.symbol || "$";
 };
@@ -118,7 +118,7 @@ const submitExpense = async () => {
     !formData.value.merchantName ||
     !formData.value.category ||
     !formData.value.description ||
-    !formData.value.currency ||
+    !formData.value?.currency ||
     !uploadedImage.value
   ) {
     toast.add({ title: "Please fill in all required fields", color: "error" });
@@ -136,7 +136,7 @@ const submitExpense = async () => {
         merchantName: formData.value.merchantName,
         category: formData.value.category,
         description: formData.value.description,
-        currency: formData.value.currency, // Holds the raw base64 data url
+        currency: formData.value?.currency || "USD", // Holds the raw base64 data url
         image: uploadedImage.value,
       },
     });
@@ -284,13 +284,13 @@ const submitExpense = async () => {
                     v-model="formData.amount"
                     type="number"
                     step="0.01"
-                    :placeholder="`0.00`"
+                    :placeholder="`0.00 ${getCurrencySymbol(formData?.currency)}`"
                     size="lg"
                     class="w-full"
                   >
                     <template #leading>
                       <span class="text-gray-500 font-medium">
-                        {{ getCurrencySymbol(formData.currency) }}
+                        {{ getCurrencySymbol(formData?.currency) }}
                       </span>
                     </template>
                   </UInput>

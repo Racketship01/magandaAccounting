@@ -56,7 +56,7 @@ watch(
         department: employee.department,
         startDate: employee.startDate,
         salary: employee.salary,
-        currency: employee.currency,
+        currency: employee?.currency || "PHP",
         status: employee.status,
         address: { ...employee.address },
         credentials: { ...employee.credentials },
@@ -79,7 +79,7 @@ const isFormValid = computed(() => {
     profileForm.value.department.trim() &&
     profileForm.value.startDate &&
     profileForm.value.salary > 0 &&
-    profileForm.value.currency.trim() !== ""
+    (profileForm.value?.currency || "").trim() !== ""
   );
 });
 
@@ -169,7 +169,7 @@ const currencies = [
 
 const currentCurrencySymbol = computed(() => {
   const currency = currencies.find(
-    (c) => c.value === profileForm.value.currency,
+    (c) => c.value === profileForm.value?.currency,
   );
   return currency?.symbol || "";
 });

@@ -185,10 +185,10 @@ const handleReject = (expenseId: string) => {
   }
 };
 
-const formatCurrency = (amount: number, currency: string) => {
+const formatCurrency = (amount: number, currency?: string | null) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: currency,
+    currency: currency || "USD",
   }).format(amount);
 };
 
@@ -412,7 +412,7 @@ const getCategoryColor = (category: string) => {
           <div>
             <p class="expense-table__label">Amount</p>
             <p class="expense-table__text-currency">
-              {{ formatCurrency(expense.amount, expense.currency) }}
+              {{ formatCurrency(expense.amount, expense?.currency) }}
             </p>
           </div>
         </div>
