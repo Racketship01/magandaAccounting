@@ -37,6 +37,36 @@ export default function useNotifications() {
     "app-notifications-has-fetched",
     () => false,
   );
+  const streamErrorShown = useState<boolean>(
+    "app-notifications-stream-error-shown",
+    () => false,
+  );
+
+  const TOASTED_IDS_KEY = "app-notifications-toasted-ids";
+
+  function loadToastedIds(): Set<string> {
+    if (typeof window === "undefined") return new Set();
+    try {
+      const raw = window.localStorage.getItem(TOASTED_IDS_KEY);
+      if (!raw) return new Set();
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr))
+        return new Set(arr.filter((x) => typeof x === "string"));
+      return new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  function saveToastedIds(set: Set<string>) {
+    if (typeof window === "undefined") return;
+    try {
+      const arr = [...set].slice(-200);
+      window.localStorage.setItem(TOASTED_IDS_KEY, JSON.stringify(arr));
+    } catch {
+      // Ignore quota / serialization errors
+    }
+  }
 
   async function fetchNotifications() {
     loading.value = true;
@@ -55,17 +85,27 @@ export default function useNotifications() {
           (id) => !prevUnreadIds.value.has(id),
         );
         if (newIds.length > 0 && list.length > 0) {
-          const newestNew = list.find((n) => newIds.includes(n.id));
-          if (newestNew) {
-            toast.add({
-              title: newestNew.title,
-              description: newestNew.description,
-              icon: "i-lucide-bell",
-              color: "primary",
-              timeout: 5000,
-            });
+          const toastedIds = loadToastedIds();
+          const toastableIds = newIds.filter((id) => !toastedIds.has(id));
+          if (toastableIds.length > 0) {
+            const newestNew = list.find((n) => toastableIds.includes(n.id));
+            if (newestNew) {
+              toast.add({
+                title: newestNew.title,
+                description: newestNew.description,
+                icon: "i-lucide-bell",
+                color: "primary",
+                timeout: 5000,
+              });
+              toastableIds.forEach((id) => toastedIds.add(id));
+              saveToastedIds(toastedIds);
+            }
           }
         }
+      } else {
+        const toastedIds = loadToastedIds();
+        [...currentUnreadIds].forEach((id) => toastedIds.add(id));
+        saveToastedIds(toastedIds);
       }
 
       prevUnreadIds.value = currentUnreadIds;
@@ -146,6 +186,7 @@ export default function useNotifications() {
     eventSource = new EventSource("/api/notifications/stream");
     eventSource.onmessage = (e) => {
       try {
+        streamErrorShown.value = false;
         const data = JSON.parse(e.data);
         if (data.type === "refresh") {
           fetchNotifications();
@@ -159,10 +200,13 @@ export default function useNotifications() {
       }
     };
     eventSource.onerror = () => {
-      toast.add({
-        title: "Notification stream error",
-        color: "error",
-      });
+      if (!streamErrorShown.value) {
+        streamErrorShown.value = true;
+        toast.add({
+          title: "Notification stream error",
+          color: "error",
+        });
+      }
       // EventSource auto-reconnects; silent fail to match polling behavior
     };
   }
@@ -174,6 +218,7 @@ export default function useNotifications() {
     }
     hasFetchedInitial.value = false;
     prevUnreadIds.value = new Set();
+    streamErrorShown.value = false;
   }
 
   return {
