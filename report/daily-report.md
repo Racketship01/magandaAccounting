@@ -1,17 +1,8 @@
 📋 Daily Progress Report - **Accounting Project**
 Date: October 4, 2026 (Sunday)
-Branch: notification
-Author: racketship01
 
-✅ Summary - **Notification Toast Deduplication (localStorage) + SSE Error Spam Guard**
-Today's work focused on: unstaged changes (pending commit) to:
-• layers/base/app/composables/useNotifications.ts
-
-Killed the two most-visible notification UX annoyances: **(1) re-toasting the same unread notification on every page navigation / data refresh**, and **(2) SSE "stream error" toast-spam every time the browser's EventSource reconnected** (which happens every ~30s on flaky networks). Solved #1 with a per-browser `localStorage` LRU set of already-toasted notification IDs that persists across tab refreshes and page navigations, and #2 with a single-flight error-flag that locks until the next successful SSE onmessage clears it. Also added a size cap (200 IDs) to the toasted-IDs set so localStorage never balloons. The changes are currently unstaged in the working tree, ready to commit under a message like `optimize: dedupe notification toasts + rate limit SSE errors`.
-
-📁 Files Modified (1 staged, 1 meta)
-1️⃣ layers/base/app/composables/useNotifications.ts Modified (+44 lines, ~10 lines of toast logic replaced)
-👉https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/app/composables/useNotifications.ts?ref_type=heads
+✅ Summary - **Notification Toast Deduplication (localStorage) + SSE Error Spam Guard + Side Project: Wedding Website**
+Today's work focused on: Killed the two most-visible notification UX annoyances: **(1) re-toasting the same unread notification on every page navigation / data refresh**, and **(2) SSE "stream error" toast-spam every time the browser's EventSource reconnected** (which happens every ~30s on flaky networks). Solved #1 with a per-browser `localStorage` LRU set of already-toasted notification IDs that persists across tab refreshes and page navigations, and #2 with a single-flight error-flag that locks until the next successful SSE onmessage clears it. Also added a size cap (200 IDs) to the toasted-IDs set so localStorage never balloons. The changes are currently unstaged in the working tree, ready to commit under a message like `optimize: dedupe notification toasts + rate limit SSE errors`. **(2) wedding-yeng** project is a Nuxt 4 single-page wedding invitation with **15 section components**, centralized data, and a romantic editorial design (powder blue + champagne palette). The project is currently **uncommitted** (fresh repo) but all 23 tracked files are in place.
 
 📐 Task Completed
 1️⃣ **localStorage-Toasted-IDs Set (Fix: Re-Toasting Same Unread)**
@@ -26,12 +17,11 @@ Killed the two most-visible notification UX annoyances: **(1) re-toasting the sa
 • **onmessage clears the flag**: Every successful SSE `onmessage` (first line inside the try) sets `streamErrorShown.value = false;`, so on next error we can surface the error again — we only suppress _consecutive_ errors without an intervening success in between.
 • **onerror gated with if**: Previously `eventSource.onerror` always called `toast.add(...)`. Now it's `if (!streamErrorShown.value) { streamErrorShown.value = true; toast.add(...) }` — so the error surface-once per reconnect-cycle, not once every 100 ms (typical EventSource reconnect rate). Combined with SSE's built-in auto-reconnect (exponential backoff on some browsers), this nets a maximum of one error toast per network drop instead of a hundred.
 • **stopPolling resets the flag**: When stopPolling tears down EventSource, it also zeroes `streamErrorShown.value = false` alongside the existing `prevUnreadIds` and `hasFetchedInitial` clear, so a brand-new startPolling call later starts with a clean slate and the first real error _will_ show.
+🔗[useNotifications.ts](https://git.next1.ph/imelda/accounting/-/blob/notification/layers/base/app/composables/useNotifications.ts?ref_type=heads)
+
+3️⃣ **Side Project: Wedding Website**: This is a production-ready, independently-reviewed, single-page Nuxt 4 wedding invitation delivering 15 information sections (hero → RSVP → footer) with a powder-blue/champagne romantic-editorial aesthetic, strict TypeScript, a fully centralized data layer, and responsive mobile-first behavior
 
 🚀 Next Steps / Remaining Work
-💡 **Commit Today's useNotifications changes** — The dedupe + rate-limit changes are currently unstaged in the working tree. Commit with a message like `optimize: dedupe notification toasts + rate limit SSE stream errors` so they join the git history.
-
 💡 **Upload Endpoint for Profile Avatar** — Profile upload UI was fully stripped on Oct 1. Next: implement `POST /api/profile/upload` that streams `multipart/form-data` to `public/uploads/`, writes the resulting file name/URL back into `Employee.profileImage` (or `Admin.profileImage`), updates the composable's `currentUser.profileImage` ref on success, then re-adds the avatar upload button + progress state.
 
 💡 **Multi-instance scaling for the notification bus** — If ever deploying behind a load balancer with multiple app instances, swap the in-memory EventEmitter in `notificationBus.ts` for Redis Pub/Sub (or equivalent cross-process pub/sub) so SSE events fired on instance A reach subscribers connected to instance B.
-
-💡 **Diagnostics UI Panel for Bill-Due Reminder Job** — The bill reminder job already returns a full per-bill diagnostics array (`scanned`, `pushed`, `skippedPaid`, `skippedDisabled`, `skippedOutOfWindow`, `skippedAlreadyNotified`, plus raw and clamped reminder-days and days-until-due). Add an admin-only "Job runs" panel that calls `POST /api/jobs/billDueReminders?today=…` and renders the diagnostics as a filterable table so non-dev admins can self-serve "why didn't bill X fire today?" debugging.

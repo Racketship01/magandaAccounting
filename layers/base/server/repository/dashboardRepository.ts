@@ -50,6 +50,14 @@ export async function getDashboardStats(
   const billsWhere: any = {};
   if (user.role === "admin" && adminId) {
     billsWhere.adminId = adminId;
+  } else if (user.role === "employee") {
+    if (adminId) {
+      billsWhere.adminId = adminId;
+    } else if (employeeIds.length > 0) {
+      billsWhere.id = "none";
+    } else {
+      billsWhere.id = "none";
+    }
   }
 
   const allExpenses = await prisma.expense.findMany({
@@ -67,6 +75,10 @@ export async function getDashboardStats(
     where: billsWhere,
     select: {
       id: true,
+      amount: true,
+      category: true,
+      dueDate: true,
+      paidDate: true,
       isPaid: true,
     },
   });

@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";

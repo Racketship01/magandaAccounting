@@ -9,8 +9,11 @@ import { getDashboardStats } from "../../../server/repository/dashboardRepositor
 export default defineEventHandler(async (event): Promise<DashboardStats> => {
   const { profile, allExpenses, allBills } = await getDashboardStats(event);
 
-  const totalSpend = allExpenses.reduce(
-    (sum: any, e: any) => sum + (e.amount || 0),
+  const paidBills = allBills.filter((b: any) => b.isPaid === true);
+  const allSpends = [...allExpenses, ...paidBills];
+
+  const totalSpend = allSpends.reduce(
+    (sum: any, e: any) => sum + (Number(e.amount) || 0),
     0,
   );
 
@@ -29,7 +32,17 @@ export default defineEventHandler(async (event): Promise<DashboardStats> => {
   const categoryMap = new Map<string, number>();
   for (const expense of allExpenses) {
     const key = expense.category || "Uncategorized";
-    categoryMap.set(key, (categoryMap.get(key) || 0) + (expense.amount || 0));
+    categoryMap.set(
+      key,
+      (categoryMap.get(key) || 0) + (Number(expense.amount) || 0),
+    );
+  }
+  for (const bill of paidBills) {
+    const key = bill.category || "Uncategorized";
+    categoryMap.set(
+      key,
+      (categoryMap.get(key) || 0) + (Number(bill.amount) || 0),
+    );
   }
   const categoryTotals: CategoryTotal[] = Array.from(categoryMap.entries())
     .map(([category, amount]) => ({ category, amount }))
@@ -45,7 +58,29 @@ export default defineEventHandler(async (event): Promise<DashboardStats> => {
         yearlyMap.set(year, new Map<number, number>());
       }
       const yearMap = yearlyMap.get(year)!;
-      yearMap.set(month, (yearMap.get(month) || 0) + (expense.amount || 0));
+      yearMap.set(
+        month,
+        (yearMap.get(month) || 0) + (Number(expense.amount) || 0),
+      );
+    } catch {
+      // skip invalid dates
+    }
+  }
+  for (const bill of paidBills) {
+    try {
+      const dateStr = bill.paidDate || bill.dueDate;
+      if (!dateStr) continue;
+      const d = new Date(dateStr);
+      const year = d.getFullYear();
+      const month = d.getMonth();
+      if (!yearlyMap.has(year)) {
+        yearlyMap.set(year, new Map<number, number>());
+      }
+      const yearMap = yearlyMap.get(year)!;
+      yearMap.set(
+        month,
+        (yearMap.get(month) || 0) + (Number(bill.amount) || 0),
+      );
     } catch {
       // skip invalid dates
     }
