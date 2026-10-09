@@ -302,7 +302,9 @@ watch(currentUser, async () => {
               <p class="stat-card__value">
                 {{ formatCurrency(totalSpend) }}
               </p>
-              <p class="stat-card__description">All expenses combined</p>
+              <p class="stat-card__description">
+                All expenses and bills combined
+              </p>
             </template>
           </div>
           <!-- icon -->

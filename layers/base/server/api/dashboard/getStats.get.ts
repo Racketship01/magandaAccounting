@@ -10,7 +10,10 @@ export default defineEventHandler(async (event): Promise<DashboardStats> => {
   const { profile, allExpenses, allBills } = await getDashboardStats(event);
 
   const paidBills = allBills.filter((b: any) => b.isPaid === true);
-  const allSpends = [...allExpenses, ...paidBills];
+  const approvedExpenses = allExpenses.filter(
+    (e: any) => e.status === "approved",
+  );
+  const allSpends = [...approvedExpenses, ...paidBills];
 
   const totalSpend = allSpends.reduce(
     (sum: any, e: any) => sum + (Number(e.amount) || 0),
