@@ -1,4 +1,4 @@
-﻿lockfileVersion: '9.0'
+lockfileVersion: '9.0'
 
 settings:
   autoInstallPeers: true
@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@adonisjs/hash':
         specifier: 9.1.1
-        version: 9.1.1
+        version: 9.1.1(bcrypt@6.0.0)
       '@nuxt/eslint':
         specifier: 1.10.0
         version: 1.10.0(@typescript-eslint/utils@8.57.1(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@vue/compiler-sfc@3.5.43)(eslint@9.39.4(jiti@2.7.0))(magic-string@1.4.1)(magicast@0.5.5)(oxc-parser@0.151.0)(rolldown@1.2.9)(typescript@5.9.3)(unplugin@3.4.0(esbuild@0.27.4)(rolldown@1.2.9)(rollup@4.63.4)(vite@8.3.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.1)(tsx@4.23.1)(yaml@2.8.2)))(vite@8.3.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.1)(tsx@4.23.1)(yaml@2.8.2))
@@ -29,6 +29,9 @@ importers:
       '@types/node':
         specifier: ^25.3.1
         version: 25.5.0
+      bcrypt:
+        specifier: ^6.0.0
+        version: 6.0.0
       better-sqlite3:
         specifier: ^12.6.2
         version: 12.8.0
@@ -41,12 +44,15 @@ importers:
       eslint:
         specifier: ^9.39.1
         version: 9.39.4(jiti@2.7.0)
+      ioredis:
+        specifier: ^5.11.1
+        version: 5.11.1
       nuxt:
         specifier: ^4.5.2
         version: 4.5.2(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.29.7(@babel/core@7.29.0))(@electric-sql/pglite@0.3.15)(@oxc-project/types@0.151.0)(@parcel/watcher@2.5.6)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.43)(better-sqlite3@12.8.0)(cac@6.7.14)(db0@0.3.4(@electric-sql/pglite@0.3.15)(better-sqlite3@12.8.0)(mysql2@3.15.3))(esbuild@0.27.4)(eslint@9.39.4(jiti@2.7.0))(ioredis@5.11.1)(lightningcss@1.33.0)(magicast@0.5.5)(mysql2@3.15.3)(optionator@0.9.4)(oxc-parser@0.151.0)(rolldown@1.2.9)(rollup-plugin-visualizer@7.1.1(rolldown@1.2.9)(rollup@4.63.4))(rollup@4.63.4)(srvx@0.11.22)(terser@5.46.1)(tsx@4.23.1)(typescript@5.9.3)(vite@8.3.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.1)(tsx@4.23.1)(yaml@2.8.2))(yaml@2.8.2)
       nuxt-auth-utils:
         specifier: ^0.5.29
-        version: 0.5.29(magic-string@1.4.1)(magicast@0.5.5)(oxc-parser@0.151.0)(rolldown@1.2.9)(unplugin@3.4.0(esbuild@0.27.4)(rolldown@1.2.9)(rollup@4.63.4)(vite@8.3.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.1)(tsx@4.23.1)(yaml@2.8.2)))
+        version: 0.5.29(bcrypt@6.0.0)(magic-string@1.4.1)(magicast@0.5.5)(oxc-parser@0.151.0)(rolldown@1.2.9)(unplugin@3.4.0(esbuild@0.27.4)(rolldown@1.2.9)(rollup@4.63.4)(vite@8.3.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.1)(tsx@4.23.1)(yaml@2.8.2)))
       openai:
         specifier: ^7.4.0
         version: 7.4.0(ws@8.21.3)(zod@4.3.6)
@@ -75,6 +81,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.1.14
         version: 4.2.1
+      '@types/bcrypt':
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/better-sqlite3':
         specifier: ^7.6.13
         version: 7.6.13
@@ -1130,6 +1139,7 @@ packages:
 
   '@nuxt/ui-pro@3.3.7':
     resolution: {integrity: sha512-jZnUsppccbdNPjiuBV7ayCgVCwASL6oNvxdW7T4mytBbjuE6gRINFg/6gJbuMo2JP8xIIiaaPZjWhxbs5wV4rQ==}
+    deprecated: '@nuxt/ui-pro is now part of @nuxt/ui. See https://ui.nuxt.com/docs/getting-started/migration'
     peerDependencies:
       joi: ^17.13.0
       superstruct: ^2.0.0
@@ -2191,6 +2201,9 @@ packages:
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
+  '@types/bcrypt@6.0.0':
+    resolution: {integrity: sha512-/oJGukuH3D2+D+3H4JWLaAsJ/ji86dhRidzZ/Od7H/i8g+aCmvkeCc6Ni/f9uxGLSQVCRZkX2/lqEFG2BvWtlQ==}
+
   '@types/better-sqlite3@7.6.13':
     resolution: {integrity: sha512-NMv9ASNARoKksWtsq/SHakpYAYnhBrQgGD8zkLYk/jaK8jUGn08CfEdTRgYhMypUQAfzSP8W6gNLe0q19/t4VA==}
 
@@ -2809,6 +2822,10 @@ packages:
     resolution: {integrity: sha512-gMmEShwwq7FJqMwvfRwvCl00v4kN+KOfJqXn+f4nrufak5gNHJOksd/60Dvjuz7sI8Y5WiSFBa8FEYr+zoyqCw==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+
+  bcrypt@6.0.0:
+    resolution: {integrity: sha512-cU8v/EGSrnH+HnxV2z0J7/blxH8gq7Xh2JFT6Aroax7UohdmiJJlxApMxtKfuI7z68NvvVcmR78k2LbT6efhRg==}
+    engines: {node: '>= 18'}
 
   better-sqlite3@12.8.0:
     resolution: {integrity: sha512-RxD2Vd96sQDjQr20kdP+F+dK/1OUNiVOl200vKBZY8u0vTwysfolF6Hq+3ZK2+h8My9YvZhHsF+RSGZW2VYrPQ==}
@@ -4447,6 +4464,10 @@ packages:
 
   node-addon-api@7.1.1:
     resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
+
+  node-addon-api@8.9.2:
+    resolution: {integrity: sha512-VijLXbi3UACN69I0JVXJsX4tjACjNoQDgv2gTF6sx2wWEi8tkSg2eX8p5gSIFi8z2+DL3oHmY6OyKce38SDolg==}
+    engines: {node: ^18 || ^20 || >= 21}
 
   node-fetch-native@1.6.7:
     resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
@@ -6172,10 +6193,12 @@ packages:
 
 snapshots:
 
-  '@adonisjs/hash@9.1.1':
+  '@adonisjs/hash@9.1.1(bcrypt@6.0.0)':
     dependencies:
       '@phc/format': 1.0.0
       '@poppinss/utils': 6.10.1
+    optionalDependencies:
+      bcrypt: 6.0.0
 
   '@ai-sdk/provider-utils@2.2.8(zod@4.3.6)':
     dependencies:
@@ -8748,6 +8771,10 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
+  '@types/bcrypt@6.0.0':
+    dependencies:
+      '@types/node': 25.5.0
+
   '@types/better-sqlite3@7.6.13':
     dependencies:
       '@types/node': 25.5.0
@@ -9361,6 +9388,11 @@ snapshots:
   base64-js@1.5.1: {}
 
   baseline-browser-mapping@2.11.25: {}
+
+  bcrypt@6.0.0:
+    dependencies:
+      node-addon-api: 8.9.2
+      node-gyp-build: 4.8.4
 
   better-sqlite3@12.8.0:
     dependencies:
@@ -11162,6 +11194,8 @@ snapshots:
   node-addon-api@7.1.1:
     optional: true
 
+  node-addon-api@8.9.2: {}
+
   node-fetch-native@1.6.7: {}
 
   node-fetch@2.7.0:
@@ -11197,9 +11231,9 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  nuxt-auth-utils@0.5.29(magic-string@1.4.1)(magicast@0.5.5)(oxc-parser@0.151.0)(rolldown@1.2.9)(unplugin@3.4.0(esbuild@0.27.4)(rolldown@1.2.9)(rollup@4.63.4)(vite@8.3.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.1)(tsx@4.23.1)(yaml@2.8.2))):
+  nuxt-auth-utils@0.5.29(bcrypt@6.0.0)(magic-string@1.4.1)(magicast@0.5.5)(oxc-parser@0.151.0)(rolldown@1.2.9)(unplugin@3.4.0(esbuild@0.27.4)(rolldown@1.2.9)(rollup@4.63.4)(vite@8.3.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.1)(tsx@4.23.1)(yaml@2.8.2))):
     dependencies:
-      '@adonisjs/hash': 9.1.1
+      '@adonisjs/hash': 9.1.1(bcrypt@6.0.0)
       '@nuxt/kit': 4.5.2(magic-string@1.4.1)(magicast@0.5.5)(oxc-parser@0.151.0)(rolldown@1.2.9)(unplugin@3.4.0(esbuild@0.27.4)(rolldown@1.2.9)(rollup@4.63.4)(vite@8.3.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.1)(tsx@4.23.1)(yaml@2.8.2)))
       defu: 6.1.7
       h3: 1.15.11

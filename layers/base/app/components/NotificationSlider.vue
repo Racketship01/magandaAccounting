@@ -78,11 +78,11 @@ const displayedNotifications = computed(() =>
     :model-value="props.modelValue"
     @update:model-value="emit('update:modelValue', $event)"
   >
-    <div class="relative">
+    <div class="relative inline-flex">
       <UButton
         color="neutral"
         variant="ghost"
-        square
+        size="md"
         aria-label="Notifications"
         @click="emit('update:modelValue', true)"
       >
@@ -92,8 +92,7 @@ const displayedNotifications = computed(() =>
         v-if="unreadCount > 0"
         :content="unreadCount > 99 ? '99+' : String(unreadCount)"
         color="error"
-        size="xs"
-        class="pointer-events-none absolute -top-1 -right-1 min-w-[18px] justify-center"
+        class="red-dot__indicator"
       />
     </div>
 

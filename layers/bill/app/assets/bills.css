@@ -51,9 +51,10 @@
   border-color: var(--color-gray-200);
   border-radius: 0.5rem;
   box-shadow: var(--shadow-md);
+  background-color: var(--color-gray-50);
 }
 .bills-table:hover {
-  background-color: var(--color-gray-50);
+  background-color: var(--color-gray-100);
 }
 
 .bills-table__grid {
@@ -105,6 +106,27 @@
   .bills-modal {
     max-width: 48rem;
   }
+}
+
+.bills-modal .view-panel__card {
+  max-height: 48rem;
+}
+
+.bills-modal .page-header {
+  max-height: 44rem;
+  overflow: hidden;
+}
+
+.bills-modal .view-panel__detail-grid {
+  max-height: 20rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.bills-modal .receipt-view__divider {
+  max-height: 18rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
 }
 
 /** Bill Form */

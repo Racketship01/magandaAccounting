@@ -173,4 +173,11 @@
   .dark .notice-card__description {
     color: var(--color-gray-300);
   }
+
+  .dark .card__box {
+    background-color: var(--color-gray-900);
+  }
+  .dark .red-dot__indicator {
+    box-shadow: 0 0 0 1px var(--ring-gray-900);
+  }
 }

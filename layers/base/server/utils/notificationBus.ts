@@ -1,57 +1,94 @@
-// EventEmitter --class for creating and handling named events
+// notificationBus --cross-process notification fan-out for SSE.
+//
+// When REDIS_URL is set, events are published to a Redis Pub/Sub channel so that
+// a notification created on instance A reaches SSE subscribers connected to
+// instance B. When REDIS_URL is unset, it degrades to a plain in-process
+// EventEmitter (single-instance behavior).
 import { EventEmitter } from "node:events";
+import Redis from "ioredis";
 
-// NotificationBus --class for managing notifications --inherits all EventEmitter methods
-class NotificationBus extends EventEmitter {
-  // private: only the class itself can access it.
-  // static: the property belongs to the class, not to individual objects.
-  // instance: NotificationBus: TypeScript says the value must be a NotificationBus.
-  private static instance: NotificationBus;
-  private subscribers: Map<string, Set<(userId: string) => void>> = new Map();
+const REDIS_URL = process.env.REDIS_URL ?? "";
+const CHANNEL = "accounting:notifications";
+const EVENT = "notification";
 
-  private constructor() {
-    super(); // initializes the inherited EventEmitter behavior
-    this.setMaxListeners(1000); // sets the maximum number of listeners for this event emitter to 1000
-  }
+type NotificationBusState = {
+  bus: EventEmitter;
+  publisher: Redis | null;
+  subscriber: Redis | null;
+};
 
-  // create a singleton instance of NotificationBus
-  static getInstance(): NotificationBus {
-    if (!NotificationBus.instance) {
-      NotificationBus.instance = new NotificationBus();
-      // if an instance has not been created yet, create one and store it in the instance property
-    }
-    return NotificationBus.instance;
-  }
-
-  // --emits notification event when a notification is received
-  emitNotification(userId: string) {
-    this.emit("notification", userId); // notification --event name || userId --event argument/payload
-  } // any listener registered for "notification" receives that user ID as an argument
-
-  // --subscribes to notification event to receive notifications
-  subscribe(userId: string, callback: () => void): () => void {
-    const handler = (targetUserId: string) => {
-      if (targetUserId === userId) {
-        callback(); // fire the callback function if the target user ID matches the subscribed user ID
-      }
-    };
-    this.on("notification", handler); // When the "notification" event is emitted, the handler function will be called.
-    return () => {
-      this.off("notification", handler); // returns a closure that removes the exact handler previously registered
-    };
-  }
+function createState(): NotificationBusState {
+  const bus = new EventEmitter();
+  bus.setMaxListeners(1000);
+  return { bus, publisher: null, subscriber: null };
 }
 
-// --instance of NotificationBus class
-const bus = NotificationBus.getInstance();
+// Cache on globalThis so dev HMR does not leak Redis connections.
+const globalScope = globalThis as typeof globalThis & {
+  __notificationBusState?: NotificationBusState;
+};
+const state: NotificationBusState =
+  globalScope.__notificationBusState ?? createState();
+globalScope.__notificationBusState = state;
 
-export function emitNotificationForUser(userId: string) {
-  bus.emitNotification(userId);
+// --lazily opens the Redis connections and bridges the channel onto the local bus
+function connectRedis(): void {
+  if (!REDIS_URL || state.subscriber) return;
+
+  state.publisher = new Redis(REDIS_URL);
+  // A connection in subscriber mode cannot run normal commands, so it is separate.
+  state.subscriber = new Redis(REDIS_URL);
+
+  state.publisher.on("error", (err: Error) => {
+    console.error("[notificationBus] redis publisher error:", err.message);
+  });
+  state.subscriber.on("error", (err: Error) => {
+    console.error("[notificationBus] redis subscriber error:", err.message);
+  });
+
+  state.subscriber.on("message", (channel: string, message: string) => {
+    if (channel === CHANNEL && message) {
+      state.bus.emit(EVENT, message);
+    }
+  });
+
+  state.subscriber.subscribe(CHANNEL, (err) => {
+    if (err) {
+      console.error("[notificationBus] redis subscribe failed:", err.message);
+      return;
+    }
+    console.log(`[notificationBus] subscribed to redis channel "${CHANNEL}"`);
+  });
+}
+
+export function emitNotificationForUser(userId: string): void {
+  connectRedis();
+
+  if (state.publisher) {
+    state.publisher.publish(CHANNEL, userId).catch((err: Error) => {
+      // Publish failed: still deliver locally so single-instance setups keep working.
+      console.error("[notificationBus] redis publish failed:", err.message);
+      state.bus.emit(EVENT, userId);
+    });
+    return;
+  }
+
+  state.bus.emit(EVENT, userId);
 }
 
 export function subscribeToNotifications(
   userId: string,
   callback: () => void,
 ): () => void {
-  return bus.subscribe(userId, callback);
+  connectRedis();
+
+  const handler = (targetUserId: string) => {
+    if (targetUserId === userId) {
+      callback();
+    }
+  };
+  state.bus.on(EVENT, handler);
+  return () => {
+    state.bus.off(EVENT, handler);
+  };
 }

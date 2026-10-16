@@ -220,9 +220,10 @@
   border-color: var(--color-gray-200);
   border-radius: 0.5rem;
   box-shadow: var(--shadow-md);
+  background-color: var(--color-gray-50);
 }
 .expense-table:hover {
-  background-color: var(--color-gray-50);
+  background-color: var(--color-gray-100);
 }
 
 .expense-table__grid {
@@ -290,4 +291,25 @@
   .expense-table__modal {
     max-width: 48rem;
   }
+}
+
+.expense-table__modal .view-panel__card {
+  max-height: 48rem;
+}
+
+.expense-table__modal .page-header {
+  max-height: 44rem;
+  overflow: hidden;
+}
+
+.expense-table__modal .view-panel__detail-grid {
+  max-height: 20rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.expense-table__modal .receipt-view__divider {
+  max-height: 18rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
 }

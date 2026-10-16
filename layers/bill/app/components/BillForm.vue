@@ -323,28 +323,26 @@ const getCurrencySymbol = (currency: string) => {
             />
           </UFormGroup>
 
-          <UFormGroup label="Reminder Notifications">
-            <div class="flex flex-col gap-4">
+          <div class="bill-receipt__reminder">
+            <UFormGroup label="Reminder">
+              <USelect
+                v-model="billFormData.reminderDays"
+                :items="reminderOptions"
+                :disabled="!billFormData.reminderEnabled"
+                placeholder="Select reminder window"
+                size="lg"
+                class="w-full mb-4"
+              />
+            </UFormGroup>
+
+            <UFormGroup label="Enable Reminder">
               <UCheckbox
                 v-model="billFormData.reminderEnabled"
                 label="Send due-date notifications"
-                size="md"
+                class="mt-2 ml-7 justify-self-end"
               />
-              <div>
-                <USelect
-                  v-model="billFormData.reminderDays"
-                  :items="reminderOptions"
-                  :disabled="!billFormData.reminderEnabled"
-                  placeholder="Select reminder window"
-                  size="lg"
-                  class="w-full"
-                />
-                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                  Reminder is sent 3–7 days before the due date.
-                </p>
-              </div>
-            </div>
-          </UFormGroup>
+            </UFormGroup>
+          </div>
         </div>
       </div>
     </div>

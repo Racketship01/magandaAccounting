@@ -28,6 +28,10 @@
   font-weight: 600;
 }
 
+.card__box {
+  background-color: color-mix(in oklab, var(--color-amber-50) 5%, transparent);
+}
+
 .card__panel {
   display: flex;
   flex-direction: column;
@@ -44,6 +48,7 @@
   grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 1.5rem;
 }
+
 @media (min-width: 768px) {
   .card__stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -129,7 +134,14 @@
 
 .view-panel__card {
   width: 100%;
-  overflow-y: auto;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .view-panel__card {
+    height: 42rem;
+    overflow-y: hidden;
+  }
 }
 
 .view-panel__header {
@@ -300,9 +312,7 @@
   transition-duration: 200ms;
 }
 .receipt-view__surface:hover {
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 .receipt-view__image {
   width: 100%;
@@ -329,15 +339,15 @@
 }
 
 .receipt-view__image-overlay:hover {
-  opacity: 1;
+  opacity: 2;
 }
 
 .receipt-view__image-tab {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-primary);
-  background-color: color-mix(in oklab, var(--color-black) 60%, transparent);
+  color: var(--color-gray-100);
+  background-color: color-mix(in oklab, var(--color-gray-400) 60%, transparent);
   padding-left: 1rem;
   padding-right: 1rem;
   padding-top: 0.5rem;
@@ -417,12 +427,17 @@
   color: var(--text-secondary);
 }
 
-.stat-card__value {
+.stat-card__value,
+.stat-card__value-disabled {
   font-size: 1.5rem;
   line-height: 2rem;
   font-weight: 700;
   color: var(--color-gray-950);
   margin-top: 0.25rem;
+}
+
+.stat-card__value-disabled {
+  color: var(--color-gray-400);
 }
 
 .stat-card__description {
@@ -614,6 +629,17 @@
 }
 
 /* Page Card (notification) */
+
+.red-dot__indicator {
+  position: absolute;
+  top: 0.125rem;
+  right: 0.125rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: calc(infinity * 1px);
+  background-color: var(--color-red-500);
+  box-shadow: 0 0 0 2px var(--ring-white-100);
+}
 
 .notice-card__surface {
   position: relative;
