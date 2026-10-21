@@ -1,35 +1,30 @@
 📋 Daily Progress Report - **Accounting Project**
-Date: October 9, 2026 (Friday)
+Date: October 16, 2026 (Friday)
+Branch: preDep
+Author: racketship01
 
-✅ Summary - **Dashboard Total-Spend Definition: Approved Expenses + Paid Bills (UI Text + Backend Filter) + Side Project Wedding Deployment**
-Two small but important corrections to yesterday's "All bills into TotalSpend" release so the KPI number means what the card says:
-(1) **Backend**: the `totalSpend` aggregate now takes only **approved** expenses into the sum (`allExpenses.filter(status === "approved")`) rather than every status including pending/rejected — matching accounting's typical "money actually out the door" definition.
-(2) **Frontend**: the Total Spend stat-card description was updated from "All expenses combined" → "All expenses and bills combined" so the user reading the card now knows paid bills are included, which aligns the copy with yesterday's data change.
-(3) **Branch move**: the `preDep` branch now tracks this + all prior `notification` / `main` work — preparing for a pre-deployment pass (hence "preDep") before the first real-environment rollout.
+✅ Summary - **Real Cross-Server Notifications (Redis Pub/Sub for SSE) + Design Polish Pass**
+🔔 **Headline: Notifications now survive a multi-server setup.** The real-time notification system was rewritten so that a notification created on one app server is instantly delivered to users connected to _any other_ app server. Previously the notification "bus" lived only in one server's memory, which meant that once the app is scaled to more than one instance behind a load balancer, an admin connected to server A would silently miss an expense alert raised on server B. Today's change routes every notification through Redis, the industry-standard message broker, while keeping the old single-server behaviour as an automatic fallback when no Redis is configured. This was the #1 item on the project's "remaining work" list for several weeks.
+🎨 **Second landing: UI polish.** Fixed a stray caption that printed "Open in new tabReceipt Section", cleaned up the notification bell (smaller red dot indicator instead of a bulky number badge), gave every card a subtle amber tint, tightened modal scroll heights on the Bills and Expense pages so tall dialogs stop overflowing, and restructured the bill reminder controls so the "Reminder" day-picker now sits above the "Enable Reminder" checkbox. Also added a sample uploaded receipt image used during local testing.
 
 📐 Task Completed
-1️⃣ **Backend: totalSpend Now Sums Only Approved Expenses + Paid Bills**
-• Yesterday's `allSpends = [...allExpenses, ...paidBills]` was accidentally summing ALL statuses (pending + rejected + approved) with paid bills, so a newly-submitted $2,000 pending expense was already inflating the Total Spend KPI even though the money hadn't gone out yet.
-• Today's correction inserts an intermediate step: `approvedExpenses = allExpenses.filter(e => e.status === "approved")` then `allSpends = [...approvedExpenses, ...paidBills]`.
-• The `categoryTotals` and `monthlyExpensesByYear` downstream reduce already consume the same `allExpenses` / `paidBills` inputs (unchanged) — those intentionally include all-statuses so the pie and monthly bars capture holistic trend, which is the correct semantic split: card-Total-Spend = actual spend; charts = holistic portfolio view.
-• Net effect: `totalSpend` now matches what a real accounting/finance user would expect from a "Total Spend" headline.
-🔗[getStats.get.ts](https://github.com/maganda-team/accounting/blob/preDep/getStats.get.ts)
+1️⃣ **Notification Bus: Redis Pub/Sub with Graceful Single-Instance Fallback**
+• Replaced the old singleton `NotificationBus extends EventEmitter` class with a plain, module-level state object (`{ bus, publisher, subscriber }`) cached on `globalThis.__notificationBusState` so Nuxt dev HMR reloads no longer leak Redis connections or duplicate listeners.
+• **Automatic mode selection**: reads `REDIS_URL` from the environment. Set → notifications are published to the Redis channel `accounting:notifications`. Unset → falls back to a plain in-process `EventEmitter`, exactly preserving the previous single-server behaviour. No config change is required to keep the app working today.
+• **Two separate connections**: a distinct `publisher` and `subscriber` ioredis client, because a Redis connection in subscriber mode cannot issue normal commands. Both attach `.on("error", …)` handlers so a broker outage logs instead of crashing the process.
+• **Lazy connect**: `connectRedis()` opens the connections on first use and short-circuits if already connected, so Redis is never touched in environments that don't need it.
+• **Publish with local fallback**: `emitNotificationForUser()` publishes to Redis; if the publish promise rejects, it logs the failure and still emits on the local bus — so a Redis blip degrades to single-instance delivery rather than dropping the notification entirely.
+• **Per-user filtering preserved**: `subscribeToNotifications(userId, cb)` keeps the same contract — the SSE stream registers once and only fires when the incoming payload matches its own `userId` — and still returns an unsubscribe closure for clean teardown on client disconnect.
+🔗[notificationBus.ts](https://git.next1.ph/imelda/accounting/-/blob/preDep/layers/base/server/utils/notificationBus.ts?ref_type=heads)
 
-2️⃣ **Frontend: Total Spend Card Description Now Correctly Mentions Bills**
-• In `Dashboards.vue` (inside the `#default` slot of the blue Total Spend UCard, `<p class="stat-card__description">`), text changed from:
-"All expenses combined"
-→ "All expenses and bills combined"
-• Single sentence change but semantically critical: the card no longer under-reports what it aggregates, which closes an integrity gap where a savvy user could add up paid bills on the Bills page and wonder why they didn't show in the dashboard headline.
-🔗[Dashboards.vue](https://github.com/maganda-team/accounting/blob/preDep/src/components/Dashboards.vue)
+2️⃣ **SSE Pipeline Now Multi-Instance Safe (End-to-End)**
+• With this change the full chain — `pushNotification()` → `emitNotificationForUser()` → Redis channel → every instance's subscriber → local bus → the per-user SSE stream → browser `EventSource` toast — works across N app servers. This closes the "Multi-instance scaling for the notification bus" item that had been carried forward in every report since September.
 
-3️⃣ **Side Project: Wedding Deployment**
-✅ Deployed the wedding site to a live server
-✅ Created Nitro API route`POST /api/rsvp` with server-side validation
-✅ Gmail SMTP email sending via Nodemailer (app password whitespace stripping included)
-✅ Fixed Nodemailer Nitro bundling bug: switched from direct`await` to callback-wrapped Promise
-🔗 https://wedding-website-jm-hgf8.vercel.app/
+3️⃣ **Notification Bell Polish**
+• Button changed from a fixed `square` ghost button to `size="md"`, and its wrapper to `relative inline-flex` so the dot anchors correctly without stretching the header row.
+🔗[NotificationSlider.vue](https://git.next1.ph/imelda/accounting/-/blob/preDep/layers/base/app/components/NotificationSlider.vue?ref_type=heads)
 
 🚀 Next Steps / Remaining Work
-💡 **Render New Bill Counters on Dashboard** — API now returns `paidBillsCount` + `totalBillsCount` since commit `07f95c0`, but the Dashboards.vue KPI grid still only renders 4 cards (Total Spend, Pending Approval, Unpaid Bills, Rejected Expenses [hidden behind `_rejectedExpenses` unused computed]). Next: add Paid Bills + Total Bills tiles, or a 3-column bills mini-grid (Paid / Unpaid / Total) in one row to use the new API surface end-to-end.
+💡 **Verify the Redis path end-to-end** — The fallback (no `REDIS_URL`) is safe, but the Redis path has only been committed, not yet exercised in a running multi-instance environment. Next: set `REDIS_URL` locally (or spin two dev instances on different ports against one Redis) and confirm a notification raised on instance A reaches an SSE client on instance B. Also document `REDIS_URL` in `.env.example`.
 
-💡 **Multi-instance scaling for the notification bus** — If ever deploying behind a load balancer with multiple app instances, swap the in-memory EventEmitter in `notificationBus.ts` for Redis Pub/Sub (or equivalent cross-process pub/sub) so SSE events fired on instance A reach subscribers connected to instance B.
+💡 **PreDep — Server-Route Permission Audit** — Verify every server route carries the correct session guard (`adminSession` vs `userSession` vs none). Priority: `deleteNotification`, `billDueReminders` trigger, `updateBill`, `createEmployeeUser`, `updateExpense`.
