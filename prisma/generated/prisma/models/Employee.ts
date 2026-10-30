@@ -297,7 +297,7 @@ export type EmployeeGroupByOutputType = {
   _max: EmployeeMaxAggregateOutputType | null
 }
 
-export type GetEmployeeGroupByPayload<T extends EmployeeGroupByArgs> = Prisma.PrismaPromise<
+type GetEmployeeGroupByPayload<T extends EmployeeGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<EmployeeGroupByOutputType, T['by']> &
       {
@@ -704,9 +704,9 @@ export type EmployeeSumOrderByAggregateInput = {
   salary?: Prisma.SortOrder
 }
 
-export type EmployeeScalarRelationFilter = {
-  is?: Prisma.EmployeeWhereInput
-  isNot?: Prisma.EmployeeWhereInput
+export type EmployeeNullableScalarRelationFilter = {
+  is?: Prisma.EmployeeWhereInput | null
+  isNot?: Prisma.EmployeeWhereInput | null
 }
 
 export type EmployeeCreateNestedManyWithoutUserInput = {
@@ -773,10 +773,12 @@ export type EmployeeCreateNestedOneWithoutExpensesInput = {
   connect?: Prisma.EmployeeWhereUniqueInput
 }
 
-export type EmployeeUpdateOneRequiredWithoutExpensesNestedInput = {
+export type EmployeeUpdateOneWithoutExpensesNestedInput = {
   create?: Prisma.XOR<Prisma.EmployeeCreateWithoutExpensesInput, Prisma.EmployeeUncheckedCreateWithoutExpensesInput>
   connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutExpensesInput
   upsert?: Prisma.EmployeeUpsertWithoutExpensesInput
+  disconnect?: Prisma.EmployeeWhereInput | boolean
+  delete?: Prisma.EmployeeWhereInput | boolean
   connect?: Prisma.EmployeeWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeUpdateToOneWithWhereWithoutExpensesInput, Prisma.EmployeeUpdateWithoutExpensesInput>, Prisma.EmployeeUncheckedUpdateWithoutExpensesInput>
 }
@@ -834,6 +836,7 @@ export type EmployeeCreateOrConnectWithoutUserInput = {
 
 export type EmployeeCreateManyUserInputEnvelope = {
   data: Prisma.EmployeeCreateManyUserInput | Prisma.EmployeeCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type EmployeeUpsertWithWhereUniqueWithoutUserInput = {
@@ -1923,6 +1926,7 @@ export type EmployeeCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * The data used to create many Employees.
    */
   data: Prisma.EmployeeCreateManyInput | Prisma.EmployeeCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1941,6 +1945,7 @@ export type EmployeeCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * The data used to create many Employees.
    */
   data: Prisma.EmployeeCreateManyInput | Prisma.EmployeeCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

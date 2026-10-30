@@ -1,0 +1,1 @@
+import{_n as e,g as t}from"./DBq4UlV4.js";import{u as n}from"./BMslHvqZ.js";import{u as r}from"#entry";function i(){let{loggedIn:i,user:a,session:o,fetch:s,clear:c}=r(),l=async()=>{await c(),await n(`/login`)},u=t(()=>i.value&&o.value?.user?.id!==void 0);return{loggedIn:i,user:e(a),session:e(o),isAuthenticated:u,fetch:s,clear:c,logout:l}}export{i as t};

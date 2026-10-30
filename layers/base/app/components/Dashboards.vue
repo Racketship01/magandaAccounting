@@ -335,7 +335,7 @@ watch(currentUser, async () => {
               <p
                 class="text-xl font-semibold text-gray-400 dark:text-gray-500 mt-1"
               >
-                Nothing to review
+                0
               </p>
               <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
                 Expenses awaiting approval will appear here

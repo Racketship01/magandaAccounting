@@ -1,5 +1,3 @@
-<!-- @format -->
-
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
 import { computed, ref, watch } from "vue";
@@ -9,6 +7,7 @@ import {
   updateEmployeeSchema,
 } from "../../server/schemas";
 import useToastGlobal from "../../../base/app/composables/useToast";
+import { upload } from "@vercel/blob/client";
 
 interface Props {
   modelValue: boolean;
@@ -24,6 +23,8 @@ const emit = defineEmits<{
 
 // Form state
 const { formData, resetForm } = useEmployee();
+const { toast } = useToastGlobal();
+const isUploading = ref(false);
 
 const isOpen = computed({
   get: () => props.modelValue,
@@ -37,8 +38,6 @@ const isEmployeeFormOpen = computed({
 
 const handleSaveEmployeeForm = async () => {
   if (!isFormValid.value) return;
-
-  const { toast } = useToastGlobal();
 
   // UPDATE Employee
   if (props.employee) {
@@ -162,29 +161,36 @@ const triggerFileUpload = () => {
   fileInput.value?.click();
 };
 
-const handleImageUpload = (event: Event) => {
+const handleImageUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
+  if (!file) return;
 
-  if (file) {
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File size must be less than 5MB");
-      return;
-    }
+  if (file.size > 5 * 1024 * 1024) {
+    toast.add({ title: "File size must be less than 5MB", color: "error" });
+    target.value = "";
+    return;
+  }
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      alert("Please select a valid image file");
-      return;
-    }
+  if (!file.type.startsWith("image/")) {
+    toast.add({ title: "Please select a valid image file", color: "error" });
+    target.value = "";
+    return;
+  }
 
-    // Convert to base64 for preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      formData.value.profileImage = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
+  isUploading.value = true;
+  try {
+    const blob = await upload(`avatars/${file.name}`, file, {
+      access: "public",
+      handleUploadUrl: "/api/blob/upload",
+    });
+    formData.value.profileImage = blob.url;
+  } catch (error) {
+    console.error("Avatar upload failed:", error);
+    toast.add({ title: "Failed to upload image", color: "error" });
+  } finally {
+    isUploading.value = false;
+    target.value = "";
   }
 };
 
@@ -259,6 +265,8 @@ const currentCurrencySymbol = computed(() => {
                   icon="i-lucide-upload"
                   variant="outline"
                   size="sm"
+                  :loading="isUploading"
+                  :disabled="isUploading"
                   @click="triggerFileUpload"
                 >
                   Upload Image

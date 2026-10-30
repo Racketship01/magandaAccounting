@@ -1,14 +1,12 @@
-// server/utils/prisma.ts (Prisma 7 with SQLite adapter)
-
+// prisma/utils/prisma.ts (Prisma 7 with PostgreSQL adapter)
 import { PrismaClient } from "../generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import path from "path";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-// process.cwd() is always the project root in Nuxt/Nitro
-const dbPath = path.resolve(process.cwd(), "dev.db");
-console.log("[prisma.ts] Using DB path:", dbPath);
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error("DATABASE_URL is not set");
+}
 
-// v7 adapter takes { url: "<plain file path>" } — NOT a "file:" URI
-const adapter = new PrismaBetterSqlite3({ url: dbPath });
+const adapter = new PrismaPg({ connectionString });
 
 export const prisma = new PrismaClient({ adapter });

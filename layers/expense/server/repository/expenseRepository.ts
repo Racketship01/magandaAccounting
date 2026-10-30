@@ -38,8 +38,10 @@ export const createExpense = async (
   const user = await userSession(event);
 
   let firstName = "";
+
+
   let adminId = "";
-  let employeeId = "";
+  let employeeId: string | null = null;
   let adminUserId: string | null = null;
 
   if (user.role === "admin") {
@@ -57,12 +59,7 @@ export const createExpense = async (
     const ownEmployee = await prisma.employee.findFirst({
       where: { userId: user.id },
     });
-    if (ownEmployee) {
-      employeeId = ownEmployee.id;
-    } else {
-      const fallbackEmployee = await prisma.employee.findFirst();
-      employeeId = fallbackEmployee?.id || "";
-    }
+    employeeId = ownEmployee?.id ?? null;
   } else {
     const employee = await prisma.employee.findFirst({
       where: { userId: user.id },

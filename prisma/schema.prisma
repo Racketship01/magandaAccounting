@@ -5,7 +5,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 enum UserRole {
@@ -152,8 +152,8 @@ model Expense {
   admin   Admin  @relation(fields: [adminId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   adminId String
 
-  employee   Employee @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  employeeId String
+  employee   Employee? @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  employeeId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

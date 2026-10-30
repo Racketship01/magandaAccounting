@@ -297,7 +297,7 @@ export type AdminGroupByOutputType = {
   _max: AdminMaxAggregateOutputType | null
 }
 
-export type GetAdminGroupByPayload<T extends AdminGroupByArgs> = Prisma.PrismaPromise<
+type GetAdminGroupByPayload<T extends AdminGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AdminGroupByOutputType, T['by']> &
       {
@@ -841,6 +841,7 @@ export type AdminCreateOrConnectWithoutUserInput = {
 
 export type AdminCreateManyUserInputEnvelope = {
   data: Prisma.AdminCreateManyUserInput | Prisma.AdminCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type AdminUpsertWithWhereUniqueWithoutUserInput = {
@@ -2061,6 +2062,7 @@ export type AdminCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * The data used to create many Admins.
    */
   data: Prisma.AdminCreateManyInput | Prisma.AdminCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -2079,6 +2081,7 @@ export type AdminCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * The data used to create many Admins.
    */
   data: Prisma.AdminCreateManyInput | Prisma.AdminCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

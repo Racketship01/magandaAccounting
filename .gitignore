@@ -18,6 +18,12 @@ logs
 .fleet
 .idea
 
+
+# Local SQLite database
+*.sqlite
+dev.db
+prisma/dev.db
+
 # Local env files
 .env
 .env.*

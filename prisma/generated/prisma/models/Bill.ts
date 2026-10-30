@@ -273,7 +273,7 @@ export type BillGroupByOutputType = {
   _max: BillMaxAggregateOutputType | null
 }
 
-export type GetBillGroupByPayload<T extends BillGroupByArgs> = Prisma.PrismaPromise<
+type GetBillGroupByPayload<T extends BillGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BillGroupByOutputType, T['by']> &
       {
@@ -712,6 +712,7 @@ export type BillCreateOrConnectWithoutAdminInput = {
 
 export type BillCreateManyAdminInputEnvelope = {
   data: Prisma.BillCreateManyAdminInput | Prisma.BillCreateManyAdminInput[]
+  skipDuplicates?: boolean
 }
 
 export type BillUpsertWithWhereUniqueWithoutAdminInput = {
@@ -1612,6 +1613,7 @@ export type BillCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * The data used to create many Bills.
    */
   data: Prisma.BillCreateManyInput | Prisma.BillCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1630,6 +1632,7 @@ export type BillCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * The data used to create many Bills.
    */
   data: Prisma.BillCreateManyInput | Prisma.BillCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

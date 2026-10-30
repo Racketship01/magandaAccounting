@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     "@nuxt/ui-pro",
     "vite-tsconfig-paths",
   ],
+  nitro: { preset: "vercel" },
   postcss: {
     plugins: {
       "@tailwindcss/postcss": {},

@@ -1,0 +1,1 @@
+import{k as e,mt as t,v as n}from"./DBq4UlV4.js";import{t as r}from"./DkQncJYw.js";import{t as i}from"./CLAUA6tk.js";var a=e({__name:`login`,setup(e){return r({layout:`auth`,title:`Login - NextOne`}),(e,r)=>{let a=i;return t(),n(a)}}});export{a as default};

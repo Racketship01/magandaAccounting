@@ -245,7 +245,7 @@ export type ExpenseGroupByOutputType = {
   status: $Enums.ExpenseStatus
   receiptUrl: string | null
   adminId: string
-  employeeId: string
+  employeeId: string | null
   createdAt: Date
   updatedAt: Date
   _count: ExpenseCountAggregateOutputType | null
@@ -255,7 +255,7 @@ export type ExpenseGroupByOutputType = {
   _max: ExpenseMaxAggregateOutputType | null
 }
 
-export type GetExpenseGroupByPayload<T extends ExpenseGroupByArgs> = Prisma.PrismaPromise<
+type GetExpenseGroupByPayload<T extends ExpenseGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ExpenseGroupByOutputType, T['by']> &
       {
@@ -285,11 +285,11 @@ export type ExpenseWhereInput = {
   status?: Prisma.EnumExpenseStatusFilter<"Expense"> | $Enums.ExpenseStatus
   receiptUrl?: Prisma.StringNullableFilter<"Expense"> | string | null
   adminId?: Prisma.StringFilter<"Expense"> | string
-  employeeId?: Prisma.StringFilter<"Expense"> | string
+  employeeId?: Prisma.StringNullableFilter<"Expense"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   admin?: Prisma.XOR<Prisma.AdminScalarRelationFilter, Prisma.AdminWhereInput>
-  employee?: Prisma.XOR<Prisma.EmployeeScalarRelationFilter, Prisma.EmployeeWhereInput>
+  employee?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
 }
 
 export type ExpenseOrderByWithRelationInput = {
@@ -304,7 +304,7 @@ export type ExpenseOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   receiptUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   adminId?: Prisma.SortOrder
-  employeeId?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   admin?: Prisma.AdminOrderByWithRelationInput
@@ -327,11 +327,11 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumExpenseStatusFilter<"Expense"> | $Enums.ExpenseStatus
   receiptUrl?: Prisma.StringNullableFilter<"Expense"> | string | null
   adminId?: Prisma.StringFilter<"Expense"> | string
-  employeeId?: Prisma.StringFilter<"Expense"> | string
+  employeeId?: Prisma.StringNullableFilter<"Expense"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   admin?: Prisma.XOR<Prisma.AdminScalarRelationFilter, Prisma.AdminWhereInput>
-  employee?: Prisma.XOR<Prisma.EmployeeScalarRelationFilter, Prisma.EmployeeWhereInput>
+  employee?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
 }, "id" | "adminId_employeeId_id">
 
 export type ExpenseOrderByWithAggregationInput = {
@@ -346,7 +346,7 @@ export type ExpenseOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   receiptUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   adminId?: Prisma.SortOrder
-  employeeId?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ExpenseCountOrderByAggregateInput
@@ -371,7 +371,7 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumExpenseStatusWithAggregatesFilter<"Expense"> | $Enums.ExpenseStatus
   receiptUrl?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   adminId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
-  employeeId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
+  employeeId?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
 }
@@ -390,7 +390,7 @@ export type ExpenseCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   admin: Prisma.AdminCreateNestedOneWithoutExpensesInput
-  employee: Prisma.EmployeeCreateNestedOneWithoutExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutExpensesInput
 }
 
 export type ExpenseUncheckedCreateInput = {
@@ -405,7 +405,7 @@ export type ExpenseUncheckedCreateInput = {
   status?: $Enums.ExpenseStatus
   receiptUrl?: string | null
   adminId: string
-  employeeId: string
+  employeeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -424,7 +424,7 @@ export type ExpenseUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   admin?: Prisma.AdminUpdateOneRequiredWithoutExpensesNestedInput
-  employee?: Prisma.EmployeeUpdateOneRequiredWithoutExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutExpensesNestedInput
 }
 
 export type ExpenseUncheckedUpdateInput = {
@@ -439,7 +439,7 @@ export type ExpenseUncheckedUpdateInput = {
   status?: Prisma.EnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus
   receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminId?: Prisma.StringFieldUpdateOperationsInput | string
-  employeeId?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -456,7 +456,7 @@ export type ExpenseCreateManyInput = {
   status?: $Enums.ExpenseStatus
   receiptUrl?: string | null
   adminId: string
-  employeeId: string
+  employeeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -488,7 +488,7 @@ export type ExpenseUncheckedUpdateManyInput = {
   status?: Prisma.EnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus
   receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminId?: Prisma.StringFieldUpdateOperationsInput | string
-  employeeId?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -695,6 +695,7 @@ export type ExpenseCreateOrConnectWithoutEmployeeInput = {
 
 export type ExpenseCreateManyEmployeeInputEnvelope = {
   data: Prisma.ExpenseCreateManyEmployeeInput | Prisma.ExpenseCreateManyEmployeeInput[]
+  skipDuplicates?: boolean
 }
 
 export type ExpenseUpsertWithWhereUniqueWithoutEmployeeInput = {
@@ -728,7 +729,7 @@ export type ExpenseScalarWhereInput = {
   status?: Prisma.EnumExpenseStatusFilter<"Expense"> | $Enums.ExpenseStatus
   receiptUrl?: Prisma.StringNullableFilter<"Expense"> | string | null
   adminId?: Prisma.StringFilter<"Expense"> | string
-  employeeId?: Prisma.StringFilter<"Expense"> | string
+  employeeId?: Prisma.StringNullableFilter<"Expense"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
 }
@@ -746,7 +747,7 @@ export type ExpenseCreateWithoutAdminInput = {
   receiptUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  employee: Prisma.EmployeeCreateNestedOneWithoutExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutExpensesInput
 }
 
 export type ExpenseUncheckedCreateWithoutAdminInput = {
@@ -760,7 +761,7 @@ export type ExpenseUncheckedCreateWithoutAdminInput = {
   employeeName?: string | null
   status?: $Enums.ExpenseStatus
   receiptUrl?: string | null
-  employeeId: string
+  employeeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -772,6 +773,7 @@ export type ExpenseCreateOrConnectWithoutAdminInput = {
 
 export type ExpenseCreateManyAdminInputEnvelope = {
   data: Prisma.ExpenseCreateManyAdminInput | Prisma.ExpenseCreateManyAdminInput[]
+  skipDuplicates?: boolean
 }
 
 export type ExpenseUpsertWithWhereUniqueWithoutAdminInput = {
@@ -865,7 +867,7 @@ export type ExpenseCreateManyAdminInput = {
   employeeName?: string | null
   status?: $Enums.ExpenseStatus
   receiptUrl?: string | null
-  employeeId: string
+  employeeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -883,7 +885,7 @@ export type ExpenseUpdateWithoutAdminInput = {
   receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  employee?: Prisma.EmployeeUpdateOneRequiredWithoutExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutExpensesNestedInput
 }
 
 export type ExpenseUncheckedUpdateWithoutAdminInput = {
@@ -897,7 +899,7 @@ export type ExpenseUncheckedUpdateWithoutAdminInput = {
   employeeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus
   receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  employeeId?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -913,7 +915,7 @@ export type ExpenseUncheckedUpdateManyWithoutAdminInput = {
   employeeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus
   receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  employeeId?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -936,7 +938,7 @@ export type ExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   updatedAt?: boolean
   admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
-  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.Expense$employeeArgs<ExtArgs>
 }, ExtArgs["result"]["expense"]>
 
 export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -955,7 +957,7 @@ export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
-  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.Expense$employeeArgs<ExtArgs>
 }, ExtArgs["result"]["expense"]>
 
 export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -974,7 +976,7 @@ export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
-  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.Expense$employeeArgs<ExtArgs>
 }, ExtArgs["result"]["expense"]>
 
 export type ExpenseSelectScalar = {
@@ -997,22 +999,22 @@ export type ExpenseSelectScalar = {
 export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "category" | "amount" | "currency" | "merchantName" | "description" | "employeeName" | "status" | "receiptUrl" | "adminId" | "employeeId" | "createdAt" | "updatedAt", ExtArgs["result"]["expense"]>
 export type ExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
-  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.Expense$employeeArgs<ExtArgs>
 }
 export type ExpenseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
-  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.Expense$employeeArgs<ExtArgs>
 }
 export type ExpenseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
-  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.Expense$employeeArgs<ExtArgs>
 }
 
 export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Expense"
   objects: {
     admin: Prisma.$AdminPayload<ExtArgs>
-    employee: Prisma.$EmployeePayload<ExtArgs>
+    employee: Prisma.$EmployeePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1026,7 +1028,7 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     status: $Enums.ExpenseStatus
     receiptUrl: string | null
     adminId: string
-    employeeId: string
+    employeeId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["expense"]>
@@ -1424,7 +1426,7 @@ readonly fields: ExpenseFieldRefs;
 export interface Prisma__ExpenseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   admin<T extends Prisma.AdminDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminDefaultArgs<ExtArgs>>): Prisma.Prisma__AdminClient<runtime.Types.Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  employee<T extends Prisma.EmployeeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeDefaultArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  employee<T extends Prisma.Expense$employeeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Expense$employeeArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1702,6 +1704,7 @@ export type ExpenseCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Expenses.
    */
   data: Prisma.ExpenseCreateManyInput | Prisma.ExpenseCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1720,6 +1723,7 @@ export type ExpenseCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * The data used to create many Expenses.
    */
   data: Prisma.ExpenseCreateManyInput | Prisma.ExpenseCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */
@@ -1864,6 +1868,25 @@ export type ExpenseDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Expenses to delete.
    */
   limit?: number
+}
+
+/**
+ * Expense.employee
+ */
+export type Expense$employeeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Employee
+   */
+  select?: Prisma.EmployeeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Employee
+   */
+  omit?: Prisma.EmployeeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmployeeInclude<ExtArgs> | null
+  where?: Prisma.EmployeeWhereInput
 }
 
 /**

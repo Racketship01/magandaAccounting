@@ -178,7 +178,7 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
         </UForm>
 
         <!-- Sign Up Link -->
-        <div class="mt-6 text-center">
+        <!-- <div class="mt-6 text-center">
           <p class="login-body__card-text">
             Don't have an account?
             <UButton
@@ -192,7 +192,7 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
               Sign up
             </UButton>
           </p>
-        </div>
+        </div> -->
       </div>
 
       <!-- Additional Info -->
