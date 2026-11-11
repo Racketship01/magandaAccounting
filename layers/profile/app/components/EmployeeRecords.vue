@@ -171,8 +171,8 @@ const formatDate = (dateString: string) => {
     title="Employee Records"
     subtitle="All Employee Records"
     description="Manage and track all your employee records"
-    :showStats="false"
-    :showScanner="false"
+    :show-stats="false"
+    :show-scanner="false"
   >
     <!-- Filters Slot -->
     <template #filters>
@@ -249,7 +249,7 @@ const formatDate = (dateString: string) => {
             "
             :alt="`${employee.firstName} ${employee.lastName}`"
             class="employee-table__image"
-          />
+          >
         </div>
 
         <!-- Employee Details -->

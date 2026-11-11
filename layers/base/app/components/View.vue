@@ -1,11 +1,10 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- @format -->
 
-<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import type { ExpenseItem } from "@/layers/expense/app/composables/useExpense";
 import type { Bill } from "@/layers/bill/app/composables/useBill";
-import adminSession from "../../../profile/server/utils/roleSession";
 
 interface Props {
   title: string;
@@ -518,7 +517,7 @@ const clearReceipt = () => {
                   :src="expense.receiptUrl"
                   alt="Receipt preview"
                   class="receipt-view__image"
-                />
+                >
                 <!-- Hover Overlay -->
                 <div class="receipt-view__image-overlay">
                   <div class="receipt-view__image-tab">
@@ -567,7 +566,7 @@ const clearReceipt = () => {
                     :src="receiptImage"
                     alt="Uploaded receipt preview"
                     class="receipt-view__image"
-                  />
+                  >
 
                   <!-- Hover Overlay -->
                   <div class="receipt-view__image-overlay">
@@ -620,7 +619,7 @@ const clearReceipt = () => {
                 accept="image/*"
                 class="hidden"
                 @change="handleFileSelect"
-              />
+              >
             </div>
             <div v-if="uploadError" class="text-red-500 text-xs">
               {{ uploadError }}
@@ -641,7 +640,7 @@ const clearReceipt = () => {
                     :src="bill.receiptImage"
                     alt="Receipt preview"
                     class="receipt-view__image"
-                  />
+                  >
                   <!-- Hover Overlay -->
                   <div class="receipt-view__image-overlay">
                     <div class="receipt-view__image-tab">

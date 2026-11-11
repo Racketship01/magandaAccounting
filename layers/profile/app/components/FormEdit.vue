@@ -206,7 +206,7 @@ const currentCurrencySymbol = computed(() => {
               :src="resolvedProfileImage"
               :alt="`${profileForm.firstName} ${profileForm.lastName}`"
               class="profile-card__form-profile--picture"
-            />
+            >
             <div
               v-else
               class="w-16 h-16 rounded-full bg-linear-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold border-2 border-gray-200 dark:border-gray-600"
@@ -223,7 +223,7 @@ const currentCurrencySymbol = computed(() => {
                   accept="image/*"
                   class="hidden"
                   @change="handleImageUpload"
-                />
+                >
                 <UButton
                   icon="i-lucide-upload"
                   variant="outline"

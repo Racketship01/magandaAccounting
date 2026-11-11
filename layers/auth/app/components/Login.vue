@@ -81,7 +81,7 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
       <!-- Logo/Brand Section -->
       <div class="text-center mb-8">
         <div class="login-body__brand">
-          <img :src="currentLogo" alt="Logo" class="login-body__brand-image" />
+          <img :src="currentLogo" alt="Logo" class="login-body__brand-image" >
         </div>
 
         <p class="login-body__brand-text">

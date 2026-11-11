@@ -1,7 +1,7 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- @format -->
 
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
-<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { signupSchema } from "../../server/schemas";
 import useUser from "../composables/useUser";
@@ -97,7 +97,7 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
       <!-- Logo/Brand Section -->
       <div class="text-center mb-8">
         <div class="login-body__brand">
-          <img :src="currentLogo" alt="Logo" class="login-body__brand-image" />
+          <img :src="currentLogo" alt="Logo" class="login-body__brand-image" >
         </div>
 
         <p class="login-body__brand-text">Create your account to get started</p>

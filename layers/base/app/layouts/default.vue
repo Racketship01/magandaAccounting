@@ -110,7 +110,7 @@ const links = computed(() => {
     <!-- Header -->
     <UHeader class="shell__app-header">
       <template #left>
-        <img :src="currentLogo" alt="Logo" class="h-10 w-auto" />
+        <img :src="currentLogo" alt="Logo" class="h-10 w-auto" >
       </template>
 
       <template #right>
@@ -133,7 +133,7 @@ const links = computed(() => {
           <div class="shell__sidebar">
             <!-- Navigation Section -->
             <nav class="shell__navigation">
-              <h2 class="shell__navigation-title"></h2>
+              <h2 class="shell__navigation-title"/>
 
               <UNavigationMenu
                 :collapsed="collapsed"

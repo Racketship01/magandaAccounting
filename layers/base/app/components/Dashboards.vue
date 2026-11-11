@@ -294,10 +294,10 @@ watch(currentUser, async (user) => {
     :title="`${greeting}, ${admin.name}`"
     subtitle=""
     description="Here's what's happening with your finances today."
-    :showStats="true"
-    :showFilters="false"
-    :showActions="false"
-    :showScanner="false"
+    :show-stats="true"
+    :show-filters="false"
+    :show-actions="false"
+    :show-scanner="false"
   >
     <!-- 2. Stats Grid (Dash.vue L300-L392) — 3 KPI cards -->
     <template #stats>

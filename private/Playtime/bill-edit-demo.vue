@@ -150,9 +150,9 @@ const handleCloseModal = () => {
         <template #footer>
           <div class="flex justify-end">
             <UButton
-              @click="handleEditBill"
               icon="i-lucide-edit"
               color="primary"
+              @click="handleEditBill"
             >
               Edit This Bill
             </UButton>
@@ -208,8 +208,8 @@ const handleCloseModal = () => {
     >
       <template #body>
         <BillEdit
-          :bill="sampleBill"
           v-model="isEditModalOpen"
+          :bill="sampleBill"
           @close="handleCloseModal"
           @save="handleSaveBill"
         />

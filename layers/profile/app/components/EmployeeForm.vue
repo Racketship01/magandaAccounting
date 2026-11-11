@@ -249,7 +249,7 @@ const currentCurrencySymbol = computed(() => {
               "
               :alt="`${formData.firstName} ${formData.lastName}`"
               class="profile-card__form-profile--picture"
-            />
+            >
           </div>
           <div class="flex-1">
             <UFormGroup label="Profile Picture">
@@ -260,7 +260,7 @@ const currentCurrencySymbol = computed(() => {
                   accept="image/*"
                   class="hidden"
                   @change="handleImageUpload"
-                />
+                >
                 <UButton
                   icon="i-lucide-upload"
                   variant="outline"

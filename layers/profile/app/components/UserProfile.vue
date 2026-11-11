@@ -102,11 +102,11 @@ const handleCloseEditProfile = () => {
     title="My Profile"
     subtitle="Profile Information"
     description="View and manage your profile information"
-    :showStats="false"
-    :showScanner="false"
-    :showFilters="false"
-    :showActions="false"
-    contentHeight="auto"
+    :show-stats="false"
+    :show-scanner="false"
+    :show-filters="false"
+    :show-actions="false"
+    content-height="auto"
   >
     <template #content>
       <!-- Loading skeleton: shown only before the profile has loaded -->
@@ -132,7 +132,7 @@ const handleCloseEditProfile = () => {
                     :src="currentUser?.profileImage"
                     :alt="`${currentUser?.firstName} ${currentUser?.lastName}`"
                     class="profile-container__image-display"
-                  />
+                  >
                   <div v-else class="profile-container__image-upload">
                     {{ currentUser?.firstName?.[0]
                     }}{{ currentUser?.lastName?.[0] }}

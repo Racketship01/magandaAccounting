@@ -64,15 +64,15 @@ const switchView = (type: "expense" | "bill") => {
     <div class="mb-6 flex gap-4">
       <UButton
         :variant="currentView === 'expense' ? 'solid' : 'outline'"
-        @click="switchView('expense')"
         icon="i-lucide-credit-card"
+        @click="switchView('expense')"
       >
         View Expense
       </UButton>
       <UButton
         :variant="currentView === 'bill' ? 'solid' : 'outline'"
-        @click="switchView('bill')"
         icon="i-lucide-file-text"
+        @click="switchView('bill')"
       >
         View Bill
       </UButton>

@@ -218,8 +218,8 @@ watch(
     title="Bills Management"
     subtitle="All Bills Record"
     description="Track and manage all your bills with receipts and reminders"
-    :showStats="false"
-    :showScanner="false"
+    :show-stats="false"
+    :show-scanner="false"
   >
     <!-- Filters Slot -->
     <template #filters>

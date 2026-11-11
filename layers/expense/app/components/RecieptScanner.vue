@@ -152,7 +152,7 @@ const submitExpense = async () => {
               @change="
                 handleFileUpload(($event.target as HTMLInputElement)?.files)
               "
-            />
+            >
           </div>
 
           <!-- Processing State -->
@@ -175,7 +175,7 @@ const submitExpense = async () => {
               :src="uploadedImage"
               alt="Uploaded receipt"
               class="max-h-96 mx-auto rounded-lg shadow-lg"
-            />
+            >
             <div class="flex gap-2 justify-center">
               <UButton
                 color="neutral"
@@ -213,7 +213,7 @@ const submitExpense = async () => {
           Expense Details
         </h2>
 
-        <form @submit.prevent="submitExpense" class="space-y-4">
+        <form class="space-y-4" @submit.prevent="submitExpense">
           <div class="flex flex-col gap-5">
             <!-- Currency and Amount Fields -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

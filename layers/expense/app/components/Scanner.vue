@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- @format -->
 
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
@@ -160,11 +161,11 @@ const submitExpense = async () => {
     title="Receipt Scanner"
     subtitle="Upload Receipt & Extract Data"
     description="Upload a receipt to automatically extract expense details"
-    :showStats="false"
-    :showScanner="false"
-    :showFilters="false"
-    :showActions="false"
-    contentHeight="scanner"
+    :show-stats="false"
+    :show-scanner="false"
+    :show-filters="false"
+    :show-actions="false"
+    content-height="scanner"
   >
     <template #content>
       <div class="receipt-scanner__grid">
@@ -212,7 +213,7 @@ const submitExpense = async () => {
                 @change="
                   handleFileUpload(($event.target as HTMLInputElement)?.files)
                 "
-              />
+              >
             </div>
 
             <!-- Processing State -->
@@ -238,7 +239,7 @@ const submitExpense = async () => {
                 :src="uploadedImage"
                 alt="Uploaded receipt"
                 class="receipt-scanner__image"
-              />
+              >
               <div class="receipt-scanner__dropzone--image-button">
                 <UButton
                   color="neutral"
@@ -259,8 +260,8 @@ const submitExpense = async () => {
           <h2 class="receipt-scanner__form-title">Expense Details</h2>
 
           <form
-            @submit.prevent="submitExpense"
             class="receipt-scanner__form-action"
+            @submit.prevent="submitExpense"
           >
             <div class="receipt-scanner__form-field">
               <!-- Currency and Amount Fields -->
@@ -378,6 +379,6 @@ const submitExpense = async () => {
       </div>
     </template>
 
-    <template #modals></template>
+    <template #modals />
   </Card>
 </template>

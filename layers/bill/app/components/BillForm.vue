@@ -253,7 +253,7 @@ const getCurrencySymbol = (currency: string) => {
                   :src="receiptImage"
                   alt="Receipt preview"
                   class="bill-receipt__image"
-                />
+                >
 
                 <div class="bill-receipt__toolbar">
                   <p class="bill-receipt__message">
@@ -296,7 +296,7 @@ const getCurrencySymbol = (currency: string) => {
                   accept="image/*"
                   class="hidden"
                   @change="handleFileSelect"
-                />
+                >
               </div>
               <div v-if="uploadError" class="bill-receipt__upload-error">
                 {{ uploadError }}

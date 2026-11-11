@@ -164,19 +164,19 @@ const getCategoryLabel = (category: string) => {
       <!-- Action Buttons -->
       <div class="flex gap-4 mb-6">
         <UButton
-          @click="handleAddNewBill"
           icon="i-lucide-plus"
           color="primary"
           size="lg"
+          @click="handleAddNewBill"
         >
           Add New Bill
         </UButton>
         <UButton
-          @click="handleEditBill(sampleBill)"
           icon="i-lucide-edit"
           color="primary"
           variant="outline"
           size="lg"
+          @click="handleEditBill(sampleBill)"
         >
           Edit Sample Bill
         </UButton>
@@ -346,8 +346,8 @@ const getCategoryLabel = (category: string) => {
     >
       <template #body>
         <AddEdit
-          :bill="null"
           v-model="isAddModalOpen"
+          :bill="null"
           @close="handleCloseModal"
           @save="handleSaveBill"
         />
@@ -362,8 +362,8 @@ const getCategoryLabel = (category: string) => {
     >
       <template #body>
         <AddEdit
-          :bill="selectedBill"
           v-model="isEditModalOpen"
+          :bill="selectedBill"
           @close="handleCloseModal"
           @save="handleSaveBill"
         />

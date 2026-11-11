@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import type { Bill } from "../composables/useBill";
 import useBill from "../composables/useBill";
 import useToastGlobal from "../../../base/app/composables/useToast";

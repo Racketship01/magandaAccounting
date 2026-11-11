@@ -261,8 +261,8 @@ const getCategoryColor = (category: string) => {
     title="Expense Reports"
     subtitle="All Expense Reports"
     description="Review, categorize, and consolidate expenses into reports for submission"
-    :showStats="false"
-    :showScanner="false"
+    :show-stats="false"
+    :show-scanner="false"
   >
     <!-- Filters Slot -->
     <template #filters>
