@@ -9,6 +9,8 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
+  BarController,
+  DoughnutController,
   Title,
 } from "chart.js";
 import { computed, ref, watch } from "vue";
@@ -24,6 +26,8 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  BarController,
+  DoughnutController,
   Title,
 );
 
