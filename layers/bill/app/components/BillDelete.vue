@@ -8,7 +8,7 @@ interface Props {
   bill: Bill | null;
 }
 
-const { refresh } = useBill();
+const { removeBill } = useBill();
 
 const props = defineProps<Props>();
 
@@ -30,12 +30,12 @@ const confirmDelete = async () => {
     });
 
     emit("confirmDelete", billToDelete.value);
+    removeBill(billToDelete.value.id);
     toast.add({
       title: "Bill deleted",
       description: "The bill has been deleted successfully",
       color: "success",
     });
-    await refresh();
   } catch (error: any) {
     toast.add({
       title: "Failed to delete Bill",

@@ -1,5 +1,6 @@
 import { updateBill } from "../../repository/billRepository";
 import { updateBillSchema } from "../../schemas";
+import { persistReceiptImage } from "../../utils/receiptImage";
 import adminSession from "../../../../profile/server/utils/roleSession";
 import { pushNotification } from "../../../../base/server/repository/notificationRepository";
 import { createError, readBody, defineEventHandler } from "h3";
@@ -24,7 +25,14 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
-  const result = await updateBill(id, validationResult.data);
+  const receiptImage = await persistReceiptImage(
+    validationResult.data.receiptImage,
+  );
+
+  const result = await updateBill(id, {
+    ...validationResult.data,
+    receiptImage,
+  });
 
   if (result.adminUserId && !result.wasPaid && result.isNowPaid) {
     await pushNotification({

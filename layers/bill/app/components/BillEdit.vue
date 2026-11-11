@@ -11,7 +11,7 @@ interface Props {
 const _props = defineProps<Props>();
 
 const emit = defineEmits(["close", "save"]);
-const { refresh } = useBill();
+const { upsertBill } = useBill();
 
 const handleClose = () => {
   emit("close");
@@ -30,12 +30,12 @@ const handleSaveBill = async (updatedBill: Bill) => {
     );
 
     emit("save", response.bill);
+    if (response.bill) upsertBill(response.bill);
     toast.add({
       title: "Bill updated",
       description: "The bill has been updated successfully",
       color: "success",
     });
-    await refresh();
   } catch (error: any) {
     toast.add({
       title: "Error",

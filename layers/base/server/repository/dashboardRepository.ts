@@ -1,17 +1,50 @@
 import { prisma } from "../../../../prisma/utils/prisma";
 import userSession from "../../../auth/server/utils/userSession";
-import type { DashboardStats } from "../../app/composables/useDashboardStats";
+
+type DashboardProfile = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  admin: { id: string; createdAt: Date; updatedAt: Date }[];
+  employees: { id: string; createdAt: Date; updatedAt: Date }[];
+};
+
+type DashboardExpense = {
+  id: string;
+  amount: number;
+  category: string;
+  date: string;
+  status: string;
+};
+
+type DashboardBill = {
+  id: string;
+  amount: number;
+  category: string;
+  dueDate: string;
+  paidDate: string | null;
+  isPaid: boolean;
+};
+
+export type DashboardSource = {
+  profile: DashboardProfile;
+  allExpenses: DashboardExpense[];
+  allBills: DashboardBill[];
+};
 
 export async function getDashboardStats(
   event: H3Event,
-): Promise<DashboardStats> {
+): Promise<DashboardSource> {
   const user = await userSession(event);
 
   const profile = await prisma.user.findFirst({
     where: { id: user.id },
-    include: {
-      admin: true,
-      employees: true,
+    select: {
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+      admin: { select: { id: true, createdAt: true, updatedAt: true } },
+      employees: { select: { id: true, createdAt: true, updatedAt: true } },
     },
   });
 

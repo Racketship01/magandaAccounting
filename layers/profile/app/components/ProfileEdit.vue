@@ -24,12 +24,18 @@ const isOpen = computed({
 
 const handleSaveProfile = async (employee: EmployeeData) => {
   try {
-    const response = await $fetch<{ profile: any }>(`/api/updateProfile`, {
-      method: "PATCH",
-      body: { ...employee },
-    });
+    const response = await $fetch<{ currentUser: EmployeeData }>(
+      `/api/updateProfile`,
+      {
+        method: "PATCH",
+        body: { ...employee },
+      },
+    );
 
-    emit("save", employee);
+    // Emit the DB-authoritative record (not the local form payload) so the
+    // profile view reflects the data actually persisted in the database,
+    // including server-derived fields such as the generated avatar.
+    emit("save", response?.currentUser ?? employee);
     isOpen.value = false;
     toast.add({ title: "Profile updated successfully!", color: "success" });
   } catch (err: any) {

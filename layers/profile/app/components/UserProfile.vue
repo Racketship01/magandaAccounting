@@ -1,10 +1,10 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import type { EmployeeData } from "../composables/useEmployee";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import useProfile from "../composables/useProfile";
 
-const { currentUser, refresh } = useProfile();
+const { currentUser, currentUserStatus, updateCurrentUser } = useProfile();
 
 const isEditProfileOpen = ref(false);
 
@@ -83,23 +83,18 @@ const handleEditProfile = () => {
 };
 
 const handleSaveProfile = (profileData: EmployeeData) => {
-  // Update current user
-  currentUser.value = {
+  updateCurrentUser({
     ...profileData,
-    id: currentUser?.value?.id || "",
+    id: currentUser.value?.id || profileData.id || "",
     profileImage:
-      profileData.profileImage || currentUser?.value?.profileImage || "",
-  };
+      profileData.profileImage || currentUser.value?.profileImage || "",
+  });
   isEditProfileOpen.value = false;
 };
 
 const handleCloseEditProfile = () => {
   isEditProfileOpen.value = false;
 };
-
-watch(refresh, () => {
-  refresh();
-});
 </script>
 
 <template>
@@ -114,7 +109,16 @@ watch(refresh, () => {
     contentHeight="auto"
   >
     <template #content>
-      <div class="space-y-6">
+      <!-- Loading skeleton: shown only before the profile has loaded -->
+      <div
+        v-if="currentUserStatus === 'pending' && !currentUser"
+        class="space-y-6"
+      >
+        <USkeleton class="h-48 w-full rounded-lg" />
+        <USkeleton class="h-64 w-full rounded-lg" />
+      </div>
+
+      <div v-else class="space-y-6">
         <!-- Profile Overview Card -->
         <UCard class="shadow-sm">
           <div class="profile-container">

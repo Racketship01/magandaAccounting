@@ -10,6 +10,7 @@ import type {
   Employee,
   User,
 } from "../../../../prisma/generated/prisma/client";
+import { buildProfileImage } from "./profileRepository";
 
 export async function createEmployee(
   employeeInfo: CreateEmployeeSchema,
@@ -72,7 +73,11 @@ export async function getAllEmployee(): Promise<
   });
   return employees.map((employee) => ({
     ...employee,
-    profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(employee.firstName)}+${encodeURIComponent(employee.lastName)}&background=random&color=fff`,
+    profileImage: buildProfileImage(
+      employee.firstName,
+      employee.lastName,
+      employee.profileImage,
+    ),
   }));
 }
 

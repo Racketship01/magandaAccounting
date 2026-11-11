@@ -33,22 +33,39 @@ const defaultStats: DashboardStats = {
   },
 };
 
+// How long cached stats are considered fresh before a navigation refetches them.
+const CACHE_TTL = 60_000;
+
 export default function useDashboardStats() {
+  const statsFetchedAt = useState<number>("dashboardStatsFetchedAt", () => 0);
+
+  // Single source of truth for the dashboard stats, shared across consumers.
   const {
     data,
+    status: dashboardStatsStatus,
     refresh: refreshStats,
     error: dashboardStatsError,
-  } = useAsyncData<DashboardStats | null>("dashboardStats", async () => {
-    try {
+  } = useAsyncData<DashboardStats | null>(
+    "dashboardStats",
+    async () => {
       const response = await $fetch<DashboardStats>("/api/dashboard/getStats", {
         headers: useRequestHeaders(["cookie"]),
       });
-      return response;
-    } catch (error) {
-      console.error("Failed to load dashboard stats:", error);
-      throw error;
-    }
-  });
+      statsFetchedAt.value = Date.now();
+      return response ?? null;
+    },
+    {
+      default: () => null,
+      dedupe: "cancel",
+      // Reuse fresh cache instead of refetching on every mount/navigation.
+      getCachedData: (key, nuxtApp) => {
+        const cached = nuxtApp.payload.data[key] ?? nuxtApp.static.data[key];
+        const isFresh =
+          cached && Date.now() - statsFetchedAt.value < CACHE_TTL;
+        return isFresh ? cached : undefined;
+      },
+    },
+  );
 
   const dashboardStats = computed<DashboardStats>(() => {
     const resolved = data.value;
@@ -63,8 +80,13 @@ export default function useDashboardStats() {
     };
   });
 
+  // True once real (non-default) stats have been resolved at least once.
+  const dashboardStatsLoaded = computed(() => data.value !== null);
+
   return {
     dashboardStats,
+    dashboardStatsLoaded,
+    dashboardStatsStatus,
     refreshStats,
     dashboardStatsError,
   };

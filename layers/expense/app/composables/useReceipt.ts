@@ -16,7 +16,7 @@ export const useReceipt = () => {
 
   const isProcessing = useState<boolean>("isProcessing", () => false);
 
-  const formData = useState<FormData>("formData", () => ({
+  const formData = useState<FormData>("receiptFormData", () => ({
     amount: "",
     currency: "USD",
     date: "",

@@ -11,7 +11,7 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-const { expenseState, availableExpenses, selectedExpense, refresh } =
+const { expenseState, availableExpenses, expensesStatus, selectedExpense } =
   useExpense();
 const { toast } = useToastGlobal();
 const { employees } = useEmployee();
@@ -226,14 +226,6 @@ const formatDate = (dateString: string) => {
 };
 
 watch(
-  () => expenseState.value.searchQuery,
-  async () => {
-    await refresh();
-  },
-  { immediate: true },
-);
-
-watch(
   [() => route.query.expenseId, () => availableExpenses.value.length],
   ([expenseId]) => {
     if (expenseId && typeof expenseId === "string") {
@@ -345,6 +337,18 @@ const getCategoryColor = (category: string) => {
 
     <!-- Content Slot -->
     <template #content>
+      <!-- Loading skeleton: shown only before the first page of data arrives -->
+      <div
+        v-if="expensesStatus === 'pending' && availableExpenses.length === 0"
+        class="space-y-3"
+      >
+        <USkeleton
+          v-for="n in 4"
+          :key="`expense-skeleton-${n}`"
+          class="h-20 w-full rounded-lg"
+        />
+      </div>
+
       <div
         v-for="expense in filteredExpenses"
         :key="expense.id"

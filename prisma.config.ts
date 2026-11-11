@@ -9,7 +9,10 @@ export default defineConfig({
     path: "prisma/migrations",
     seed: "npx tsx prisma/seed.ts",
   },
+  // Used by the Prisma CLI (migrate/generate/studio/seed). Prefer the direct
+  // (non-pooled) connection for migrations; the runtime client in
+  // prisma/utils/prisma.ts uses the pooled DATABASE_URL.
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: process.env["DIRECT_URL"] || process.env["DATABASE_URL"],
   },
 });

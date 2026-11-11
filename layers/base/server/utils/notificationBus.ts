@@ -55,9 +55,7 @@ function connectRedis(): void {
   state.subscriber.subscribe(CHANNEL, (err) => {
     if (err) {
       console.error("[notificationBus] redis subscribe failed:", err.message);
-      return;
     }
-    console.log(`[notificationBus] subscribed to redis channel "${CHANNEL}"`);
   });
 }
 

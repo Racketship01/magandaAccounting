@@ -28,8 +28,11 @@ export interface EmployeeData {
   profileImage?: string;
 }
 
+// How long a cached list is considered fresh before a navigation refetches it.
+const CACHE_TTL = 60_000;
+
 export default function useEmployee() {
-  const formData = useState<EmployeeData>("formData", () => ({
+  const formData = useState<EmployeeData>("employeeFormData", () => ({
     firstName: "",
     lastName: "",
     role: "employee",
@@ -82,21 +85,38 @@ export default function useEmployee() {
     };
   };
 
-  const employees = useState<EmployeeData[]>("employees", () => []);
+  const employeesFetchedAt = useState<number>("employeesFetchedAt", () => 0);
 
-  // Fetch employees from the backend endpoint and override the employees useState
-  const { refresh } = useAsyncData("getAllEmployee", async () => {
-    const response = await $fetch<{ employees: EmployeeData[] }>(
-      "/api/getAllEmployee",
-      {
-        headers: useRequestHeaders(["cookie"]),
+  // Single source of truth for the employee list, shared across consumers.
+  const {
+    data: employees,
+    status: employeesStatus,
+    error: employeesError,
+    refresh,
+  } = useAsyncData<EmployeeData[]>(
+    "employees",
+    async () => {
+      const response = await $fetch<{ employees: EmployeeData[] }>(
+        "/api/getAllEmployee",
+        {
+          headers: useRequestHeaders(["cookie"]),
+        },
+      );
+      employeesFetchedAt.value = Date.now();
+      return response?.employees ?? [];
+    },
+    {
+      default: () => [] as EmployeeData[],
+      dedupe: "cancel",
+      // Reuse fresh cache instead of refetching on every mount/navigation.
+      getCachedData: (key, nuxtApp) => {
+        const cached = nuxtApp.payload.data[key] ?? nuxtApp.static.data[key];
+        const isFresh =
+          cached && Date.now() - employeesFetchedAt.value < CACHE_TTL;
+        return isFresh ? cached : undefined;
       },
-    );
-    if (response?.employees) {
-      employees.value = response.employees;
-    }
-    return response;
-  });
+    },
+  );
 
   const employeeState = useState("employeeState", () => ({
     searchQuery: "",
@@ -110,6 +130,8 @@ export default function useEmployee() {
     formData,
     resetForm,
     employees,
+    employeesStatus,
+    employeesError,
     employeeState,
     refresh,
   };

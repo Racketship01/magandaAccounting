@@ -11,7 +11,7 @@ interface Props {
 const _props = defineProps<Props>();
 const emit = defineEmits(["close", "save"]);
 
-const { refresh } = useBill();
+const { upsertBill } = useBill();
 
 const handleClose = () => {
   emit("close");
@@ -37,8 +37,8 @@ const handleSaveBill = async (billData: Bill) => {
     };
 
     emit("save", savedBillData);
+    if (createdBill) upsertBill(createdBill);
     toast.add({ title: "Bill added successfully!", color: "success" });
-    await refresh();
   } catch (error: any) {
     toast.add({
       title: "Failed to create Bill",

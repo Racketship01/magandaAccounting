@@ -1,5 +1,6 @@
 import { createBill } from "../repository/billRepository";
 import { createBillSchema } from "../schemas";
+import { persistReceiptImage } from "../utils/receiptImage";
 import { defineEventHandler, readBody, createError, H3Error } from "h3";
 import adminSession from "../../../../layers/profile/server/utils/roleSession";
 import { prisma } from "../../../../prisma/utils/prisma";
@@ -38,7 +39,12 @@ export default defineEventHandler(async (event: any) => {
   }
 
   try {
-    const createResult = await createBill(result.data, admin.id);
+    const receiptImage = await persistReceiptImage(result.data.receiptImage);
+
+    const createResult = await createBill(
+      { ...result.data, receiptImage },
+      admin.id,
+    );
 
     if (!createResult) {
       throw createError({

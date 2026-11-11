@@ -11,7 +11,7 @@ import {
   BarElement,
   Title,
 } from "chart.js";
-import { computed, ref, watch, onMounted } from "vue";
+import { computed, ref, watch } from "vue";
 import useProfile from "../../../profile/app/composables/useProfile";
 import useDashboardStats from "../composables/useDashboardStats";
 import useToastGlobal from "../composables/useToast";
@@ -28,9 +28,20 @@ ChartJS.register(
 );
 
 const { toast } = useToastGlobal();
-const { currentUser, refresh } = useProfile();
-const { dashboardStats, refreshStats, dashboardStatsError } =
-  useDashboardStats();
+const { currentUser } = useProfile();
+const {
+  dashboardStats,
+  dashboardStatsLoaded,
+  dashboardStatsStatus,
+  refreshStats,
+  dashboardStatsError,
+} = useDashboardStats();
+
+// Show the loading skeleton only before real stats have resolved, so a
+// background refresh with stale-but-usable data doesn't blank the page.
+const isDashboardLoading = computed(
+  () => dashboardStatsStatus.value === "pending" && !dashboardStatsLoaded.value,
+);
 
 const { ...weatherToday } = useWeatherForecast();
 
@@ -240,22 +251,15 @@ watch(dashboardStatsError, (error) => {
   }
 });
 
-onMounted(async () => {
-  try {
-    await Promise.all([refresh(), refreshStats()]);
-  } catch (error) {
-    toast.add({
-      title: "Failed to load dashboard data",
-      description:
-        error instanceof Error
-          ? error.message
-          : "Please check your connection and try again.",
-      color: "error",
-    });
+// Refetch stats when the signed-in user actually changes (e.g. after a profile
+// edit) — but skip the initial population so we don't double-fetch on load.
+let userInitialized = false;
+watch(currentUser, async (user) => {
+  if (!user) return;
+  if (!userInitialized) {
+    userInitialized = true;
+    return;
   }
-});
-
-watch(currentUser, async () => {
   try {
     await refreshStats();
   } catch (error) {
@@ -272,7 +276,21 @@ watch(currentUser, async () => {
 </script>
 
 <template>
+  <!-- Loading skeleton: shown only before real stats have resolved -->
+  <div v-if="isDashboardLoading" class="space-y-6">
+    <USkeleton class="h-24 w-full rounded-lg" />
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <USkeleton
+        v-for="n in 3"
+        :key="`dashboard-stat-skeleton-${n}`"
+        class="h-32 w-full rounded-lg"
+      />
+    </div>
+    <USkeleton class="h-80 w-full rounded-lg" />
+  </div>
+
   <Card
+    v-else
     :title="`${greeting}, ${admin.name}`"
     subtitle=""
     description="Here's what's happening with your finances today."

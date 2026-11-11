@@ -4,7 +4,7 @@ import { ref, computed } from "vue";
 import useEmployee from "../composables/useEmployee";
 
 // state
-const { employees, employeeState, refresh } = useEmployee();
+const { employees, employeesStatus, employeeState, refresh } = useEmployee();
 const isEmployeeDeleteModalOpen = ref(false);
 const isEmployeeFormModalOpen = ref(false);
 const employeeToDelete = ref<EmployeeData | null>(null);
@@ -223,6 +223,18 @@ const formatDate = (dateString: string) => {
 
     <!-- Content Slot -->
     <template #content>
+      <!-- Loading skeleton: shown only before the first page of data arrives -->
+      <div
+        v-if="employeesStatus === 'pending' && employees.length === 0"
+        class="space-y-3"
+      >
+        <USkeleton
+          v-for="n in 4"
+          :key="`employee-skeleton-${n}`"
+          class="h-20 w-full rounded-lg"
+        />
+      </div>
+
       <div
         v-for="employee in filteredEmployees"
         :key="employee.id"

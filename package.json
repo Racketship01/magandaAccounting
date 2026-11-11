@@ -10,6 +10,7 @@
     "postinstall": "prisma generate && nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "typecheck": "nuxt typecheck",
     "prepare": "husky",
     "report": "bash ./scripts/generate_report.sh",
     "test": "echo \"No tests yet\" && exit 0",
@@ -54,7 +55,9 @@
     "oxc-parser": "^0.151.0",
     "prisma": "^7.4.1",
     "tailwindcss": "^4.1.14",
-    "tsx": "^4.23.1"
+    "tsx": "^4.23.1",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.14"
   },
   "packageManager": "pnpm@10.13.1"
 }

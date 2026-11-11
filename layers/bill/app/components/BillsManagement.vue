@@ -8,7 +8,7 @@ import type { Bill } from "../composables/useBill";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const { bills, billState, refresh } = useBill();
+const { bills, billsStatus, billState } = useBill();
 
 // Bill categories
 const billCategories = [
@@ -93,18 +93,10 @@ const handleEditBill = (bill: any) => {
   isEditBillModalOpen.value = true;
 };
 
-const handleSaveBill = async (bill: Bill) => {
+const handleSaveBill = (_bill: Bill) => {
   if (isBillAddModalOpen.value) {
     isBillAddModalOpen.value = false;
   } else if (isEditBillModalOpen.value) {
-    const index = bills.value.findIndex((b) => b.id === bill.id);
-    if (index !== -1) {
-      bills.value[index] = {
-        ...bill,
-        id: bill.id as string,
-      };
-    }
-    await refresh();
     isEditBillModalOpen.value = false;
   }
 
@@ -117,13 +109,8 @@ const handleDeleteBill = (bill: any) => {
 };
 
 const confirmDeleteBill = () => {
-  if (selectedBill.value) {
-    bills.value = bills.value.filter(
-      (b: { id: any }) => b.id !== selectedBill.value!.id,
-    );
-    selectedBill.value = null;
-    isDeleteBillModalOpen.value = false;
-  }
+  selectedBill.value = null;
+  isDeleteBillModalOpen.value = false;
 };
 
 const cancelDeleteBill = () => {
@@ -146,13 +133,8 @@ const handleCloseViewBill = () => {
   selectedBill.value = null;
 };
 
-const handleMarkAsPaidFromModal = (billId: string) => {
-  const bill = bills.value.find((b: { id: string }) => b.id === billId);
-  if (bill) {
-    bill.isPaid = true;
-    bill.paidDate = new Date().toISOString().split("T")[0];
-    isViewBillModalOpen.value = false;
-  }
+const handleMarkAsPaidFromModal = (_billId: string) => {
+  isViewBillModalOpen.value = false;
   isBillViewEditModalOpen.value = false;
 };
 
@@ -298,6 +280,18 @@ watch(
 
     <!-- Content Slot -->
     <template #content>
+      <!-- Loading skeleton: shown only before the first page of data arrives -->
+      <div
+        v-if="billsStatus === 'pending' && bills.length === 0"
+        class="space-y-3"
+      >
+        <USkeleton
+          v-for="n in 4"
+          :key="`bill-skeleton-${n}`"
+          class="h-20 w-full rounded-lg"
+        />
+      </div>
+
       <div v-for="bill in filteredBills" :key="bill.id" class="bills-table">
         <!-- Bill Details -->
         <div class="bills-table__grid">

@@ -53,7 +53,6 @@ const extractReceiptData = async (
   });
 
   // 3. Return the parsed fields
-  console.log(response);
   extractedData.value.amount = response.amount;
   extractedData.value.date = response.date;
   extractedData.value.merchantName = response.merchantName;
@@ -128,7 +127,7 @@ const submitExpense = async () => {
     isProcessing.value = true;
 
     // Save to server database
-    const savedExpense = await $fetch("/api/expense/createExpense", {
+    await $fetch("/api/expense/createExpense", {
       method: "POST",
       body: {
         amount: formData.value.amount,
@@ -140,7 +139,6 @@ const submitExpense = async () => {
         image: uploadedImage.value,
       },
     });
-    console.log("Saved Expense:", savedExpense);
     toast.add({ title: "Expense added successfully!", color: "success" });
 
     // Reset scanner states

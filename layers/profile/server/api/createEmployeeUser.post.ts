@@ -39,7 +39,6 @@ export default defineEventHandler(async (event) => {
     credentials,
     profileImage,
   } = result.data;
-  console.log(result.data);
 
   const { username, email, password } = credentials;
   const { street, city, state, zipCode } = address;

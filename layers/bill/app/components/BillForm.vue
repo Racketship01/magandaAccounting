@@ -140,7 +140,6 @@ const handleFileSelect = async (event: Event) => {
     // Convert file to base64 for preview
     const base64 = await convertToBase64(file);
     receiptImage.value = base64;
-    console.log("Receipt uploaded successfully");
   } catch (error) {
     uploadError.value = "Failed to process image";
     console.error("Upload error:", error);

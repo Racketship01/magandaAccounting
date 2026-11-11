@@ -49,12 +49,10 @@ const handleLogin = async (event: FormSubmitEvent<typeof login.value>) => {
   login.value.isLoading = true;
 
   try {
-    const response = await $fetch("/api/auth/login", {
+    await $fetch("/api/auth/login", {
       method: "POST",
       body: event.data,
     });
-
-    console.log(response);
 
     const { fetch } = useAuth(); // useAuth already exposes fetch
     await fetch(); // sync session from server

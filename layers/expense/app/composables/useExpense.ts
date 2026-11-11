@@ -11,6 +11,9 @@ export interface ExpenseItem {
   receiptUrl?: string;
 }
 
+// How long a cached list is considered fresh before a navigation refetches it.
+const CACHE_TTL = 60_000;
+
 export default function useExpense() {
   const expenseState = useState("expense", () => ({
     searchQuery: "",
@@ -26,42 +29,53 @@ export default function useExpense() {
     () => null,
   );
 
-  // Mock expense data (individual expenses not yet in a report)
-  const availableExpenses = useState<ExpenseItem[]>(
-    "availableExpenses",
-    () => [],
-  );
+  const expensesFetchedAt = useState<number>("expensesFetchedAt", () => 0);
 
-  const { refresh } = useAsyncData("getExpenses", async () => {
-    try {
-      const response = await $fetch("/api/expense/getAllExpense", {
-        headers: useRequestHeaders(["cookie"]),
+  // Single source of truth for the expense list, shared across consumers.
+  const {
+    data: availableExpenses,
+    status: expensesStatus,
+    error: expensesError,
+    refresh,
+  } = useAsyncData<ExpenseItem[]>(
+    "expenses",
+    async () => {
+      const response = await $fetch<ExpenseItem[]>(
+        "/api/expense/getAllExpense",
+        {
+          headers: useRequestHeaders(["cookie"]),
+        },
+      );
+      expensesFetchedAt.value = Date.now();
+      return (response ?? []).map((expense) => {
+        let status = expense.status;
+        if (status) {
+          status =
+            status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+        } else {
+          status = "Pending";
+        }
+        return { ...expense, status };
       });
-      if (response) {
-        availableExpenses.value = (response as ExpenseItem[]).map((expense) => {
-          let status = expense.status;
-          if (status) {
-            status =
-              status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
-          } else {
-            status = "Pending";
-          }
-          return {
-            ...expense,
-            status,
-          };
-        });
-      }
-    } catch (error) {
-      console.error("Failed to load expenses:", error);
-      return { expenses: [] };
-    }
-  });
-  refresh();
+    },
+    {
+      default: () => [] as ExpenseItem[],
+      dedupe: "cancel",
+      // Reuse fresh cache instead of refetching on every mount/navigation.
+      getCachedData: (key, nuxtApp) => {
+        const cached = nuxtApp.payload.data[key] ?? nuxtApp.static.data[key];
+        const isFresh =
+          cached && Date.now() - expensesFetchedAt.value < CACHE_TTL;
+        return isFresh ? cached : undefined;
+      },
+    },
+  );
 
   return {
     expenseState,
     availableExpenses,
+    expensesStatus,
+    expensesError,
     selectedExpense,
     refresh,
   };

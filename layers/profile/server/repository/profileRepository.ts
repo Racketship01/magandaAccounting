@@ -5,7 +5,55 @@ import type {
   Admin,
 } from "../../../../prisma/generated/prisma/client";
 import userSession from "../../../auth/server/utils/userSession";
-import { type UpdateProfileSchema, mapStatus } from "../schemas";
+import {
+  type UpdateProfileSchema,
+  mapStatus,
+  mapPrismaStatus,
+} from "../schemas";
+
+export const buildProfileImage = (
+  firstName: string,
+  lastName: string,
+  existing?: string | null,
+) => {
+  if (existing && existing.trim() !== "") return existing;
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName)}&background=random&color=fff`;
+};
+
+// Maps the persisted employee/admin record to the shape the client expects
+// (nested address/credentials, UI status). Shared by GET and PATCH so both
+// endpoints return identical structures.
+export function mapCurrentUser(profile: any) {
+  return {
+    id: profile.id,
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    role: profile.role,
+    phone: profile.phone,
+    jobTitle: profile.jobTitle,
+    nationality: profile.nationality,
+    department: profile.department,
+    startDate: profile.startDate,
+    salary: profile.salary,
+    currency: profile.currency,
+    status: mapPrismaStatus(profile.status),
+    address: {
+      street: profile.street,
+      city: profile.city,
+      state: profile.state,
+      zipCode: profile.zipCode,
+    },
+    credentials: {
+      username: profile.user?.username,
+      email: profile.user?.email,
+    },
+    profileImage: buildProfileImage(
+      profile.firstName || "",
+      profile.lastName || "",
+      profile.profileImage || "",
+    ),
+  };
+}
 
 export async function getMyProfile(
   event: any,
@@ -25,15 +73,6 @@ export async function getMyProfile(
   if (!profile) {
     throw new Error("Profile not found");
   }
-
-  const buildProfileImage = (
-    firstName: string,
-    lastName: string,
-    existing?: string | null,
-  ) => {
-    if (existing && existing.trim() !== "") return existing;
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName)}&background=random&color=fff`;
-  };
 
   if (profile.admin && profile.admin.length > 0) {
     const admin = profile.admin[0];

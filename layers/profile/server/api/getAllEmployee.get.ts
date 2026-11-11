@@ -45,7 +45,5 @@ export default defineEventHandler(async (event) => {
     })),
   };
 
-  console.log(allEmployees);
-
   return { ...allEmployees };
 });

@@ -61,12 +61,10 @@ const handleSignUp = async (event: FormSubmitEvent<typeof signup.value>) => {
   signup.value.isLoading = true;
 
   try {
-    const response = await $fetch("/api/auth/signup", {
+    await $fetch("/api/auth/signup", {
       method: "POST",
       body: event.data,
     });
-
-    console.log(response);
 
     toast.add({
       title: "Success",

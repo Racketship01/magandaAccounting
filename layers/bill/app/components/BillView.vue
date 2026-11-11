@@ -8,7 +8,7 @@ interface Props {
   bill: Bill | null;
 }
 
-const { bill: _BillProps, refresh } = useBill();
+const { bill: _BillProps, upsertBill } = useBill();
 
 const _props = defineProps<Props>();
 const emit = defineEmits(["close", "paid"]);
@@ -33,12 +33,12 @@ const handlePaid = async (
     );
 
     emit("paid", response);
+    if (response.bill) upsertBill(response.bill);
     toast.add({
       title: "Bill updated",
       description: "The bill has been updated successfully",
       color: "success",
     });
-    await refresh();
   } catch (error: any) {
     toast.add({
       title: "Error",

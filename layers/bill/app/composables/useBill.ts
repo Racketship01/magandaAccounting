@@ -15,8 +15,11 @@ export interface Bill {
   currency?: string;
 }
 
+// How long a cached list is considered fresh before a navigation refetches it.
+const CACHE_TTL = 60_000;
+
 export default function useBill() {
-  const billFormData = useState<Bill>("formData", () => ({
+  const billFormData = useState<Bill>("billFormData", () => ({
     title: "",
     amount: 0,
     category: "",
@@ -49,22 +52,38 @@ export default function useBill() {
   };
 
   const bill = useState<Bill | null>("bill", () => null);
-  const bills = useState<Bill[]>("bills", () => []);
 
-  const { refresh } = useAsyncData("getBills", async () => {
-    try {
+  // Timestamp of the last successful fetch, shared across consumers of "bills".
+  const billsFetchedAt = useState<number>("billsFetchedAt", () => 0);
+
+  // Single source of truth for the bills list. Every component that calls
+  // useBill() shares this same ref (Nuxt caches by key), so no parallel
+  // useState copy is needed.
+  const {
+    data: bills,
+    status: billsStatus,
+    error: billsError,
+    refresh,
+  } = useAsyncData<Bill[]>(
+    "bills",
+    async () => {
       const response = await $fetch<{ bills: Bill[] }>("/api/getBills", {
         headers: useRequestHeaders(["cookie"]),
       });
-      if (response?.bills) {
-        bills.value = response.bills;
-      }
-      return response;
-    } catch (error) {
-      console.error("Failed to load bills:", error);
-      return { bills: [] };
-    }
-  });
+      billsFetchedAt.value = Date.now();
+      return response?.bills ?? [];
+    },
+    {
+      default: () => [] as Bill[],
+      dedupe: "cancel",
+      // Reuse fresh cache instead of refetching on every mount/navigation.
+      getCachedData: (key, nuxtApp) => {
+        const cached = nuxtApp.payload.data[key] ?? nuxtApp.static.data[key];
+        const isFresh = cached && Date.now() - billsFetchedAt.value < CACHE_TTL;
+        return isFresh ? cached : undefined;
+      },
+    },
+  );
 
   const billState = useState("billState", () => ({
     searchQuery: "",
@@ -72,11 +91,30 @@ export default function useBill() {
     selectedStatus: "",
   }));
 
+  // Reconcile a single bill from an authoritative server response.
+  const upsertBill = (updated: Bill) => {
+    const index = bills.value.findIndex((b) => b.id === updated.id);
+    if (index !== -1) {
+      bills.value[index] = { ...bills.value[index], ...updated };
+    } else if (updated.id) {
+      bills.value = [updated, ...bills.value];
+    }
+  };
+
+  const removeBill = (id?: string) => {
+    if (!id) return;
+    bills.value = bills.value.filter((b) => b.id !== id);
+  };
+
   return {
     bill,
     bills,
+    billsStatus,
+    billsError,
     billState,
     refresh,
+    upsertBill,
+    removeBill,
     billFormData,
     resetForm,
   };

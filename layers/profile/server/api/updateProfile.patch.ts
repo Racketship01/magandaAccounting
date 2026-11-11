@@ -1,5 +1,8 @@
 import { defineEventHandler, readBody, createError, H3Error } from "h3";
-import { updateMyProfile } from "../repository/profileRepository";
+import {
+  updateMyProfile,
+  mapCurrentUser,
+} from "../repository/profileRepository";
 import { updateProfileSchema } from "../schemas";
 
 export default defineEventHandler(async (event) => {
@@ -33,7 +36,7 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Profile not found",
       });
     }
-    return { profile };
+    return { currentUser: mapCurrentUser(profile) };
   } catch (error: any) {
     console.error("Profile update error:", error);
     if (error instanceof H3Error) throw error;

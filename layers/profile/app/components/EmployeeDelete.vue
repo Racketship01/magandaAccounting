@@ -34,7 +34,7 @@ const confirmDelete = async () => {
       toast.add({ title: "Employee deleted successfully!", color: "success" });
       isEmployeeDeleteOpen.value = false;
     } catch (err) {
-      console.log(err);
+      console.error("Failed to delete employee:", err);
     }
   }
 };
