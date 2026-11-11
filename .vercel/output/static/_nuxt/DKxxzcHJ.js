@@ -1,1 +1,0 @@
-import{c as e,u as t}from"./BMslHvqZ.js";import{t as n}from"./BNkipfd1.js";var r=e((e,r)=>{let{isAuthenticated:i,user:a}=n();if(!i.value)return t(`/login`);if(a.value?.role!==`admin`)return t(`/dashboard`)});export{r as default};
