@@ -249,7 +249,7 @@ const formatDate = (dateString: string) => {
             "
             :alt="`${employee.firstName} ${employee.lastName}`"
             class="employee-table__image"
-          >
+          />
         </div>
 
         <!-- Employee Details -->

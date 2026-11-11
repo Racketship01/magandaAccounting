@@ -437,11 +437,7 @@ watch(currentUser, async (user) => {
           </template>
           <div class="content-section__chart-body">
             <template v-if="isCategoryChartEmpty">
-              <div class="text-center py-10">
-                <!-- <UIcon
-                  name="i-lucide-pie-chart"
-                  class="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4"
-                /> -->
+              <div class="text-center py-3">
                 <p
                   class="text-xl font-semibold text-gray-400 dark:text-gray-500 mb-2"
                 >
